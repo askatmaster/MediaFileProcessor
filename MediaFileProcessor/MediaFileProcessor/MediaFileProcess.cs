@@ -129,6 +129,7 @@ public class MediaFileProcess
             try
             {
                 InputStreams[0].CopyTo(Process.StandardInput.BaseStream);
+                Process.StandardInput.Flush();
                 Process.StandardInput.Close();
             }
             catch (Exception e)
