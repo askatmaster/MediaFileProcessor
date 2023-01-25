@@ -115,6 +115,46 @@ public class FileProcessingSettings : ProcessingSettings
     }
 
     /// <summary>
+    /// Parse untranslatable HTML and LaTeX as raw
+    /// </summary>
+    public FileProcessingSettings ParseRaw()
+    {
+        _stringBuilder.Append(" --parse-raw ");
+
+        return this;
+    }
+
+    /// <summary>
+    /// Normalize the document, including converting it to NFC Unicode normalization form
+    /// </summary>
+    public FileProcessingSettings Normalize()
+    {
+        _stringBuilder.Append(" --normalize ");
+
+        return this;
+    }
+
+    /// <summary>
+    /// Link to a CSS stylesheet
+    /// </summary>
+    public FileProcessingSettings CssUrl(string url)
+    {
+        _stringBuilder.Append(" --css={url} ");
+
+        return this;
+    }
+
+    /// <summary>
+    /// Print the default template for FORMAT
+    /// </summary>
+    public FileProcessingSettings PrintDefaultTemplate(string format)
+    {
+        _stringBuilder.Append(" -D {format} ");
+
+        return this;
+    }
+
+    /// <summary>
     /// Parse each file individually before combining for multifile documents.
     /// </summary>
     public FileProcessingSettings FileScope()
