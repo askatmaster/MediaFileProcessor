@@ -1,76 +1,53 @@
-﻿using System.ComponentModel;
-using System.Net;
-namespace MediaFileProcessor.Processors;
+﻿namespace MediaFileProcessor.Processors;
 
 public class FileDownloadProcessor
 {
-    private readonly string _url;
-    private readonly string _fullPathWhereToSave;
-    private bool _result  ;
-    private readonly SemaphoreSlim _semaphore = new (0);
-
-    private FileDownloadProcessor(string url, string fullPathWhereToSave)
+    public static async Task DownloadFile(string url, string fileName)
     {
-        if (string.IsNullOrEmpty(url))
-            throw new ArgumentNullException(nameof(url));
-        if (string.IsNullOrEmpty(fullPathWhereToSave))
-            throw new ArgumentNullException(nameof(fullPathWhereToSave));
-
-        _url = url;
-        _fullPathWhereToSave = fullPathWhereToSave;
-    }
-
-    private async Task<bool> StartDownload(int timeout)
-    {
-        try
+        using (var client = new HttpClient())
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(_fullPathWhereToSave) ?? throw new DirectoryNotFoundException(nameof(_fullPathWhereToSave)));
+            // Add a user agent header in case the requested URI contains a query.
+            client.DefaultRequestHeaders.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
 
-            if (File.Exists(_fullPathWhereToSave))
-                File.Delete(_fullPathWhereToSave);
-
-            using (var client = new WebClient())
+            using (var response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead))
             {
-                var ur = new Uri(_url);
+                using (var content = response.Content)
+                {
+                    // Get the total size of the file
+                    var totalBytes = content.Headers.ContentLength.GetValueOrDefault();
 
-                client.DownloadProgressChanged += WebClientDownloadProgressChanged;
-                client.DownloadFileCompleted += WebClientDownloadCompleted;
-                Console.WriteLine(@"Downloading file:");
-                await client.DownloadFileTaskAsync(ur, _fullPathWhereToSave);
-                await _semaphore.WaitAsync(timeout);
+                    using (var fileStream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None))
+                    {
+                        // Get the stream of the content
+                        using (var contentStream = await content.ReadAsStreamAsync())
+                        {
+                            // Read the content stream
+                            var buffer = new byte[8192];
+                            int bytesRead;
+                            long bytesReceived = 0;
 
-                return _result && File.Exists(_fullPathWhereToSave);
+                            while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                            {
+                                // Write the data to the file
+                                await fileStream.WriteAsync(buffer, 0, bytesRead);
+                                bytesReceived += bytesRead;
+
+                                // Calculate the download progress in percentages
+                                var percentage = (double)bytesReceived / totalBytes * 100;
+
+                                // Round the percentage to the nearest tenth
+                                percentage = Math.Round(percentage, 1);
+
+                                // Set the cursor position to the beginning of the line
+                                Console.SetCursorPosition(0, Console.CursorTop);
+
+                                // Print the download progress percentage to the console
+                                Console.Write(percentage + "%");
+                            }
+                        }
+                    }
+                }
             }
         }
-        catch (Exception e)
-        {
-            Console.WriteLine("Was not able to download file!");
-            Console.Write(e);
-
-            return false;
-        }
-        finally
-        {
-            _semaphore.Dispose();
-        }
-    }
-
-    private void WebClientDownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
-    {
-        Console.Write($"\r    -->    {e.ProgressPercentage}%");
-    }
-
-    private void WebClientDownloadCompleted(object? sender, AsyncCompletedEventArgs args)
-    {
-        _result = !args.Cancelled;
-        if (!_result)
-            Console.Write(args.Error.ToString());
-        Console.WriteLine(Environment.NewLine + "Download finished!");
-        _semaphore.Release();
-    }
-
-    public static async Task<bool> DownloadFile(string url, string fullPathWhereToSave, int timeoutInMilliSec)
-    {
-        return await new FileDownloadProcessor(url, fullPathWhereToSave).StartDownload(timeoutInMilliSec);
     }
 }
