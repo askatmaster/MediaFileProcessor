@@ -22,6 +22,8 @@ public enum FileFormatType
     ASF,
     JPG,
     JPEG,
+    IMAGE2PIPE,
+    IMAGE2,
     PNG,
     RAWVIDEO,
     MP3,

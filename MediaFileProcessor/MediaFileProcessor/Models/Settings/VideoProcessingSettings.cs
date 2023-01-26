@@ -840,7 +840,7 @@ public class VideoProcessingSettings : ProcessingSettings
         if(files is null || files.Length == 0)
             throw new NullReferenceException("'CustomInputs' Arguments must be specified if there are no input files");
 
-        SetInputStreams();
+        SetInputStreams(files);
 
         switch(files.Length)
         {
@@ -915,9 +915,9 @@ public class VideoProcessingSettings : ProcessingSettings
     /// Set input streams from files
     /// If the input files are streams
     /// </summary>
-    private void SetInputStreams(params MediaFile[]? files)
+    private void SetInputStreams(params MediaFile[] files)
     {
-        if(files is null)
+        if(files.Length is 0)
             return;
 
 

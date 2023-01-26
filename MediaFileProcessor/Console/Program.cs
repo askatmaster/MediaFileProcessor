@@ -5,45 +5,95 @@ Console.ForegroundColor = ConsoleColor.Green;
 Console.WriteLine("Start");
 Console.ResetColor();
 
+var video1 =  @"C:\mfptest\test.avi";
 
-// var resultStream = await VideoFileProcessor.GetFrameFromVideoAsStreamAsync(TimeSpan.FromMilliseconds(47500), @"tests\test.avi");
-// await using (var output = new FileStream(@"tests\result.jpg", FileMode.Create))
+var videoProcessor = new VideoFileProcessor();
+
+// await videoProcessor.GetFrameFromVideoAsync(TimeSpan.FromMilliseconds(27500),
+//                                             new MediaFile(video1, MediaFileInputType.Path),
+//                                             @"C:\mfptest\results\result.jpg");
+
+// await using var stream = new FileStream(video1, FileMode.Open);
+// var resultStream = await videoProcessor.GetFrameFromVideoAsStreamAsync(TimeSpan.FromMilliseconds(47500), new MediaFile(stream));
+// await using (var output = new FileStream(@"C:\mfptest\results\result.jpg", FileMode.Create))
 //     resultStream.WriteTo(output);
 
-// await using var stream = new FileStream(@"tests\test.avi", FileMode.Open);
-// var resultStream = await VideoFileProcessor.GetFrameFromVideoAsStreamAsync(TimeSpan.FromMilliseconds(47500), stream);
-// await using (var output = new FileStream(@"tests\result.jpg", FileMode.Create))
-//     resultStream.WriteTo(output);
-
-// var bytes = File.ReadAllBytes(@"tests\test.avi");
-// var resultStream = await VideoFileProcessor.GetFrameFromVideoAsStreamAsync(TimeSpan.FromMilliseconds(47500), bytes);
-// await using (var output = new FileStream(@"tests\result.jpg", FileMode.Create))
-//     resultStream.WriteTo(output);
+// var bytes = File.ReadAllBytes(video1);
+// var resultBytes = await videoProcessor.GetFrameFromVideoAsBytesAsync(TimeSpan.FromMilliseconds(47500), new MediaFile(bytes), FileFormatType.JPG);
+// await using (var output = new FileStream(@"C:\mfptest\results\result.jpg", FileMode.Create))
+//     output.Write(resultBytes);
 
 
 //============================================================================================================================================================================================================================================
 
+// await videoProcessor.CutVideoAsync(TimeSpan.FromMilliseconds(27500),
+//                                    TimeSpan.FromMilliseconds(47500),
+//                                    new MediaFile(video1, MediaFileInputType.Path),
+//                                    @"C:\mfptest\results\result.avi");
 
-// var resultBytes = await VideoFileProcessor.GetFrameFromVideoAsBytesAsync(TimeSpan.FromMilliseconds(47500), @"tests\test.avi");
-// await using (var output = new FileStream(@"tests\result.jpg", FileMode.Create))
+// await using var stream = new FileStream(video1, FileMode.Open);
+// var resultStream = await videoProcessor.CutVideoAsStreamAsync(TimeSpan.FromMilliseconds(27500),
+//                                                              TimeSpan.FromMilliseconds(47500),
+//                                                              new MediaFile(stream));
+// await using (var output = new FileStream(@"C:\mfptest\results\result.avi", FileMode.Create))
+//     resultStream.WriteTo(output);
+
+// var bytes = File.ReadAllBytes(video1);
+// var resultBytes = await videoProcessor.CutVideoAsBytesAsync(TimeSpan.FromMilliseconds(27500), TimeSpan.FromMilliseconds(47500), new MediaFile(bytes));
+// await using (var output = new FileStream(@"C:\mfptest\results\result.avi", FileMode.Create))
 //     output.Write(resultBytes, 0, resultBytes.Length);
-
-// await using var stream = new FileStream(@"tests\test.avi", FileMode.Open);
-// var resultBytes = await VideoFileProcessor.GetFrameFromVideoAsBytesAsync(TimeSpan.FromMilliseconds(47500), stream);
-// await using (var output = new FileStream(@"tests\result.jpg", FileMode.Create))
-//     output.Write(resultBytes, 0, resultBytes.Length);
-
-// var bytes = File.ReadAllBytes(@"tests\test.avi");
-// var resultBytes = await VideoFileProcessor.GetFrameFromVideoAsBytesAsync(TimeSpan.FromMilliseconds(47500), bytes);
-// await using (var output = new FileStream(@"tests\result.jpg", FileMode.Create))
-//     output.Write(resultBytes, 0, resultBytes.Length);
-
 
 //============================================================================================================================================================================================================================================
 
-// await VideoFileProcessor.CutVideoAsync(TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(20), @"tests\test.avi", @"tests\result.avi");
+// await videoProcessor.ConvertVideoToImagesAsync(new MediaFile(video1, MediaFileInputType.Path),
+//                                                FileFormatType.JPG,
+//                                                @"C:\mfptest\results\result%03d.jpg");
 
-//============================================================================================================================================================================================================================================
+// await using var stream = new FileStream(video1, FileMode.Open);
+// var resultStream = await videoProcessor.ConvertVideoToImagesAsStreamAsync(new MediaFile(stream), FileFormatType.JPG);
+// var count = 1;
+// var data = resultStream.ReadAsDataArray();
+// foreach (var bytes in data)
+// {
+//     await using (var output = new FileStream(@$"C:\mfptest\results\result{count++}.jpg", FileMode.Create))
+//         output.Write(bytes, 0, bytes.Length);
+// }
+
+// var bytes = File.ReadAllBytes(video1);
+// var resultBytes = await videoProcessor.ConvertVideoToImagesAsBytesAsync(new MediaFile(bytes), FileFormatType.JPG);
+// var count = 1;
+// foreach (var bytesData in resultBytes)
+// {
+//     await using (var output = new FileStream(@$"C:\mfptest\results\result{count++}.jpg", FileMode.Create))
+//         output.Write(bytesData, 0, bytesData.Length);
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // var stream = new MultiStream();
 //
@@ -98,10 +148,10 @@ Console.ResetColor();
 // await using (var output = new FileStream(@"G:\MagickImageFile\image.jpg", FileMode.Create))
 //     resultStream.WriteTo(output);
 
-var bytes = File.ReadAllBytes(@"G:\MagickImageFile\testImage.jpg");
-var resultBytes = await ImageFileProcessor.CompressImageAsBytesAsync(new MediaFile(bytes));
-await using (var output = new FileStream(@"G:\MagickImageFile\image.jpg", FileMode.Create))
-    output.Write(resultBytes, 0, resultBytes.Length);
+// var bytes = File.ReadAllBytes(@"G:\MagickImageFile\testImage.jpg");
+// var resultBytes = await ImageFileProcessor.CompressImageAsBytesAsync(new MediaFile(bytes));
+// await using (var output = new FileStream(@"G:\MagickImageFile\image.jpg", FileMode.Create))
+//     output.Write(resultBytes, 0, resultBytes.Length);
 
 
 

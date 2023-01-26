@@ -6,10 +6,10 @@ namespace MediaFileProcessor.Processors;
 
 public class VideoFileProcessor
 {
-    private static readonly string _ffmpeg = "ffmpeg.exe";
-    private static readonly string _ffprobe = "ffprobe.exe";
+    private readonly string _ffmpeg = "ffmpeg.exe";
+    private readonly string _ffprobe = "ffprobe.exe";
 
-    private static async Task<MemoryStream?> ExecuteAsync(VideoProcessingSettings settings, CancellationToken cancellationToken)
+    private async Task<MemoryStream?> ExecuteAsync(VideoProcessingSettings settings, CancellationToken cancellationToken)
     {
         var processArguments = settings.GetProcessArguments();
 
@@ -20,62 +20,63 @@ public class VideoFileProcessor
 
     //======================================================================================================================================================================
 
-    private static async Task<MemoryStream?> ExecuteGetFrameFromVideoAsync(TimeSpan timestamp, MediaFile file, string? outputFile, CancellationToken cancellationToken)
+    private async Task<MemoryStream?> ExecuteGetFrameFromVideoAsync(TimeSpan timestamp, MediaFile file, string? outputFile, FileFormatType outputFormat, CancellationToken cancellationToken)
     {
         var settings = new VideoProcessingSettings().ReplaceIfExist()
                                                     .Seek(timestamp)
                                                     .SetInputFiles(file)
                                                     .FramesNumber(1)
+                                                    .Format(outputFormat)
                                                     .SetOutputArguments(outputFile);
 
 
         return await ExecuteAsync(settings, cancellationToken);
     }
 
-    public static async Task GetFrameFromVideoAsync(TimeSpan timestamp, MediaFile file, string outputFile, CancellationToken? cancellationToken = null)
+    public  async Task GetFrameFromVideoAsync(TimeSpan timestamp, MediaFile file, string outputFile, FileFormatType outputFormat, CancellationToken? cancellationToken = null)
     {
-        await ExecuteGetFrameFromVideoAsync(timestamp, file, outputFile, cancellationToken ?? new CancellationToken());
+        await ExecuteGetFrameFromVideoAsync(timestamp, file, outputFile, outputFormat, cancellationToken ?? new CancellationToken());
     }
-    public static async Task<MemoryStream> GetFrameFromVideoAsStreamAsync(TimeSpan timestamp, MediaFile file, CancellationToken? cancellationToken = null)
+    public  async Task<MemoryStream> GetFrameFromVideoAsStreamAsync(TimeSpan timestamp, MediaFile file, FileFormatType outputFormat, CancellationToken? cancellationToken = null)
     {
-        return (await ExecuteGetFrameFromVideoAsync(timestamp, file, null, cancellationToken ?? new CancellationToken()))!;
+        return (await ExecuteGetFrameFromVideoAsync(timestamp, file, null, outputFormat, cancellationToken ?? new CancellationToken()))!;
     }
-    public static async Task<byte[]> GetFrameFromVideoAsBytesAsync(TimeSpan timestamp, MediaFile file, CancellationToken? cancellationToken = null)
+    public  async Task<byte[]> GetFrameFromVideoAsBytesAsync(TimeSpan timestamp, MediaFile file, FileFormatType outputFormat, CancellationToken? cancellationToken = null)
     {
-        return (await ExecuteGetFrameFromVideoAsync(timestamp, file, null, cancellationToken ?? new CancellationToken()))!.ToArray();
+        return (await ExecuteGetFrameFromVideoAsync(timestamp, file, null, outputFormat, cancellationToken ?? new CancellationToken()))!.ToArray();
     }
 
     //======================================================================================================================================================================
 
-    private static async Task<MemoryStream?> ExecuteCutVideoAsync(TimeSpan startTime, TimeSpan endTime, MediaFile file, string? outputFile, CancellationToken cancellationToken)
+    private  async Task<MemoryStream?> ExecuteCutVideoAsync(TimeSpan startTime, TimeSpan endTime, MediaFile file, string? outputFile, FileFormatType outputFormat, CancellationToken cancellationToken)
     {
         var settings = new VideoProcessingSettings().ReplaceIfExist()
+                                                    .SetInputFiles(file)
                                                     .Seek(startTime)
                                                     .TimePosition(endTime)
-                                                    .SetInputFiles(file)
                                                     .CopyAllCodec()
-                                                    .MapMetadata()
+                                                    .Format(outputFormat)
                                                     .SetOutputArguments(outputFile);
 
         return await ExecuteAsync(settings, cancellationToken);
     }
 
-    public static async Task CutVideoAsync(TimeSpan startTime, TimeSpan endTime,  MediaFile file, string outputFile, CancellationToken? cancellationToken = null)
+    public  async Task CutVideoAsync(TimeSpan startTime, TimeSpan endTime,  MediaFile file, string outputFile, FileFormatType outputFormat, CancellationToken? cancellationToken = null)
     {
-        await ExecuteCutVideoAsync(startTime, endTime, file, outputFile, cancellationToken ?? new CancellationToken());
+        await ExecuteCutVideoAsync(startTime, endTime, file, outputFile, outputFormat, cancellationToken ?? new CancellationToken());
     }
-    public static async Task<MemoryStream> CutVideoAsStreamAsync(TimeSpan startTime, TimeSpan endTime, MediaFile file, CancellationToken? cancellationToken = null)
+    public  async Task<MemoryStream> CutVideoAsStreamAsync(TimeSpan startTime, TimeSpan endTime, MediaFile file, FileFormatType outputFormat, CancellationToken? cancellationToken = null)
     {
-        return (await ExecuteCutVideoAsync(startTime, endTime, file, null, cancellationToken ?? new CancellationToken()))!;
+        return (await ExecuteCutVideoAsync(startTime, endTime, file, null, outputFormat, cancellationToken ?? new CancellationToken()))!;
     }
-    public static async Task<byte[]> CutVideoAsBytesAsync(TimeSpan startTime, TimeSpan endTime, MediaFile file, CancellationToken? cancellationToken = null)
+    public  async Task<byte[]> CutVideoAsBytesAsync(TimeSpan startTime, TimeSpan endTime, MediaFile file, FileFormatType outputFormat, CancellationToken? cancellationToken = null)
     {
-        return (await ExecuteCutVideoAsync(startTime, endTime, file, null, cancellationToken ?? new CancellationToken()))!.ToArray();
+        return (await ExecuteCutVideoAsync(startTime, endTime, file, null, outputFormat, cancellationToken ?? new CancellationToken()))!.ToArray();
     }
 
     //======================================================================================================================================================================
 
-    private static async Task<MemoryStream?> ExecuteConvertImagesToVideoAsync(MediaFile file, int frameRate, VideoCodecType videoCodecType, FileFormatType? outputFileFormatType, string? outputFile, CancellationToken cancellationToken)
+    private  async Task<MemoryStream?> ExecuteConvertImagesToVideoAsync(MediaFile file, int frameRate, VideoCodecType videoCodecType, FileFormatType? outputFileFormatType, string? outputFile, CancellationToken cancellationToken)
     {
         var settings = new VideoProcessingSettings().ReplaceIfExist()
                                                     .FrameRate(frameRate)
@@ -89,30 +90,32 @@ public class VideoFileProcessor
         return await ExecuteAsync(settings, cancellationToken);
     }
 
-    public static async Task ConvertImagesToVideoAsync(MediaFile file, int frameRate, string outputFile, CancellationToken? cancellationToken = null, VideoCodecType videoCodecType = VideoCodecType.LIBX264)
+    public  async Task ConvertImagesToVideoAsync(MediaFile file, int frameRate, string outputFile, CancellationToken? cancellationToken = null, VideoCodecType videoCodecType = VideoCodecType.LIBX264)
     {
         await ExecuteConvertImagesToVideoAsync(file, frameRate, videoCodecType, null, outputFile,  cancellationToken ?? new CancellationToken());
     }
-    public static async Task<MemoryStream> ConvertImagesToVideoAsStreamAsync(MediaFile file, int frameRate, FileFormatType outputFileFormatType, VideoCodecType videoCodecType = VideoCodecType.LIBX264, CancellationToken? cancellationToken = null)
+    public  async Task<MemoryStream> ConvertImagesToVideoAsStreamAsync(MediaFile file, int frameRate, FileFormatType outputFileFormatType, VideoCodecType videoCodecType = VideoCodecType.LIBX264, CancellationToken? cancellationToken = null)
     {
         return (await ExecuteConvertImagesToVideoAsync(file, frameRate, videoCodecType, outputFileFormatType, null, cancellationToken ?? new CancellationToken()))!;
     }
-    public static async Task<byte[]> ConvertImagesToVideoAsBytesAsync(MediaFile file, int frameRate, FileFormatType? outputFileFormatType, VideoCodecType videoCodecType = VideoCodecType.LIBX264, CancellationToken? cancellationToken = null)
+    public  async Task<byte[]> ConvertImagesToVideoAsBytesAsync(MediaFile file, int frameRate, FileFormatType? outputFileFormatType, VideoCodecType videoCodecType = VideoCodecType.LIBX264, CancellationToken? cancellationToken = null)
     {
         return (await ExecuteConvertImagesToVideoAsync(file, frameRate, videoCodecType, outputFileFormatType, null, cancellationToken ?? new CancellationToken()))!.ToArray();
     }
 
     //======================================================================================================================================================================
 
-    private static async Task<MemoryStream?> ExecuteConvertVideoToImagesAsync(MediaFile file, FileFormatType? outputFileFormatType, string? outputImagesPattern, CancellationToken cancellationToken)
+    private  async Task<MemoryStream?> ExecuteConvertVideoToImagesAsync(MediaFile file, FileFormatType? outputFileFormatType, string? outputImagesPattern, CancellationToken cancellationToken)
     {
         var settings = new VideoProcessingSettings().ReplaceIfExist().SetInputFiles(file).SetOutputArguments(outputImagesPattern);
 
         switch(outputFileFormatType)
         {
             case FileFormatType.JPG:
+            case FileFormatType.IMAGE2PIPE:
+            case FileFormatType.IMAGE2:
             case FileFormatType.JPEG:
-                settings.Format(outputFileFormatType.Value);
+                settings.Format(FileFormatType.IMAGE2PIPE);
                 break;
             case FileFormatType.PNG:
                 settings.VideoCodec(VideoCodecType.PNG);
@@ -129,17 +132,17 @@ public class VideoFileProcessor
         return await ExecuteAsync(settings, cancellationToken);
     }
 
-    public static async Task ConvertVideoToImagesAsync(MediaFile file, string outputImagesPattern, CancellationToken? cancellationToken = null)
+    public  async Task ConvertVideoToImagesAsync(MediaFile file, FileFormatType outputFormatType, string outputImagesPattern, CancellationToken? cancellationToken = null)
     {
-        await ExecuteConvertVideoToImagesAsync(file, null, outputImagesPattern,  cancellationToken ?? new CancellationToken());
+        await ExecuteConvertVideoToImagesAsync(file, outputFormatType, outputImagesPattern,  cancellationToken ?? new CancellationToken());
     }
-    public static async Task<MultiStream> ConvertVideoToImagesAsStreamAsync(MediaFile file, FileFormatType outputFormatType, CancellationToken? cancellationToken = null)
+    public  async Task<MultiStream> ConvertVideoToImagesAsStreamAsync(MediaFile file, FileFormatType outputFormatType, CancellationToken? cancellationToken = null)
     {
         var stream = (await ExecuteConvertVideoToImagesAsync(file, outputFormatType, null,  cancellationToken ?? new CancellationToken()))!;
 
         return stream.GetMultiStreamBySignature(FilesSignatures.GetSignature(outputFormatType));
     }
-    public static async Task<byte[][]> ConvertVideoToImagesAsBytesAsync(MediaFile file, FileFormatType outputFormatType, CancellationToken? cancellationToken = null)
+    public  async Task<byte[][]> ConvertVideoToImagesAsBytesAsync(MediaFile file, FileFormatType outputFormatType, CancellationToken? cancellationToken = null)
     {
         var stream = (await ExecuteConvertVideoToImagesAsync(file, outputFormatType, null,  cancellationToken ?? new CancellationToken()))!;
         return stream.GetMultiStreamBySignature(FilesSignatures.GetSignature(outputFormatType)).ReadAsDataArray();
@@ -147,7 +150,7 @@ public class VideoFileProcessor
 
     //======================================================================================================================================================================
 
-    private static async Task<MemoryStream?> ExecuteGetAudioFromVideoAsync(MediaFile file, FileFormatType outputFileFormatType, AudioSampleRateType audioSampleRateType, int audioChannel, string? output, CancellationToken cancellationToken)
+    private  async Task<MemoryStream?> ExecuteGetAudioFromVideoAsync(MediaFile file, FileFormatType outputFileFormatType, AudioSampleRateType audioSampleRateType, int audioChannel, string? output, CancellationToken cancellationToken)
     {
         var settings = new VideoProcessingSettings().ReplaceIfExist()
                                                     .SetInputFiles(file)
@@ -160,46 +163,46 @@ public class VideoFileProcessor
         return await ExecuteAsync(settings, cancellationToken);
     }
 
-    public static async Task GetAudioFromVideoAsync(MediaFile file, FileFormatType outputFileFormatType, string output, int audioChannel = 2, CancellationToken? cancellationToken = null, AudioSampleRateType audioSampleRateType = AudioSampleRateType.Hz44100)
+    public  async Task GetAudioFromVideoAsync(MediaFile file, FileFormatType outputFileFormatType, string output, int audioChannel = 2, CancellationToken? cancellationToken = null, AudioSampleRateType audioSampleRateType = AudioSampleRateType.Hz44100)
     {
         await ExecuteGetAudioFromVideoAsync(file, outputFileFormatType, audioSampleRateType, audioChannel, output,  cancellationToken ?? new CancellationToken());
     }
 
-    public static async Task<MemoryStream> GetAudioFromVideoAsStreamAsync(MediaFile file, FileFormatType outputFileFormatType, int audioChannel = 2, CancellationToken? cancellationToken = null, AudioSampleRateType audioSampleRateType = AudioSampleRateType.Hz44100)
+    public  async Task<MemoryStream> GetAudioFromVideoAsStreamAsync(MediaFile file, FileFormatType outputFileFormatType, int audioChannel = 2, CancellationToken? cancellationToken = null, AudioSampleRateType audioSampleRateType = AudioSampleRateType.Hz44100)
     {
         return (await ExecuteGetAudioFromVideoAsync(file, outputFileFormatType, audioSampleRateType, audioChannel, null,  cancellationToken ?? new CancellationToken()))!;
     }
 
-    public static async Task<byte[]> GetAudioFromVideoAsBytesAsync(MediaFile file, FileFormatType outputFileFormatType, int audioChannel = 2, CancellationToken? cancellationToken = null, AudioSampleRateType audioSampleRateType = AudioSampleRateType.Hz44100)
+    public  async Task<byte[]> GetAudioFromVideoAsBytesAsync(MediaFile file, FileFormatType outputFileFormatType, int audioChannel = 2, CancellationToken? cancellationToken = null, AudioSampleRateType audioSampleRateType = AudioSampleRateType.Hz44100)
     {
         return (await ExecuteGetAudioFromVideoAsync(file, outputFileFormatType, audioSampleRateType, audioChannel, null,  cancellationToken ?? new CancellationToken()))!.ToArray();
     }
 
     //======================================================================================================================================================================
 
-    private static async Task<MemoryStream?> ExecuteConvertVideoAsync( MediaFile file, string? output, CancellationToken cancellationToken)
+    private  async Task<MemoryStream?> ExecuteConvertVideoAsync( MediaFile file, string? output, CancellationToken cancellationToken)
     {
         return await ExecuteAsync(new VideoProcessingSettings().ReplaceIfExist().SetInputFiles(file).SetOutputArguments(output), cancellationToken);
     }
 
-    public static async Task ConvertVideoAsync(MediaFile file, string output, CancellationToken? cancellationToken = null)
+    public  async Task ConvertVideoAsync(MediaFile file, string output, CancellationToken? cancellationToken = null)
     {
         await ExecuteConvertVideoAsync(file, output, cancellationToken ?? new CancellationToken());
     }
 
-    public static async Task<MemoryStream> ConvertVideoAsStreamAsync(MediaFile file, CancellationToken? cancellationToken = null)
+    public  async Task<MemoryStream> ConvertVideoAsStreamAsync(MediaFile file, CancellationToken? cancellationToken = null)
     {
         return (await ExecuteConvertVideoAsync(file, null, cancellationToken ?? new CancellationToken()))!;
     }
 
-    public static async Task<byte[]> ConvertVideoAsBytesAsync(MediaFile file, CancellationToken? cancellationToken = null)
+    public  async Task<byte[]> ConvertVideoAsBytesAsync(MediaFile file, CancellationToken? cancellationToken = null)
     {
         return (await ExecuteConvertVideoAsync(file, null, cancellationToken ?? new CancellationToken()))!.ToArray();
     }
 
     //======================================================================================================================================================================
 
-    private static async Task<MemoryStream?> ExecuteAddWaterMarkToVideoAsync(MediaFile videoFile, MediaFile watermarkFile, PositionType position, string? output, CancellationToken cancellationToken)
+    private  async Task<MemoryStream?> ExecuteAddWaterMarkToVideoAsync(MediaFile videoFile, MediaFile watermarkFile, PositionType position, string? output, CancellationToken cancellationToken)
     {
         var positionArgumant = string.Empty;
 
@@ -225,24 +228,24 @@ public class VideoFileProcessor
         return await ExecuteAsync(settings, cancellationToken);
     }
 
-    public static async Task AddWaterMarkToVideoAsync(MediaFile videoFile, MediaFile watermarkFile, PositionType position, string output, CancellationToken? cancellationToken = null)
+    public  async Task AddWaterMarkToVideoAsync(MediaFile videoFile, MediaFile watermarkFile, PositionType position, string output, CancellationToken? cancellationToken = null)
     {
         await ExecuteAddWaterMarkToVideoAsync(videoFile, watermarkFile, position, output, cancellationToken ?? new CancellationToken());
     }
 
-    public static async Task<MemoryStream> AddWaterMarkToVideoAsStreamAsync(MediaFile videoFile, MediaFile watermarkFile, PositionType position, CancellationToken? cancellationToken = null)
+    public  async Task<MemoryStream> AddWaterMarkToVideoAsStreamAsync(MediaFile videoFile, MediaFile watermarkFile, PositionType position, CancellationToken? cancellationToken = null)
     {
         return (await ExecuteAddWaterMarkToVideoAsync(videoFile, watermarkFile, position, null, cancellationToken ?? new CancellationToken()))!;
     }
 
-    public static async Task<byte[]> AddWaterMarkToVideoAsBytesAsync(MediaFile videoFile, MediaFile watermarkFile, PositionType position, CancellationToken? cancellationToken = null)
+    public  async Task<byte[]> AddWaterMarkToVideoAsBytesAsync(MediaFile videoFile, MediaFile watermarkFile, PositionType position, CancellationToken? cancellationToken = null)
     {
         return (await ExecuteAddWaterMarkToVideoAsync(videoFile, watermarkFile, position, null, cancellationToken ?? new CancellationToken()))!.ToArray();
     }
 
     //======================================================================================================================================================================
 
-    private static async Task<MemoryStream?> ExecuteExtractVideoFromFileAsync(MediaFile file, string? output, CancellationToken cancellationToken)
+    private  async Task<MemoryStream?> ExecuteExtractVideoFromFileAsync(MediaFile file, string? output, CancellationToken cancellationToken)
     {
         var settings = new VideoProcessingSettings().ReplaceIfExist()
                                                     .SetInputFiles(file)
@@ -255,24 +258,24 @@ public class VideoFileProcessor
         return await ExecuteAsync(settings, cancellationToken);
     }
 
-    public static async Task ExtractVideoFromFileAsync(MediaFile file, string output, CancellationToken? cancellationToken = null)
+    public  async Task ExtractVideoFromFileAsync(MediaFile file, string output, CancellationToken? cancellationToken = null)
     {
         await ExecuteExtractVideoFromFileAsync(file, output, cancellationToken ?? new CancellationToken());
     }
 
-    public static async Task<MemoryStream> ExtractVideoFromFileAsStreamAsync(MediaFile file, CancellationToken? cancellationToken = null)
+    public  async Task<MemoryStream> ExtractVideoFromFileAsStreamAsync(MediaFile file, CancellationToken? cancellationToken = null)
     {
         return (await ExecuteExtractVideoFromFileAsync(file, null, cancellationToken ?? new CancellationToken()))!;
     }
 
-    public static async Task<byte[]> ExtractVideoFromFileAsBytesAsync(MediaFile file, CancellationToken? cancellationToken = null)
+    public  async Task<byte[]> ExtractVideoFromFileAsBytesAsync(MediaFile file, CancellationToken? cancellationToken = null)
     {
         return (await ExecuteExtractVideoFromFileAsync(file, null, cancellationToken ?? new CancellationToken()))!.ToArray();
     }
 
     //======================================================================================================================================================================
 
-    private static async Task<MemoryStream?> ExecuteAddAudioToVideoAsync(MediaFile audioFile, MediaFile videofile, string? output, CancellationToken cancellationToken)
+    private  async Task<MemoryStream?> ExecuteAddAudioToVideoAsync(MediaFile audioFile, MediaFile videofile, string? output, CancellationToken cancellationToken)
     {
         var settings = new VideoProcessingSettings().ReplaceIfExist()
                                                     .SetInputFiles(audioFile, videofile)
@@ -283,24 +286,24 @@ public class VideoFileProcessor
         return await ExecuteAsync(settings, cancellationToken);
     }
 
-    public static async Task AddAudioToVideoAsync(MediaFile audioFile, MediaFile videofile, string output, CancellationToken? cancellationToken = null)
+    public  async Task AddAudioToVideoAsync(MediaFile audioFile, MediaFile videofile, string output, CancellationToken? cancellationToken = null)
     {
         await ExecuteAddAudioToVideoAsync(audioFile, videofile, output, cancellationToken ?? new CancellationToken());
     }
 
-    public static async Task<MemoryStream> AddAudioToVideoAsStreamAsync(MediaFile audioFile, MediaFile videofile, CancellationToken? cancellationToken = null)
+    public  async Task<MemoryStream> AddAudioToVideoAsStreamAsync(MediaFile audioFile, MediaFile videofile, CancellationToken? cancellationToken = null)
     {
         return (await ExecuteAddAudioToVideoAsync(audioFile, videofile, null, cancellationToken ?? new CancellationToken()))!;
     }
 
-    public static async Task<byte[]> AddAudioToVideoAsBytesAsync(MediaFile audioFile, MediaFile videofile, CancellationToken? cancellationToken = null)
+    public  async Task<byte[]> AddAudioToVideoAsBytesAsync(MediaFile audioFile, MediaFile videofile, CancellationToken? cancellationToken = null)
     {
         return (await ExecuteAddAudioToVideoAsync(audioFile, videofile, null, cancellationToken ?? new CancellationToken()))!.ToArray();
     }
 
     //======================================================================================================================================================================
 
-    private static async Task<MemoryStream?> ExecuteConvertVideoToGifAsync(MediaFile file, int fps, int scale, int loop, string? output, CancellationToken cancellationToken)
+    private  async Task<MemoryStream?> ExecuteConvertVideoToGifAsync(MediaFile file, int fps, int scale, int loop, string? output, CancellationToken cancellationToken)
     {
         var setting = new VideoProcessingSettings().ReplaceIfExist()
                                                    .SetInputFiles(file)
@@ -311,47 +314,47 @@ public class VideoFileProcessor
         return await ExecuteAsync(setting, cancellationToken);
     }
 
-    public static async Task ConvertVideoToGifAsync(MediaFile file, int fps, int scale, int loop, string output, CancellationToken? cancellationToken = null)
+    public  async Task ConvertVideoToGifAsync(MediaFile file, int fps, int scale, int loop, string output, CancellationToken? cancellationToken = null)
     {
         await ExecuteConvertVideoToGifAsync(file, fps, scale, loop, output, cancellationToken ?? new CancellationToken());
     }
 
-    public static async Task<MemoryStream> ConvertVideoToGifAsStreamAsync(MediaFile file, int fps, int scale, int loop, CancellationToken? cancellationToken = null)
+    public  async Task<MemoryStream> ConvertVideoToGifAsStreamAsync(MediaFile file, int fps, int scale, int loop, CancellationToken? cancellationToken = null)
     {
         return (await ExecuteConvertVideoToGifAsync(file, fps, scale, loop, null, cancellationToken ?? new CancellationToken()))!;
     }
 
-    public static async Task<byte[]> ConvertVideoToGifAsBytesAsync(MediaFile file, int fps, int scale, int loop, CancellationToken? cancellationToken = null)
+    public  async Task<byte[]> ConvertVideoToGifAsBytesAsync(MediaFile file, int fps, int scale, int loop, CancellationToken? cancellationToken = null)
     {
         return (await ExecuteConvertVideoToGifAsync(file, fps, scale, loop, null, cancellationToken ?? new CancellationToken()))!.ToArray();
     }
 
     //======================================================================================================================================================================
 
-    private static async Task<MemoryStream?> ExecuteCompressVideoAsync(MediaFile file, int crf, string? output, CancellationToken cancellationToken)
+    private  async Task<MemoryStream?> ExecuteCompressVideoAsync(MediaFile file, int crf, string? output, CancellationToken cancellationToken)
     {
         var setting = new VideoProcessingSettings().ReplaceIfExist().SetInputFiles(file).VideoCodec(VideoCodecType.LIBX264).Crf(crf).SetOutputArguments(output);
         return await ExecuteAsync(setting, cancellationToken);
     }
 
-    public static async Task CompressVideoAsync(MediaFile file, int compressionRatio, string output, CancellationToken? cancellationToken = null)
+    public  async Task CompressVideoAsync(MediaFile file, int compressionRatio, string output, CancellationToken? cancellationToken = null)
     {
         await ExecuteCompressVideoAsync(file, compressionRatio, output, cancellationToken ?? new CancellationToken());
     }
 
-    public static async Task<MemoryStream> CompressVideoAsStreamAsync(MediaFile file, int compressionRatio, CancellationToken? cancellationToken = null)
+    public  async Task<MemoryStream> CompressVideoAsStreamAsync(MediaFile file, int compressionRatio, CancellationToken? cancellationToken = null)
     {
         return (await ExecuteCompressVideoAsync(file, compressionRatio, null, cancellationToken ?? new CancellationToken()))!;
     }
 
-    public static async Task<byte[]> CompressVideoAsBytesAsync(MediaFile file, int compressionRatio, CancellationToken? cancellationToken = null)
+    public  async Task<byte[]> CompressVideoAsBytesAsync(MediaFile file, int compressionRatio, CancellationToken? cancellationToken = null)
     {
         return (await ExecuteCompressVideoAsync(file, compressionRatio, null, cancellationToken ?? new CancellationToken()))!.ToArray();
     }
 
     //======================================================================================================================================================================
 
-    private static async Task<MemoryStream?> ExecuteCompressImageAsync(MediaFile file, int level, string? output, CancellationToken cancellationToken)
+    private  async Task<MemoryStream?> ExecuteCompressImageAsync(MediaFile file, int level, string? output, CancellationToken cancellationToken)
     {
         var setting = new VideoProcessingSettings().ReplaceIfExist()
                                                    .HideBanner()
@@ -362,17 +365,17 @@ public class VideoFileProcessor
         return await ExecuteAsync(setting, cancellationToken);
     }
 
-    public static async Task CompressImageAsync(MediaFile file, int level, string output, CancellationToken? cancellationToken = null)
+    public  async Task CompressImageAsync(MediaFile file, int level, string output, CancellationToken? cancellationToken = null)
     {
         await ExecuteCompressImageAsync(file, level, output, cancellationToken ?? new CancellationToken());
     }
 
-    public static async Task<MemoryStream> CompressImageAsStreamAsync(MediaFile file, int level, CancellationToken? cancellationToken = null)
+    public  async Task<MemoryStream> CompressImageAsStreamAsync(MediaFile file, int level, CancellationToken? cancellationToken = null)
     {
         return (await ExecuteCompressImageAsync(file, level, null, cancellationToken ?? new CancellationToken()))!;
     }
 
-    public static async Task<byte[]> CompressImageAsBytesAsync(MediaFile file, int level, CancellationToken? cancellationToken = null)
+    public  async Task<byte[]> CompressImageAsBytesAsync(MediaFile file, int level, CancellationToken? cancellationToken = null)
     {
         return (await ExecuteCompressImageAsync(file, level, null, cancellationToken ?? new CancellationToken()))!.ToArray();
     }
@@ -380,7 +383,7 @@ public class VideoFileProcessor
     //======================================================================================================================================================================
 
 
-    private static async Task CreateMpegts(MediaFile inputFile, string output, CancellationToken cancellationToken)
+    private  async Task CreateMpegts(MediaFile inputFile, string output, CancellationToken cancellationToken)
     {
         var setting = new VideoProcessingSettings().ReplaceIfExist()
                                                    .SetInputFiles(inputFile)
@@ -392,7 +395,7 @@ public class VideoFileProcessor
         await ExecuteAsync(setting, cancellationToken);
     }
 
-    private static async Task<MemoryStream?> ExecuteConcatVideosAsync(MediaFile[] files, string? outputFile, CancellationToken cancellationToken)
+    private  async Task<MemoryStream?> ExecuteConcatVideosAsync(MediaFile[] files, string? outputFile, CancellationToken cancellationToken)
     {
         var intermediateFiles = new List<string>();
 
@@ -431,17 +434,17 @@ public class VideoFileProcessor
         return result;
     }
 
-    public static async Task ConcatVideosAsync(MediaFile[] files, string output, CancellationToken? cancellationToken = null)
+    public  async Task ConcatVideosAsync(MediaFile[] files, string output, CancellationToken? cancellationToken = null)
     {
         await ExecuteConcatVideosAsync(files, output, cancellationToken ?? new CancellationToken());
     }
 
-    public static async Task<MemoryStream> ConcatVideosAsStreamAsync(MediaFile[] files, CancellationToken? cancellationToken = null)
+    public  async Task<MemoryStream> ConcatVideosAsStreamAsync(MediaFile[] files, CancellationToken? cancellationToken = null)
     {
         return (await ExecuteConcatVideosAsync(files, null, cancellationToken ?? new CancellationToken()))!;
     }
 
-    public static async Task<byte[]> ConcatVideosAsBytesAsync(MediaFile[] files, CancellationToken? cancellationToken = null)
+    public  async Task<byte[]> ConcatVideosAsBytesAsync(MediaFile[] files, CancellationToken? cancellationToken = null)
     {
         return (await ExecuteConcatVideosAsync(files, null, cancellationToken ?? new CancellationToken()))!.ToArray();
     }
@@ -466,7 +469,7 @@ public class VideoFileProcessor
 
     //======================================================================================================================================================================
 
-    private static async Task<MemoryStream?> ExecuteAddHardSubtitlesAsync(MediaFile videoFile, MediaFile subsFile, string language, string? outputFile, CancellationToken cancellationToken)
+    private  async Task<MemoryStream?> ExecuteAddHardSubtitlesAsync(MediaFile videoFile, MediaFile subsFile, string language, string? outputFile, CancellationToken cancellationToken)
     {
         var setting = new VideoProcessingSettings().ReplaceIfExist()
                                                    .SetInputFiles(videoFile, subsFile)
@@ -481,17 +484,17 @@ public class VideoFileProcessor
         return await ExecuteAsync(setting, cancellationToken);
     }
 
-    public static async Task AddHardSubtitlesAsync(MediaFile videoFile, MediaFile subsFile, string language, string outputFile, CancellationToken? cancellationToken = null)
+    public  async Task AddHardSubtitlesAsync(MediaFile videoFile, MediaFile subsFile, string language, string outputFile, CancellationToken? cancellationToken = null)
     {
         await ExecuteAddHardSubtitlesAsync(videoFile, subsFile, language, outputFile, cancellationToken ?? new CancellationToken());
     }
 
-    public static async Task<MemoryStream> AddHardSubtitlesAsStreamAsync(MediaFile videoFile, MediaFile subsFile, string language, CancellationToken? cancellationToken = null)
+    public  async Task<MemoryStream> AddHardSubtitlesAsStreamAsync(MediaFile videoFile, MediaFile subsFile, string language, CancellationToken? cancellationToken = null)
     {
         return (await ExecuteAddHardSubtitlesAsync(videoFile, subsFile, language, null, cancellationToken ?? new CancellationToken()))!;
     }
 
-    public static async Task<byte[]> AddHardSubtitlesAsBytesAsync(MediaFile videoFile, MediaFile subsFile, string language, CancellationToken? cancellationToken = null)
+    public  async Task<byte[]> AddHardSubtitlesAsBytesAsync(MediaFile videoFile, MediaFile subsFile, string language, CancellationToken? cancellationToken = null)
     {
         return (await ExecuteAddHardSubtitlesAsync(videoFile, subsFile, language, null, cancellationToken ?? new CancellationToken()))!.ToArray();
     }
