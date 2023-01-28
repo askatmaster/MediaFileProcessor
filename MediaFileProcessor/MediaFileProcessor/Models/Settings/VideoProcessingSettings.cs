@@ -840,14 +840,13 @@ public class VideoProcessingSettings : ProcessingSettings
         if(files is null || files.Length == 0)
             throw new NullReferenceException("'CustomInputs' Arguments must be specified if there are no input files");
 
-        SetInputStreams(files);
-
         switch(files.Length)
         {
             case 0:
                 throw new Exception("No input files");
             case 1:
                 _stringBuilder.Append(files[0].InputType is MediaFileInputType.Path ? " -i " + files[0].InputFilePath! : StandartInputRedirectArgument);
+                SetInputStreams(files);
 
                 return this;
         }
@@ -861,7 +860,7 @@ public class VideoProcessingSettings : ProcessingSettings
                                                     + (file.InputType is MediaFileInputType.Path or MediaFileInputType.Template or MediaFileInputType.NamedPipe
                                                           ? " -i " + file.InputFilePath!
                                                           : StandartInputRedirectArgument)));
-
+            SetInputStreams(files);
             return this;
         }
 
@@ -872,7 +871,7 @@ public class VideoProcessingSettings : ProcessingSettings
                                                 + (file.InputType is MediaFileInputType.Path or MediaFileInputType.Template or MediaFileInputType.NamedPipe
                                                       ? " -i " + file.InputFilePath!
                                                       : SetPipeChannel(Guid.NewGuid().ToString(), file))));
-
+        SetInputStreams(files);
         return this;
     }
 

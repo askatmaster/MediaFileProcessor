@@ -1,8 +1,19 @@
 ﻿using MediaFileProcessor.Models.Common;
+using MediaFileProcessor.Models.Enums;
 namespace MediaFileProcessor.Extensions;
 
 public static class FileDataExtensions
 {
+    public static FileFormatType GetFileFormatType(this string fileName)
+    {
+        var ext = Path.GetExtension(fileName);
+
+        if (Enum.TryParse(ext, out FileFormatType output))
+            return output;
+
+        throw new Exception("The file extension could not be recognized");
+    }
+
     public static byte[] ConcatByteArrays(bool onlyNotDefaultArrays, params byte[][] arrays)
     {
         if(onlyNotDefaultArrays)

@@ -68,6 +68,24 @@ var videoProcessor = new VideoFileProcessor();
 //         output.Write(bytesData, 0, bytesData.Length);
 // }
 
+//============================================================================================================================================================================================================================================
+
+var stream = new MultiStream();
+
+
+var files = new List<string>();
+for (var i = 1; i <= 4390; i++)
+    files.Add($@"C:\mfptest\results2\result{i:000}.jpg");
+
+
+foreach (var file in files)
+    stream.AddStream(new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read));
+
+// await videoProcessor.ConvertImagesToVideoAsync(new MediaFile(stream), 24, @"C:\mfptest\results\result.avi", "yuv420p", FileFormatType.AVI);
+
+var resultStream = await videoProcessor.ConvertImagesToVideoAsStreamAsync(new MediaFile(stream), 24, "yuv420p", FileFormatType.AVI);
+await using (var output = new FileStream(@"C:\mfptest\results\result.avi", FileMode.Create))
+    resultStream.WriteTo(output);
 
 
 
@@ -94,23 +112,6 @@ var videoProcessor = new VideoFileProcessor();
 
 
 
-
-// var stream = new MultiStream();
-//
-//
-// var files = new List<string>();
-// for (var i = 1; i < 110; i++)
-//     files.Add($@"G:\videofiles\images\weapon1\HQW {i:0000}.jpg");
-//
-//
-// foreach (var file in files)
-//     stream.AddStream(new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read));
-
-// await VideoFileProcessor.ConvertImagesToVideoAsync(new MediaFile(stream, @"tests\result.mpg"), 5);
-
-// var resultStream = await VideoFileProcessor.ConvertImagesToVideoAsStreamAsync(new MediaFile(stream), 5);
-// await using (var output = new FileStream(@"tests\result.mpg", FileMode.Create))
-//     resultStream.WriteTo(output);
 
 // var resultStream = await VideoFileProcessor.ConvertImagesToVideoAsStreamAsync(new MediaFile(stream), 5, FileFormatType.MPEG);
 // await using (var output = new FileStream(@"tests\result.mpg", FileMode.Create))

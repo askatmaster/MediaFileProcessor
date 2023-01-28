@@ -10,6 +10,7 @@ public enum FileFormatType
     MPEG,
     MPEGTS,
     SVCD,
+    GIF,
     VOB,
     M2TS,
     MXF,
