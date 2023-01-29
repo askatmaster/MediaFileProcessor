@@ -16,9 +16,9 @@ public class VideoProcessorTests
     /// Test data
     /// </summary>
     private static readonly  string _video1 = @"C:\mfptest\test.avi";
+    private static readonly  string _photo1 =  @"C:\mfptest\water.png";
     private static readonly  string _video12 =  @"C:\mfptest\test2.avi";
     private static readonly  string _video2 =  @"C:\mfptest\sample-30s.mp4";
-    private static readonly  string _photo1 =  @"C:\mfptest\water.png";
     private static readonly  string _audio1 =  @"C:\mfptest\sample.mp3";
     private static readonly  string _subsEn =  @"C:\mfptest\subtitle.en.srt";
     private static readonly  string _subsRU =  @"C:\mfptest\subtitle.ru.srt";

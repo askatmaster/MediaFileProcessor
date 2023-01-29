@@ -155,8 +155,10 @@ public class MediaFileProcess
                 var pipe = pipes[i];
                 var inputStream = InputStreams[i];
 
+                Console.WriteLine("WaitForConnection");
                 pipe.WaitForConnection();
 
+                Console.WriteLine("WaitForConnection");
                 tasks[i] = inputStream.CopyToAsync(pipe)
                                       .ContinueWith(_ =>
                                       {

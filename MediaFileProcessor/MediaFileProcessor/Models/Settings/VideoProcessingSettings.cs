@@ -902,6 +902,8 @@ public class VideoProcessingSettings : ProcessingSettings
         return PipeNames?.Keys.ToArray();
     }
 
+    private int pipenum = 1;
+
     /// <summary>
     /// If the file is transmitted through a stream then assign a channel name to that stream
     /// </summary>
@@ -910,7 +912,8 @@ public class VideoProcessingSettings : ProcessingSettings
         PipeNames ??= new Dictionary<string, Stream>();
         PipeNames.Add(pipeName, file.InputFileStream!);
 
-        return $@"-i \\.\pipe\{pipeName}";
+        // return $@"-i \\.\pipe\{pipeName}";
+        return $@"-i pipe:{pipeName}";
     }
 
     /// <summary>

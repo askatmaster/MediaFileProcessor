@@ -7,7 +7,7 @@ namespace MediaFileProcessor.Processors;
 
 public class VideoFileProcessor
 {
-    private readonly string _ffmpeg = "ffmpeg.exe";
+    private readonly string _ffmpeg = "ffmpeg";
     private readonly string _ffprobe = "ffprobe.exe";
 
     private async Task<MemoryStream?> ExecuteAsync(VideoProcessingSettings settings, CancellationToken cancellationToken)
@@ -515,7 +515,7 @@ public class VideoFileProcessor
 
     public async Task<string> GetVideoInfo(MediaFile videoFile, CancellationToken? cancellationToken = null)
     {
-        VideoProcessingSettings? settings = null;
+        VideoProcessingSettings? settings;
 
         if(videoFile.InputFilePath != null)
             settings = new VideoProcessingSettings().CustomArguments("-v panic -print_format json=c=1 -show_streams -show_entries "
