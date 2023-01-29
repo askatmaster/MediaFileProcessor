@@ -1,4 +1,5 @@
-﻿using MediaFileProcessor.Extensions;
+﻿using System.Text;
+using MediaFileProcessor.Extensions;
 using MediaFileProcessor.Models.Common;
 using MediaFileProcessor.Models.Enums;
 using MediaFileProcessor.Models.Settings;
@@ -512,25 +513,27 @@ public class VideoFileProcessor
 
     //======================================================================================================================================================================
 
-    public async Task<string> GetVideoInfo(string videoFile, CancellationToken? cancellationToken = null)
+    public async Task<string> GetVideoInfo(MediaFile videoFile, CancellationToken? cancellationToken = null)
     {
-        var settings = new VideoProcessingSettings().CustomArguments("-v panic -print_format json=c=1 -show_streams -show_entries "
-                                                                   + $"format=size,duration,bit_rate:format_tags=creation_time {videoFile}");
+        VideoProcessingSettings? settings = null;
 
-        var process = new MediaFileProcess(_ffprobe, settings.GetProcessArguments(), settings, redirectOutputToStream: true);
+        if(videoFile.InputFilePath != null)
+            settings = new VideoProcessingSettings().CustomArguments("-v panic -print_format json=c=1 -show_streams -show_entries "
+                                                                   + $"format=size,duration,bit_rate:format_tags=creation_time {videoFile}");
+        else
+            settings = new VideoProcessingSettings().CustomArguments("-v panic -print_format json=c=1 -show_streams -show_entries "
+                                                                   + "format=size,duration,bit_rate:format_tags=creation_time ").SetInputFiles(videoFile);
+
+        var process = new MediaFileProcess(_ffprobe, settings.GetProcessArguments(false), settings, redirectOutputToStream: true);
 
         var result = await process.ExecuteAsync(cancellationToken ?? new CancellationToken());
 
-        var reader = new StreamReader(result!);
-
-        var output = await reader.ReadToEndAsync();
-
-        return output;
+        return Encoding.UTF8.GetString(result!.ToArray());
     }
 
     //======================================================================================================================================================================
 
-    private  async Task<MemoryStream?> ExecuteAddHardSubtitlesAsync(MediaFile videoFile, MediaFile subsFile, string language, string? outputFile, CancellationToken cancellationToken)
+    private  async Task<MemoryStream?> ExecuteAddHardSubtitlesAsync(MediaFile videoFile, MediaFile subsFile, string language, string? outputFile, FileFormatType outputFileFormatType, CancellationToken cancellationToken)
     {
         var setting = new VideoProcessingSettings().ReplaceIfExist()
                                                    .SetInputFiles(videoFile, subsFile)
@@ -540,23 +543,24 @@ public class VideoFileProcessor
                                                    .SubtitlesCodec("mov_text")
                                                    .MetaData("s:s:1")
                                                    .Language(language)
+                                                   .Format(outputFileFormatType)
                                                    .SetOutputArguments(outputFile);
 
         return await ExecuteAsync(setting, cancellationToken);
     }
 
-    public  async Task AddHardSubtitlesAsync(MediaFile videoFile, MediaFile subsFile, string language, string outputFile, CancellationToken? cancellationToken = null)
+    public  async Task AddHardSubtitlesAsync(MediaFile videoFile, MediaFile subsFile, string language, string outputFile, FileFormatType outputFileFormatType, CancellationToken? cancellationToken = null)
     {
-        await ExecuteAddHardSubtitlesAsync(videoFile, subsFile, language, outputFile, cancellationToken ?? new CancellationToken());
+        await ExecuteAddHardSubtitlesAsync(videoFile, subsFile, language, outputFile, outputFileFormatType, cancellationToken ?? new CancellationToken());
     }
 
-    public  async Task<MemoryStream> AddHardSubtitlesAsStreamAsync(MediaFile videoFile, MediaFile subsFile, string language, CancellationToken? cancellationToken = null)
+    public  async Task<MemoryStream> AddHardSubtitlesAsStreamAsync(MediaFile videoFile, MediaFile subsFile, string language, FileFormatType outputFileFormatType, CancellationToken? cancellationToken = null)
     {
-        return (await ExecuteAddHardSubtitlesAsync(videoFile, subsFile, language, null, cancellationToken ?? new CancellationToken()))!;
+        return (await ExecuteAddHardSubtitlesAsync(videoFile, subsFile, language, null, outputFileFormatType, cancellationToken ?? new CancellationToken()))!;
     }
 
-    public  async Task<byte[]> AddHardSubtitlesAsBytesAsync(MediaFile videoFile, MediaFile subsFile, string language, CancellationToken? cancellationToken = null)
+    public  async Task<byte[]> AddHardSubtitlesAsBytesAsync(MediaFile videoFile, MediaFile subsFile, string language, FileFormatType outputFileFormatType, CancellationToken? cancellationToken = null)
     {
-        return (await ExecuteAddHardSubtitlesAsync(videoFile, subsFile, language, null, cancellationToken ?? new CancellationToken()))!.ToArray();
+        return (await ExecuteAddHardSubtitlesAsync(videoFile, subsFile, language, null, outputFileFormatType, cancellationToken ?? new CancellationToken()))!.ToArray();
     }
 }

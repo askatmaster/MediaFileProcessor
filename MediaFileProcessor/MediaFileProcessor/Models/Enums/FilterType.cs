@@ -1,4 +1,4 @@
-﻿namespace MediaFileProcessor.Models.Enums.MagickImage;
+﻿namespace MediaFileProcessor.Models.Enums;
 
 public enum FilterType
 {

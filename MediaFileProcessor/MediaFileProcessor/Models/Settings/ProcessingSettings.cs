@@ -36,7 +36,7 @@ public abstract class ProcessingSettings
 
     protected List<Stream>? InputStreams { get; set; }
 
-    public abstract string GetProcessArguments();
+    public abstract string GetProcessArguments(bool setOutputArguments = true);
 
     public abstract Stream[]? GetInputStreams();
 }

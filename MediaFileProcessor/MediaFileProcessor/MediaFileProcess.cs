@@ -132,7 +132,6 @@ public class MediaFileProcess
             }
             catch (Exception e)
             {
-
                 if(e.Message != "Канал был закрыт.")
                     throw;
             }
@@ -151,9 +150,7 @@ public class MediaFileProcess
 
             var tasks = new Task[pipes.Length];
 
-            for (var i = 0;
-                 i < pipes.Length;
-                 i++)
+            for (var i = 0; i < pipes.Length; i++)
             {
                 var pipe = pipes[i];
                 var inputStream = InputStreams[i];

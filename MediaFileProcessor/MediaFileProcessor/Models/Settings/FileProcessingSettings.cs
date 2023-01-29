@@ -197,19 +197,18 @@ public class FileProcessingSettings : ProcessingSettings
         if(files is null)
             throw new NullReferenceException("'CustomInputs' Arguments must be specified if there are no input files");
 
-        SetInputStreams();
-
         switch(files.Length)
         {
             case 0:
                 throw new Exception("No input files");
             case 1:
                 _stringBuilder.Append(files[0]
-                                         .InputType is MediaFileInputType.Path
+                                         .InputType is MediaFileInputType.Path or MediaFileInputType.Template or MediaFileInputType.NamedPipe
                                           ? files[0]
                                              .InputFilePath!
                                           : StandartInputRedirectArgument);
 
+                SetInputStreams(files);
                 return this;
         }
 
@@ -223,6 +222,7 @@ public class FileProcessingSettings : ProcessingSettings
                                                           ? file.InputFilePath!
                                                           : StandartInputRedirectArgument)));
 
+            SetInputStreams(files);
             return this;
         }
 
@@ -235,15 +235,27 @@ public class FileProcessingSettings : ProcessingSettings
                                                                                           .ToString(),
                                                                                       file))));
 
+        SetInputStreams(files);
         return this;
     }
 
     /// <summary>
     /// Summary arguments to process
     /// </summary>
-    public override string GetProcessArguments()
+    public override string GetProcessArguments(bool setOutputArguments = true)
     {
-        return _stringBuilder + GetOutputArgument();
+        if(setOutputArguments)
+            return _stringBuilder + GetOutputArguments();
+
+        return _stringBuilder.ToString();
+    }
+
+    /// <summary>
+    /// Get output arguments
+    /// </summary>
+    private string GetOutputArguments()
+    {
+        return OutputFileArguments ?? " - ";
     }
 
     /// <summary>

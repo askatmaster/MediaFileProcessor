@@ -845,7 +845,7 @@ public class VideoProcessingSettings : ProcessingSettings
             case 0:
                 throw new Exception("No input files");
             case 1:
-                _stringBuilder.Append(files[0].InputType is MediaFileInputType.Path ? " -i " + files[0].InputFilePath! : StandartInputRedirectArgument);
+                _stringBuilder.Append(files[0].InputType is MediaFileInputType.Path or MediaFileInputType.Template or MediaFileInputType.NamedPipe ? " -i " + files[0].InputFilePath! : StandartInputRedirectArgument);
                 SetInputStreams(files);
 
                 return this;
@@ -878,9 +878,12 @@ public class VideoProcessingSettings : ProcessingSettings
     /// <summary>
     /// Summary arguments to process
     /// </summary>
-    public override string GetProcessArguments()
+    public override string GetProcessArguments(bool setOutputArguments = true)
     {
-        return _stringBuilder + GetOutputArguments();
+        if(setOutputArguments)
+            return _stringBuilder + GetOutputArguments();
+
+        return _stringBuilder.ToString();
     }
 
     /// <summary>

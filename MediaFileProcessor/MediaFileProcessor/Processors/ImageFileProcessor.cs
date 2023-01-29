@@ -1,96 +1,183 @@
 ﻿using MediaFileProcessor.Models.Common;
-using MediaFileProcessor.Models.Enums.MagickImage;
+using MediaFileProcessor.Models.Enums;
 using MediaFileProcessor.Models.Settings;
 namespace MediaFileProcessor.Processors;
 
 public class ImageFileProcessor
 {
-    private static readonly string _convert = "convert.exe";
+    private readonly string _convert = "convert.exe";
 
-    private static async Task<MemoryStream?> ExecuteAsync(ImageProcessingSettings settings, CancellationToken cancellationToken)
+    private async Task<MemoryStream?> ExecuteAsync(ImageProcessingSettings settings, CancellationToken cancellationToken)
     {
         var processArguments = settings.GetProcessArguments();
 
-        var process = new MediaFileProcess(_convert, processArguments, settings, settings.GetInputStreams(), settings.IsStandartOutputRedirect, settings.GetInputPipeNames());
+        var process = new MediaFileProcess(_convert,
+                                           processArguments,
+                                           settings,
+                                           settings.GetInputStreams(),
+                                           settings.IsStandartOutputRedirect,
+                                           settings.GetInputPipeNames());
 
         return await process.ExecuteAsync(cancellationToken);
     }
 
     //======================================================================================================================================================================
 
-    private static async Task<MemoryStream?> ExecuteCompressImageAsync(MediaFile file, string? outputFile, CancellationToken cancellationToken)
+    private async Task<MemoryStream?> ExecuteCompressImageAsync(MediaFile file,
+                                                                ImageFormat inputFormat,
+                                                                int quality,
+                                                                FilterType filterType,
+                                                                string thumbnail,
+                                                                string? outputFile,
+                                                                ImageFormat outputFormat,
+                                                                CancellationToken cancellationToken)
     {
-        var settings = new ImageProcessingSettings().SetInputFiles(file)
-                                                    .Quality(60)
-                                                    .Filter(FilterType.Lanczos)
+        var settings = new ImageProcessingSettings().Format(inputFormat)
+                                                    .SetInputFiles(file)
+                                                    .Quality(quality)
+                                                    .Filter(filterType)
                                                     .SamplingFactor("4:2:0")
                                                     .Define("jpeg:dct-method=float")
-                                                    .Thumbnail("x1080")
+                                                    .Thumbnail(thumbnail)
+                                                    .Format(outputFormat)
                                                     .SetOutputFileArguments(outputFile);
 
         return await ExecuteAsync(settings, cancellationToken);
     }
 
-    public static async Task CompressImageAsync(MediaFile file, string outputFile, CancellationToken? cancellationToken = null)
+    public async Task CompressImageAsync(MediaFile file,
+                                         ImageFormat inputFormat,
+                                         int quality,
+                                         FilterType filterType,
+                                         string thumbnail,
+                                         string outputFile,
+                                         ImageFormat outputFormat,
+                                         CancellationToken? cancellationToken = null)
     {
-        await ExecuteCompressImageAsync(file, outputFile, cancellationToken ?? new CancellationToken());
+        await ExecuteCompressImageAsync(file, inputFormat, quality, filterType, thumbnail, outputFile, outputFormat, cancellationToken ?? new CancellationToken());
     }
 
-    public static async Task<MemoryStream> CompressImageAsStreamAsync(MediaFile file, CancellationToken? cancellationToken = null)
+    public async Task<MemoryStream> CompressImageAsStreamAsync(MediaFile file,
+                                                               ImageFormat inputFormat,
+                                                               int quality,
+                                                               FilterType filterType,
+                                                               string thumbnail,
+                                                               ImageFormat outputFormat,
+                                                               CancellationToken? cancellationToken = null)
     {
-        return (await ExecuteCompressImageAsync(file, null, cancellationToken ?? new CancellationToken()))!;
+        return (await ExecuteCompressImageAsync(file, inputFormat, quality, filterType, thumbnail, null, outputFormat, cancellationToken ?? new CancellationToken()))!;
     }
 
-    public static async Task<byte[]> CompressImageAsBytesAsync(MediaFile file, CancellationToken? cancellationToken = null)
+    public async Task<byte[]> CompressImageAsBytesAsync(MediaFile file,
+                                                        ImageFormat inputFormat,
+                                                        int quality,
+                                                        FilterType filterType,
+                                                        string thumbnail,
+                                                        ImageFormat outputFormat,
+                                                        CancellationToken? cancellationToken = null)
     {
-        return (await ExecuteCompressImageAsync(file, null, cancellationToken ?? new CancellationToken()))!.ToArray();
-    }
-
-    //======================================================================================================================================================================
-
-    private static async Task<MemoryStream?> ExecuteConvertImageAsync(MediaFile file, string? outputFile, ImageFormat? outputFormat, CancellationToken cancellationToken)
-    {
-        var settings = new ImageProcessingSettings().SetInputFiles(file).OutputFormat(outputFormat).SetOutputFileArguments(outputFile);
-
-        return await ExecuteAsync(settings, cancellationToken);
-    }
-
-    public static async Task ConvertImageAsync(MediaFile file, string outputFile, CancellationToken? cancellationToken = null)
-    {
-        await ExecuteConvertImageAsync(file, outputFile, null, cancellationToken ?? new CancellationToken());
-    }
-
-    public static async Task<MemoryStream> ConvertImageAsStreamAsync(MediaFile file, ImageFormat? outputFormat, CancellationToken? cancellationToken = null)
-    {
-        return (await ExecuteConvertImageAsync(file, null, outputFormat, cancellationToken ?? new CancellationToken()))!;
-    }
-
-    public static async Task<byte[]> ConvertImageAsBytesAsync(MediaFile file, ImageFormat? outputFormat, CancellationToken? cancellationToken = null)
-    {
-        return (await ExecuteConvertImageAsync(file, null, outputFormat, cancellationToken ?? new CancellationToken()))!.ToArray();
+        return (await ExecuteCompressImageAsync(file, inputFormat, quality, filterType, thumbnail, null, outputFormat, cancellationToken ?? new CancellationToken()))!
+            .ToArray();
     }
 
     //======================================================================================================================================================================
 
-    private static async Task<MemoryStream?> ExecuteResizeImageAsync(MediaFile file, string size, ImageFormat? outputFormat, string? outputFile, CancellationToken cancellationToken)
+    private async Task<MemoryStream?> ExecuteConvertImageAsync(MediaFile file,
+                                                               ImageFormat inputFormat,
+                                                               string? outputFile,
+                                                               ImageFormat? outputFormat,
+                                                               CancellationToken cancellationToken)
     {
-        var settings = new ImageProcessingSettings().Resize(size).Quality(92).SetInputFiles(file).OutputFormat(outputFormat).SetOutputFileArguments(outputFile);
+        var settings = new ImageProcessingSettings().Format(inputFormat).SetInputFiles(file).Format(outputFormat).SetOutputFileArguments(outputFile);
 
         return await ExecuteAsync(settings, cancellationToken);
     }
 
-    public static async Task ResizeImageAsync(MediaFile file, string size, string outputFile, CancellationToken? cancellationToken = null)
+    public async Task ConvertImageAsync(MediaFile file, ImageFormat inputFormat, string outputFile, CancellationToken? cancellationToken = null)
     {
-        await ExecuteResizeImageAsync(file, size, null, outputFile, cancellationToken ?? new CancellationToken());
+        await ExecuteConvertImageAsync(file, inputFormat, outputFile, null, cancellationToken ?? new CancellationToken());
     }
 
-    public static async Task<MemoryStream> ResizeImageAsStreamAsync(MediaFile file, string size, ImageFormat? outputFormat, CancellationToken? cancellationToken = null)
+    public async Task<MemoryStream> ConvertImageAsStreamAsync(MediaFile file,
+                                                              ImageFormat inputFormat,
+                                                              ImageFormat? outputFormat,
+                                                              CancellationToken? cancellationToken = null)
     {
-        return (await ExecuteResizeImageAsync(file, size, outputFormat, null, cancellationToken ?? new CancellationToken()))!;
+        return (await ExecuteConvertImageAsync(file, inputFormat, null, outputFormat, cancellationToken ?? new CancellationToken()))!;
     }
 
-    public static async Task<byte[]> ResizeImageAsBytesAsync(MediaFile file, string size, ImageFormat? outputFormat, CancellationToken? cancellationToken = null)
+    public async Task<byte[]> ConvertImageAsBytesAsync(MediaFile file, ImageFormat inputFormat, ImageFormat? outputFormat, CancellationToken? cancellationToken = null)
     {
-        return (await ExecuteResizeImageAsync(file, size, outputFormat, null, cancellationToken ?? new CancellationToken()))!.ToArray();
+        return (await ExecuteConvertImageAsync(file, inputFormat, null, outputFormat, cancellationToken ?? new CancellationToken()))!.ToArray();
     }
+
+    //======================================================================================================================================================================
+
+    private async Task<MemoryStream?> ExecuteResizeImageAsync(MediaFile file,
+                                                              ImageFormat inputFormat,
+                                                              string size,
+                                                              ImageFormat? outputFormat,
+                                                              string? outputFile,
+                                                              CancellationToken cancellationToken)
+    {
+        var settings = new ImageProcessingSettings().Resize(size)
+                                                    .Quality(92)
+                                                    .Format(inputFormat)
+                                                    .SetInputFiles(file)
+                                                    .Format(outputFormat)
+                                                    .SetOutputFileArguments(outputFile);
+
+        return await ExecuteAsync(settings, cancellationToken);
+    }
+
+    public async Task ResizeImageAsync(MediaFile file, ImageFormat inputFormat, string size, string outputFile, CancellationToken? cancellationToken = null)
+    {
+        await ExecuteResizeImageAsync(file, inputFormat, size, null, outputFile, cancellationToken ?? new CancellationToken());
+    }
+
+    public async Task<MemoryStream> ResizeImageAsStreamAsync(MediaFile file,
+                                                             ImageFormat inputFormat,
+                                                             string size,
+                                                             ImageFormat? outputFormat,
+                                                             CancellationToken? cancellationToken = null)
+    {
+        return (await ExecuteResizeImageAsync(file, inputFormat, size, outputFormat, null, cancellationToken ?? new CancellationToken()))!;
+    }
+
+    public async Task<byte[]> ResizeImageAsBytesAsync(MediaFile file,
+                                                      ImageFormat inputFormat,
+                                                      string size,
+                                                      ImageFormat? outputFormat,
+                                                      CancellationToken? cancellationToken = null)
+    {
+        return (await ExecuteResizeImageAsync(file, inputFormat, size, outputFormat, null, cancellationToken ?? new CancellationToken()))!.ToArray();
+    }
+
+    //======================================================================================================================================================================
+
+    private async Task<MemoryStream?> ExecuteImagesToGifAsync(MediaFile file, int delay, ImageFormat inputFormat, string? outputFile, CancellationToken cancellationToken)
+    {
+        var settings = new ImageProcessingSettings().Delay(delay)
+                                                    .Format(inputFormat)
+                                                    .SetInputFiles(file)
+                                                    .Format(FileFormatType.GIF)
+                                                    .SetOutputFileArguments(outputFile);
+
+        return await ExecuteAsync(settings, cancellationToken);
+    }
+
+    public async Task ImagesToGifAsync(MediaFile file, int delay, ImageFormat inputFormat, string? outputFile, CancellationToken? cancellationToken = null)
+    {
+        await ExecuteImagesToGifAsync(file, delay, inputFormat, outputFile, cancellationToken ?? new CancellationToken());
+    }
+    public async Task<MemoryStream> ImagesToGifAsStreamAsync(MediaFile file, int delay, ImageFormat inputFormat, CancellationToken? cancellationToken = null)
+    {
+        return (await ExecuteImagesToGifAsync(file, delay, inputFormat, null, cancellationToken ?? new CancellationToken()))!;
+    }
+
+    public async Task<byte[]> ImagesToGifAsBytesAsync(MediaFile file, int delay, ImageFormat inputFormat, CancellationToken? cancellationToken = null)
+    {
+        return (await ExecuteImagesToGifAsync(file, delay, inputFormat, null, cancellationToken ?? new CancellationToken()))!.ToArray();
+    }
+
 }

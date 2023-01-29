@@ -1,6 +1,5 @@
 ﻿using MediaFileProcessor.Models.Common;
 using MediaFileProcessor.Models.Enums;
-using MediaFileProcessor.Models.Enums.MagickImage;
 namespace MediaFileProcessor.Models.Settings;
 
 public class ImageProcessingSettings : ProcessingSettings
@@ -589,7 +588,7 @@ public class ImageProcessingSettings : ProcessingSettings
 
         return this;
     }
-    public ImageProcessingSettings Delay(string centiseconds)
+    public ImageProcessingSettings Delay(int centiseconds)
     {
         _stringBuilder.Append($" -delay {centiseconds} ");
 
@@ -790,12 +789,7 @@ public class ImageProcessingSettings : ProcessingSettings
 
         return this;
     }
-    public ImageProcessingSettings Format(string @string)
-    {
-        _stringBuilder.Append($" -format {@string} ");
 
-        return this;
-    }
     public ImageProcessingSettings Frame(string geometry)
     {
         _stringBuilder.Append($" -frame {geometry} ");
@@ -1999,7 +1993,21 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Set force output format
     /// </summary>
-    public ImageProcessingSettings OutputFormat(ImageFormat? format)
+    public ImageProcessingSettings Format(FileFormatType? format)
+    {
+        if(format is null)
+            return this;
+
+        _stringBuilder.Append($" {format.ToString()
+                                        .ToLower()}:");
+
+        return this;
+    }
+
+    /// <summary>
+    /// Set force output format
+    /// </summary>
+    public ImageProcessingSettings Format(ImageFormat? format)
     {
         if(format is null)
             return this;
@@ -2023,7 +2031,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Redirect receipt input to stdin
     /// </summary>
-    private string StandartInputRedirectArgument => " - ";
+    private string StandartInputRedirectArgument => "- ";
 
     /// <summary>
     /// Setting Output Arguments
@@ -2290,19 +2298,18 @@ public class ImageProcessingSettings : ProcessingSettings
         if(files is null)
             throw new NullReferenceException("'CustomInputs' Arguments must be specified if there are no input files");
 
-        SetInputStreams();
-
         switch(files.Length)
         {
             case 0:
                 throw new Exception("No input files");
             case 1:
                 _stringBuilder.Append(files[0]
-                                         .InputType is MediaFileInputType.Path
+                                         .InputType is MediaFileInputType.Path or MediaFileInputType.Template or MediaFileInputType.NamedPipe
                                           ? files[0]
                                              .InputFilePath!
                                           : StandartInputRedirectArgument);
 
+                SetInputStreams(files);
                 return this;
         }
 
@@ -2316,6 +2323,7 @@ public class ImageProcessingSettings : ProcessingSettings
                                                           ? file.InputFilePath!
                                                           : StandartInputRedirectArgument)));
 
+            SetInputStreams(files);
             return this;
         }
 
@@ -2328,15 +2336,27 @@ public class ImageProcessingSettings : ProcessingSettings
                                                                                           .ToString(),
                                                                                       file))));
 
+        SetInputStreams(files);
         return this;
     }
 
     /// <summary>
     /// Summary arguments to process
     /// </summary>
-    public override string GetProcessArguments()
+    public override string GetProcessArguments(bool setOutputArguments = true)
     {
-        return _stringBuilder + GetOutputArgument();
+        if(setOutputArguments)
+            return _stringBuilder + GetOutputArguments();
+
+        return _stringBuilder.ToString();
+    }
+
+    /// <summary>
+    /// Get output arguments
+    /// </summary>
+    private string GetOutputArguments()
+    {
+        return OutputFileArguments ?? "- ";
     }
 
     /// <summary>
@@ -2387,13 +2407,5 @@ public class ImageProcessingSettings : ProcessingSettings
 
         InputStreams ??= new List<Stream>();
         InputStreams.AddRange(PipeNames.Select(pipeName => pipeName.Value));
-    }
-
-    /// <summary>
-    /// Get output arguments
-    /// </summary>
-    private string GetOutputArgument()
-    {
-        return OutputFileArguments ?? " - ";
     }
 }

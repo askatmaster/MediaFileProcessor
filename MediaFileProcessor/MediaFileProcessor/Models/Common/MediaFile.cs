@@ -21,7 +21,7 @@ public class MediaFile
 
                 break;
             case MediaFileInputType.Template:
-                InputFilePath = $" \"{inputArgument}\" ";
+                InputFilePath = $"\"{inputArgument}\" ";
                 InputType = inputType;
 
                 break;
