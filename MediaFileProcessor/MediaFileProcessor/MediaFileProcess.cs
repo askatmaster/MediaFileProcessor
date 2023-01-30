@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.IO.Pipes;
 using MediaFileProcessor.Models.Settings;
 namespace MediaFileProcessor;
 
@@ -15,11 +16,11 @@ public class MediaFileProcess
     private bool RedirectOutputToStream { get; }
 
     public MediaFileProcess(string processFileName,
-                            string arguments,
-                            ProcessingSettings settings,
-                            Stream[]? inputStreams = null,
-                            bool redirectOutputToStream = false,
-                            string[]? pipeNames = null)
+                                string arguments,
+                                ProcessingSettings settings,
+                                Stream[]? inputStreams = null,
+                                bool redirectOutputToStream = false,
+                                string[]? pipeNames = null)
     {
         Process = new Process();
         Settings = settings;
@@ -27,8 +28,7 @@ public class MediaFileProcess
         PipeNames = pipeNames;
         RedirectOutputToStream = redirectOutputToStream;
         Process.StartInfo.FileName = processFileName;
-        // Process.StartInfo.Arguments = "-y -ss 00:00:27.500 -i outpipe1.avi -frames:v 1 -f image2 result%03d.jpg";
-        Process.StartInfo.Arguments = "-y -i outpipe1 -i outpipe2 -filter_complex \"overlay=5:5\" -f avi result.avi";
+        Process.StartInfo.Arguments = arguments;
         Process.StartInfo.CreateNoWindow = Settings.CreateNoWindow;
         Process.StartInfo.UseShellExecute = Settings.UseShellExecute;
         Process.StartInfo.RedirectStandardInput = inputStreams is not null;
@@ -141,34 +141,28 @@ public class MediaFileProcess
                 Process.StandardInput.Close();
             }
 
-
         if(InputStreams?.Length > 1)
         {
-            var tasks = new Task[PipeNames!.Length];
+            var pipes = new NamedPipeServerStream[InputStreams.Length];
 
-            for (var i = 0;
-                 i < PipeNames!.Length;
-                 i++)
+            for (var i = 0; i < pipes.Length; i++)
+                pipes[i] = new NamedPipeServerStream(PipeNames![i], PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
+
+            var tasks = new Task[pipes.Length];
+
+            for (var i = 0; i < pipes.Length; i++)
             {
-                var pipe = PipeNames![i];
+                var pipe = pipes[i];
                 var inputStream = InputStreams[i];
 
-                Console.WriteLine("OpenWrite " + pipe + $" {Process.StartInfo.Arguments}");
-                var fs = File.OpenWrite($"{pipe}");
-                tasks[i] = Task.Run(() =>
-                {
-                    try
-                    {
-                        Console.WriteLine(((FileStream)inputStream).Name + " " + pipe);
-                        inputStream.CopyToAsync(fs);
-                    }
-                    catch (Exception)
-                    {
-                        Console.WriteLine("ERROR " + PipeNames[i]);
+                pipe.WaitForConnection();
 
-                        // ignored
-                    }
-                });
+                tasks[i] = inputStream.CopyToAsync(pipe)
+                                      .ContinueWith(_ =>
+                                      {
+                                          pipe.WaitForPipeDrain();
+                                          pipe.Disconnect();
+                                      });
             }
 
             Task.WaitAll(tasks);
