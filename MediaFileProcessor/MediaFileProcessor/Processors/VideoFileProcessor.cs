@@ -10,7 +10,7 @@ public class VideoFileProcessor
     private readonly string _ffmpeg = "ffmpeg";
     private readonly string _ffprobe = "ffprobe.exe";
 
-    private async Task<MemoryStream?> ExecuteAsync(VideoProcessingSettings settings, CancellationToken cancellationToken)
+    public async Task<MemoryStream?> ExecuteAsync(VideoProcessingSettings settings, CancellationToken cancellationToken)
     {
         var processArguments = settings.GetProcessArguments();
 

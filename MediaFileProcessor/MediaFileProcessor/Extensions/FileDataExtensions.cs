@@ -206,4 +206,70 @@ public static class FileDataExtensions
 
         return multiStream;
     }
+
+    // public static byte[] ConcatByteArrays(bool onlyNotDefaultArrays, params byte[][] arrays)
+    // {
+    //     int totalLength = 0;
+    //     int count = 0;
+    //
+    //     if (onlyNotDefaultArrays)
+    //     {
+    //         foreach (var array in arrays)
+    //         {
+    //             if (array.Any(x => x != 0))
+    //             {
+    //                 totalLength += array.Length;
+    //                 count++;
+    //             }
+    //         }
+    //
+    //         byte[][] filteredArrays = new byte[count][];
+    //         int index = 0;
+    //
+    //         foreach (var array in arrays)
+    //         {
+    //             if (array.Any(x => x != 0))
+    //             {
+    //                 filteredArrays[index] = array;
+    //                 index++;
+    //             }
+    //         }
+    //
+    //         arrays = filteredArrays;
+    //     }
+    //     else
+    //     {
+    //         totalLength = arrays.Sum(x => x.Length);
+    //     }
+    //
+    //     var result = new byte[totalLength];
+    //     int pos = 0;
+    //
+    //     foreach (var array in arrays)
+    //     {
+    //         Buffer.BlockCopy(array, 0, result, pos, array.Length);
+    //         pos += array.Length;
+    //     }
+    //
+    //     return result;
+    // }
+
+    // public static (int?, bool) SearchFileSignature(this byte[] a, byte[] b)
+    // {
+    //     var signatureLength = b.Length;
+    //     var startFlag = -1;
+    //
+    //     for (var i = 0; i < a.Length; i++)
+    //     {
+    //         if (a[i] == b[startFlag is -1 ? 0 : startFlag + 1])
+    //         {
+    //             if (startFlag is -1) startFlag = i;
+    //             else if (++startFlag == signatureLength - 1)
+    //                 return (i - signatureLength + 1, true);
+    //         }
+    //         else startFlag = -1;
+    //     }
+    //
+    //     return startFlag == -1 ? (null, false) : (startFlag - signatureLength + 2, false);
+    // }
 }
