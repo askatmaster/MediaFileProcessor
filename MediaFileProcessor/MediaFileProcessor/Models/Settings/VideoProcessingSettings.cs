@@ -902,18 +902,15 @@ public class VideoProcessingSettings : ProcessingSettings
         return PipeNames?.Keys.ToArray();
     }
 
-    private int pipenum = 1;
-
     /// <summary>
     /// If the file is transmitted through a stream then assign a channel name to that stream
     /// </summary>
     private string SetPipeChannel(string pipeName, MediaFile file)
     {
         PipeNames ??= new Dictionary<string, Stream>();
-        PipeNames.Add($"outpipe{pipenum}", file.InputFileStream!);
+        PipeNames.Add(pipeName, file.InputFileStream!);
 
-        // return $@"-i \\.\pipe\{pipeName}";
-        return $@"-i outpipe{pipenum++}";
+        return $@"-i \\.\pipe\{pipeName}";
     }
 
     /// <summary>

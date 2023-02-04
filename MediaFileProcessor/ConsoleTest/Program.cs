@@ -253,9 +253,6 @@ finally
 
 
 
-
-
-
 Console.ForegroundColor = ConsoleColor.Green;
 Console.WriteLine("Done");
 Console.ResetColor();

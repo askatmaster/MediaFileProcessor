@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using System.IO.Pipes;
+using System.Runtime.InteropServices;
 using MediaFileProcessor.Models.Settings;
 namespace MediaFileProcessor;
 
@@ -16,11 +17,11 @@ public class MediaFileProcess
     private bool RedirectOutputToStream { get; }
 
     public MediaFileProcess(string processFileName,
-                                string arguments,
-                                ProcessingSettings settings,
-                                Stream[]? inputStreams = null,
-                                bool redirectOutputToStream = false,
-                                string[]? pipeNames = null)
+                            string arguments,
+                            ProcessingSettings settings,
+                            Stream[]? inputStreams = null,
+                            bool redirectOutputToStream = false,
+                            string[]? pipeNames = null)
     {
         Process = new Process();
         Settings = settings;
@@ -141,32 +142,57 @@ public class MediaFileProcess
                 Process.StandardInput.Close();
             }
 
-        if(InputStreams?.Length > 1)
+        if (!(InputStreams?.Length > 1))
+            return;
+
+        if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            MultiInputWindowsOS();
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            MultiInpuLinuxOS();
+        else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            throw new Exception("Operating System not supported for multi inputs");
+        else
+            throw new Exception("Operating System not recognized");
+    }
+
+    private void MultiInputWindowsOS()
+    {
+        var pipes = new NamedPipeServerStream[InputStreams!.Length];
+
+        for (var i = 0; i < pipes.Length; i++)
+            pipes[i] = new NamedPipeServerStream(PipeNames![i], PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
+
+        var tasks = new Task[pipes.Length];
+
+        for (var i = 0; i < pipes.Length; i++)
         {
-            var pipes = new NamedPipeServerStream[InputStreams.Length];
+            var pipe = pipes[i];
+            var inputStream = InputStreams[i];
 
-            for (var i = 0; i < pipes.Length; i++)
-                pipes[i] = new NamedPipeServerStream(PipeNames![i], PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
+            pipe.WaitForConnection();
 
-            var tasks = new Task[pipes.Length];
-
-            for (var i = 0; i < pipes.Length; i++)
-            {
-                var pipe = pipes[i];
-                var inputStream = InputStreams[i];
-
-                pipe.WaitForConnection();
-
-                tasks[i] = inputStream.CopyToAsync(pipe)
-                                      .ContinueWith(_ =>
-                                      {
-                                          pipe.WaitForPipeDrain();
-                                          pipe.Disconnect();
-                                      });
-            }
-
-            Task.WaitAll(tasks);
+            tasks[i] = inputStream.CopyToAsync(pipe)
+                                  .ContinueWith(_ =>
+                                   {
+                                       pipe.WaitForPipeDrain();
+                                       pipe.Disconnect();
+                                   });
         }
+
+        Task.WaitAll(tasks);
+    }
+
+    private void MultiInpuLinuxOS()
+    {
+        var tasks = new Task[InputStreams!.Length];
+
+        for (var i = 0; i < PipeNames!.Length; i++)
+        {
+            var fs = File.OpenWrite($"{PipeNames[i]}");
+            tasks[i] = InputStreams[i].CopyToAsync(fs);
+        }
+
+        Task.WaitAll(tasks);
     }
 
     private void ReadStandartOutput(MemoryStream outputStream)
