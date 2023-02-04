@@ -16,11 +16,11 @@ public class MediaFileProcess
     private bool RedirectOutputToStream { get; }
 
     public MediaFileProcess(string processFileName,
-                            string arguments,
-                            ProcessingSettings settings,
-                            Stream[]? inputStreams = null,
-                            bool redirectOutputToStream = false,
-                            string[]? pipeNames = null)
+                                string arguments,
+                                ProcessingSettings settings,
+                                Stream[]? inputStreams = null,
+                                bool redirectOutputToStream = false,
+                                string[]? pipeNames = null)
     {
         Process = new Process();
         Settings = settings;
@@ -155,10 +155,8 @@ public class MediaFileProcess
                 var pipe = pipes[i];
                 var inputStream = InputStreams[i];
 
-                Console.WriteLine("WaitForConnection");
                 pipe.WaitForConnection();
 
-                Console.WriteLine("WaitForConnection");
                 tasks[i] = inputStream.CopyToAsync(pipe)
                                       .ContinueWith(_ =>
                                       {

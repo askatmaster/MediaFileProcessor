@@ -26,6 +26,7 @@ public class MediaFile
 
                 break;
             case MediaFileInputType.NamedPipe:
+                // InputFilePath = $" \\\\.\\pipe\\{inputArgument} ";
                 InputFilePath = $" \\\\.\\pipe\\{inputArgument} ";
 
                 break;

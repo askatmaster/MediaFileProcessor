@@ -910,10 +910,10 @@ public class VideoProcessingSettings : ProcessingSettings
     private string SetPipeChannel(string pipeName, MediaFile file)
     {
         PipeNames ??= new Dictionary<string, Stream>();
-        PipeNames.Add(pipeName, file.InputFileStream!);
+        PipeNames.Add($"outpipe{pipenum}", file.InputFileStream!);
 
         // return $@"-i \\.\pipe\{pipeName}";
-        return $@"-i pipe:{pipeName}";
+        return $@"-i outpipe{pipenum++}";
     }
 
     /// <summary>
