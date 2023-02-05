@@ -379,6 +379,16 @@ public class VideoProcessingSettings : ProcessingSettings
     }
 
     /// <summary>
+    /// This sets the maximum video bitrate.
+    /// </summary>
+    public VideoProcessingSettings MaxRate(int bitRate)
+    {
+        _stringBuilder.Append($" -maxrate {bitRate}k ");
+
+        return this;
+    }
+
+    /// <summary>
     /// Channel audio
     /// </summary>
     public VideoProcessingSettings AudioChannel(int channel)
@@ -415,7 +425,7 @@ public class VideoProcessingSettings : ProcessingSettings
     {
         if(videoSize is VideoSizeTyoe.CUSTOM)
         {
-            _stringBuilder.Append($" -vf \"scale={witdh - 2}:{height - 2}\" ");
+            _stringBuilder.Append($" -vf \"scale={witdh}:{height}\" ");
         }
         else
         {
@@ -432,7 +442,7 @@ public class VideoProcessingSettings : ProcessingSettings
     }
 
     /// <summary>
-    /// Video sizes
+    /// Video codec
     /// </summary>
     public VideoProcessingSettings VideoCodec(VideoCodecType codec)
     {
@@ -934,6 +944,15 @@ public class VideoProcessingSettings : ProcessingSettings
 
         InputStreams ??= new List<Stream>();
         InputStreams.AddRange(PipeNames.Select(pipeName => pipeName.Value));
+    }
+
+    public void SetInputStreams(params Stream[] streams)
+    {
+        if(streams.Length is 0)
+            return;
+
+        InputStreams ??= new List<Stream>();
+        InputStreams.AddRange(streams);
     }
 
     /// <summary>

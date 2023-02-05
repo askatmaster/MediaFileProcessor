@@ -29,6 +29,7 @@ public enum VideoCodecType
     GIF,             //GIF (Graphics Interchange Format)
     H261,            //H.261
     H263,            //H.263 / H.263-1996
+    H264,            //H.264 / H.264-1996
     H263P,           //H.263+ / H.263-1998 / H.263 version 2
     LIBX264,         //libx264 H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10 (codec h264)
     LIBX264RGB,      //libx264 H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10 RGB (codec h264)

@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.IO.Pipes;
 using System.Text;
+using ConsoleTest;
 using MediaFileProcessor.Models.Common;
 using MediaFileProcessor.Models.Enums;
 using MediaFileProcessor.Models.Settings;
@@ -9,7 +10,7 @@ Console.ForegroundColor = ConsoleColor.Green;
 Console.WriteLine("StartStream");
 Console.ResetColor();
 
-// var videoProcessor = new VideoFileProcessor();
+var videoProcessor = new VideoFileProcessor();
 // var _video1 = @"test.avi";
 // var _photo1 =  @"water.png";
 
@@ -178,78 +179,78 @@ Console.ResetColor();
 //     Arguments = $"/net7.0/{pipes[1]}"
 // });
 
-var pipes = new [] { Guid.NewGuid().ToString(), Guid.NewGuid().ToString() };
-
-var inputFile = @"test.avi";
-var inputFile2 = @"sample.mp3";
-var outputFile = @"outputFileStream.avi";
-
-var streams = new [] { new FileStream(inputFile, FileMode.Open), new FileStream(inputFile2, FileMode.Open)  };
-
-try
-{
-    using var process = new Process
-    {
-        StartInfo = new ProcessStartInfo
-        {
-            RedirectStandardInput = true,
-            RedirectStandardOutput = true,
-            UseShellExecute = false,
-            CreateNoWindow = true,
-            Arguments = $"-y -i - -i {pipes[0]} -c:v copy -c:a copy -f avi -",
-            // Arguments = $"-y -nostdin -thread_queue_size 16384 -i outpipe2 -thread_queue_size 8192 -i outpipe1 -c:v copy -c:a copy -f avi {outputFile} > /dev/null 2>&1",
-            // Arguments = "-y -ss 00:00:27.500 -i outpipe1.avi -frames:v 1 -f image2 result%03d.jpg",
-            FileName = "ffmpeg"
-        },
-        EnableRaisingEvents = true
-    };
-
-    process.Start();
-
-    var inputTask1 = Task.Run(() =>
-    {
-        Console.WriteLine("CopyToStart_" + pipes[0]);
-        var fs = File.OpenWrite($"{pipes[0]}");
-        streams[0].CopyTo(fs);
-        Console.WriteLine("CopyToEnd_" + pipes[0]);
-    });
-
-    // var inputTask2 = Task.Run(() =>
-    // {
-    //     Console.WriteLine("CopyToStart" + pipes[1]);
-    //     var fs = File.OpenWrite($"{pipes[1]}");
-    //     streams[1].CopyTo(fs);
-    //     Console.WriteLine("CopyToEnd" + pipes[1]);
-    // });
-
-    var inputTaskSI = Task.Run(() =>
-    {
-        Console.WriteLine("StandartInputStart_" + pipes[1]);
-        streams[1].CopyTo(process.StandardInput.BaseStream);
-        process.StandardInput.Flush();
-        process.StandardInput.Close();
-        Console.WriteLine("StandartInputEnd_" + pipes[1]);
-    });
-
-    var outputTask = Task.Run(() =>
-    {
-        Console.WriteLine("OUTPUTSTREAM");
-        using (var output = new FileStream(outputFile, FileMode.Create))
-            process.StandardOutput.BaseStream.CopyTo(output);
-    });
-
-    Task.WaitAll(inputTask1, inputTaskSI, outputTask);
-
-    process.WaitForExit();
-}
-finally
-{
-    foreach (var fs in streams)
-        fs.Dispose();
-
-    foreach (var pipeFile in pipes)
-        File.Delete(pipeFile);
-}
+// var pipes = new [] { Guid.NewGuid().ToString(), Guid.NewGuid().ToString() };
+//
+// var inputFile = @"test.avi";
+// var inputFile2 = @"sample.mp3";
+// var outputFile = @"outputFileStream.avi";
+//
+// var streams = new [] { new FileStream(inputFile, FileMode.Open), new FileStream(inputFile2, FileMode.Open)  };
+//
+// try
+// {
+//     using var process = new Process
+//     {
+//         StartInfo = new ProcessStartInfo
+//         {
+//             RedirectStandardInput = true,
+//             RedirectStandardOutput = true,
+//             UseShellExecute = false,
+//             CreateNoWindow = true,
+//             Arguments = $"-y -i - -i {pipes[0]} -c:v copy -c:a copy -f avi -",
+//             // Arguments = $"-y -nostdin -thread_queue_size 16384 -i outpipe2 -thread_queue_size 8192 -i outpipe1 -c:v copy -c:a copy -f avi {outputFile} > /dev/null 2>&1",
+//             // Arguments = "-y -ss 00:00:27.500 -i outpipe1.avi -frames:v 1 -f image2 result%03d.jpg",
+//             FileName = "ffmpeg"
+//         },
+//         EnableRaisingEvents = true
+//     };
+//
+//     process.Start();
+//
+//     var inputTask1 = Task.Run(() =>
+//     {
+//         Console.WriteLine("CopyToStart_" + pipes[0]);
+//         var fs = File.OpenWrite($"{pipes[0]}");
+//         streams[0].CopyTo(fs);
+//         Console.WriteLine("CopyToEnd_" + pipes[0]);
+//     });
+//
+//     // var inputTask2 = Task.Run(() =>
+//     // {
+//     //     Console.WriteLine("CopyToStart" + pipes[1]);
+//     //     var fs = File.OpenWrite($"{pipes[1]}");
+//     //     streams[1].CopyTo(fs);
+//     //     Console.WriteLine("CopyToEnd" + pipes[1]);
+//     // });
+//
+//     var inputTaskSI = Task.Run(() =>
+//     {
+//         Console.WriteLine("StandartInputStart_" + pipes[1]);
+//         streams[1].CopyTo(process.StandardInput.BaseStream);
+//         process.StandardInput.Flush();
+//         process.StandardInput.Close();
+//         Console.WriteLine("StandartInputEnd_" + pipes[1]);
+//     });
+//
+//     var outputTask = Task.Run(() =>
+//     {
+//         Console.WriteLine("OUTPUTSTREAM");
+//         using (var output = new FileStream(outputFile, FileMode.Create))
+//             process.StandardOutput.BaseStream.CopyTo(output);
+//     });
+//
+//     Task.WaitAll(inputTask1, inputTaskSI, outputTask);
+//
+//     process.WaitForExit();
+// }
+// finally
+// {
+//     foreach (var fs in streams)
+//         fs.Dispose();
+//
+//     foreach (var pipeFile in pipes)
+//         File.Delete(pipeFile);
+// }
 
 
 

@@ -130,16 +130,12 @@ public class MediaFileProcess
             try
             {
                 InputStreams[0].CopyTo(Process.StandardInput.BaseStream);
-            }
-            catch (Exception e)
-            {
-                if(e.Message != "Канал был закрыт.")
-                    throw;
-            }
-            finally
-            {
                 Process.StandardInput.Flush();
                 Process.StandardInput.Close();
+            }
+            catch (Exception)
+            {
+                //ignore
             }
 
         if (!(InputStreams?.Length > 1))
@@ -193,6 +189,9 @@ public class MediaFileProcess
         }
 
         Task.WaitAll(tasks);
+
+        foreach (var pipeFile in PipeNames)
+            File.Delete(pipeFile);
     }
 
     private void ReadStandartOutput(MemoryStream outputStream)

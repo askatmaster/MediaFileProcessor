@@ -116,7 +116,7 @@ public class VideoFileProcessor
             case FileFormatType.IMAGE2PIPE:
             case FileFormatType.IMAGE2:
             case FileFormatType.JPEG:
-                settings.Format(FileFormatType.IMAGE2PIPE);
+                settings.Format(outputImagesPattern == null ? FileFormatType.IMAGE2PIPE : outputFileFormatType.Value);
                 break;
             case FileFormatType.PNG:
                 settings.VideoCodec(VideoCodecType.PNG);
@@ -374,22 +374,27 @@ public class VideoFileProcessor
                                                    .SetInputFiles(file)
                                                    .VideoCodec(videoCodecType)
                                                    .Crf(crf)
+                                                   .VideoCodecPreset(VideoCodecPresetType.SLOW)
+                                                   .VideoBitRate(500)
+                                                   .MaxRate(500)
+                                                   .BufSize(1000)
+                                                   .VideoSize(VideoSizeTyoe.CUSTOM, -2, 720)
                                                    .Format(outputFileFormatType)
                                                    .SetOutputArguments(output);
         return await ExecuteAsync(setting, cancellationToken);
     }
 
-    public  async Task CompressVideoAsync(MediaFile file, int compressionRatio, string output, FileFormatType outputFileFormatType, VideoCodecType videoCodecType = VideoCodecType.LIBX264, CancellationToken? cancellationToken = null)
+    public  async Task CompressVideoAsync(MediaFile file, int compressionRatio, string output, FileFormatType outputFileFormatType, VideoCodecType videoCodecType = VideoCodecType.H264, CancellationToken? cancellationToken = null)
     {
         await ExecuteCompressVideoAsync(file, compressionRatio, output, outputFileFormatType, videoCodecType, cancellationToken ?? new CancellationToken());
     }
 
-    public  async Task<MemoryStream> CompressVideoAsStreamAsync(MediaFile file, int compressionRatio, FileFormatType outputFileFormatType, VideoCodecType videoCodecType = VideoCodecType.LIBX264, CancellationToken? cancellationToken = null)
+    public  async Task<MemoryStream> CompressVideoAsStreamAsync(MediaFile file, int compressionRatio, FileFormatType outputFileFormatType, VideoCodecType videoCodecType = VideoCodecType.H264, CancellationToken? cancellationToken = null)
     {
         return (await ExecuteCompressVideoAsync(file, compressionRatio, null, outputFileFormatType, videoCodecType, cancellationToken ?? new CancellationToken()))!;
     }
 
-    public  async Task<byte[]> CompressVideoAsBytesAsync(MediaFile file, int compressionRatio, FileFormatType outputFileFormatType, VideoCodecType videoCodecType = VideoCodecType.LIBX264, CancellationToken? cancellationToken = null)
+    public  async Task<byte[]> CompressVideoAsBytesAsync(MediaFile file, int compressionRatio, FileFormatType outputFileFormatType, VideoCodecType videoCodecType = VideoCodecType.H264, CancellationToken? cancellationToken = null)
     {
         return (await ExecuteCompressVideoAsync(file, compressionRatio, null, outputFileFormatType, videoCodecType, cancellationToken ?? new CancellationToken()))!.ToArray();
     }
@@ -518,13 +523,19 @@ public class VideoFileProcessor
         VideoProcessingSettings? settings;
 
         if(videoFile.InputFilePath != null)
+        {
             settings = new VideoProcessingSettings().CustomArguments("-v panic -print_format json=c=1 -show_streams -show_entries "
-                                                                   + $"format=size,duration,bit_rate:format_tags=creation_time {videoFile}");
+                                                                   + $"format=size,duration,bit_rate:format_tags=creation_time {videoFile.InputFilePath}");
+        }
         else
+        {
             settings = new VideoProcessingSettings().CustomArguments("-v panic -print_format json=c=1 -show_streams -show_entries "
-                                                                   + "format=size,duration,bit_rate:format_tags=creation_time ").SetInputFiles(videoFile);
+                                                                   + "format=size,duration,bit_rate:format_tags=creation_time -");
 
-        var process = new MediaFileProcess(_ffprobe, settings.GetProcessArguments(false), settings, redirectOutputToStream: true);
+            settings.SetInputStreams(videoFile.InputFileStream!);
+        }
+
+        var process = new MediaFileProcess(_ffprobe, settings.GetProcessArguments(false), settings, settings.GetInputStreams(), true);
 
         var result = await process.ExecuteAsync(cancellationToken ?? new CancellationToken());
 
