@@ -4,7 +4,11 @@ public enum FileFormatType
 {
     _3GP,
     MP4,
+    ICO,
+    BIN,
     MOV,
+    TIFF,
+    TIF,
     MATROSKA,
     AVI,
     MPEG,
