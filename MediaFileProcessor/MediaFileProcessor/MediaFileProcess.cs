@@ -169,10 +169,10 @@ public class MediaFileProcess
 
             tasks[i] = inputStream.CopyToAsync(pipe)
                                   .ContinueWith(_ =>
-                                   {
-                                       pipe.WaitForPipeDrain();
-                                       pipe.Disconnect();
-                                   });
+                                  {
+                                      pipe.WaitForPipeDrain();
+                                      pipe.Disconnect();
+                                  });
         }
 
         Task.WaitAll(tasks);

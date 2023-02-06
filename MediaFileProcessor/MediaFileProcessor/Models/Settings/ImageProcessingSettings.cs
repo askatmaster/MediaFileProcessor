@@ -2370,7 +2370,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Pipe names for input streams
     /// </summary>
-    public string[]? GetInputPipeNames()
+    public override string[]? GetInputPipeNames()
     {
         return PipeNames?.Keys.ToArray();
     }

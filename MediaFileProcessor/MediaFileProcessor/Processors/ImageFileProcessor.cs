@@ -9,10 +9,8 @@ public class ImageFileProcessor
 
     private async Task<MemoryStream?> ExecuteAsync(ImageProcessingSettings settings, CancellationToken cancellationToken)
     {
-        var processArguments = settings.GetProcessArguments();
-
         var process = new MediaFileProcess(_convert,
-                                           processArguments,
+                                           settings.GetProcessArguments(),
                                            settings,
                                            settings.GetInputStreams(),
                                            settings.IsStandartOutputRedirect,

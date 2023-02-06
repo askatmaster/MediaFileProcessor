@@ -2,12 +2,12 @@
 using MediaFileProcessor.Models.Enums;
 namespace MediaFileProcessor.Models.Settings;
 
-public class FileProcessingSettings : ProcessingSettings
+public class DocumentFileProcessingSettings : ProcessingSettings
 {
     /// <summary>
     /// To produce a standalone documen (e.g. a valid HTML file including 'head' and 'body' tags)
     /// </summary>
-    public FileProcessingSettings Standalone()
+    public DocumentFileProcessingSettings Standalone()
     {
         _stringBuilder.Append(" -s ");
 
@@ -17,7 +17,7 @@ public class FileProcessingSettings : ProcessingSettings
     /// <summary>
     /// The input format can be specified using the -f/--from option
     /// </summary>
-    public FileProcessingSettings From(string format)
+    public DocumentFileProcessingSettings From(string format)
     {
         _stringBuilder.Append($" -f {format}");
 
@@ -25,19 +25,9 @@ public class FileProcessingSettings : ProcessingSettings
     }
 
     /// <summary>
-    /// Set outputFile
-    /// </summary>
-    public FileProcessingSettings Output(string output)
-    {
-        _stringBuilder.Append($" -o {output}");
-
-        return this;
-    }
-
-    /// <summary>
     /// The output format using the -t/--to option
     /// </summary>
-    public FileProcessingSettings To(string format)
+    public DocumentFileProcessingSettings To(string format)
     {
         _stringBuilder.Append($" -t {format}");
 
@@ -47,7 +37,7 @@ public class FileProcessingSettings : ProcessingSettings
     /// <summary>
     /// Specify the user data directory to search for pandoc data files
     /// </summary>
-    public FileProcessingSettings DataDirectory(string directory)
+    public DocumentFileProcessingSettings DataDirectory(string directory)
     {
         _stringBuilder.Append($" --data-dir={directory}");
 
@@ -57,7 +47,7 @@ public class FileProcessingSettings : ProcessingSettings
     /// <summary>
     /// Specify a set of default option settings
     /// </summary>
-    public FileProcessingSettings DefaultOptionSettings(string file)
+    public DocumentFileProcessingSettings DefaultOptionSettings(string file)
     {
         _stringBuilder.Append($" -d {file}");
 
@@ -67,7 +57,7 @@ public class FileProcessingSettings : ProcessingSettings
     /// <summary>
     /// Shift heading levels by a positive or negative integer
     /// </summary>
-    public FileProcessingSettings ShiftHeadingLevel(string number)
+    public DocumentFileProcessingSettings ShiftHeadingLevel(string number)
     {
         _stringBuilder.Append($" --shift-heading-level-by={number}");
 
@@ -77,7 +67,7 @@ public class FileProcessingSettings : ProcessingSettings
     /// <summary>
     /// Specify an executable to be used as a filter transforming the pandoc AST after the input is parsed and before the output is written
     /// </summary>
-    public FileProcessingSettings Filter(string program)
+    public DocumentFileProcessingSettings Filter(string program)
     {
         _stringBuilder.Append($" --filter={program}");
 
@@ -87,7 +77,7 @@ public class FileProcessingSettings : ProcessingSettings
     /// <summary>
     /// Set the metadata field KEY to the value VAL. A value specified on the command line overrides a value specified in the document using YAML metadata blocks
     /// </summary>
-    public FileProcessingSettings Metadata(string value)
+    public DocumentFileProcessingSettings Metadata(string value)
     {
         _stringBuilder.Append($" --metadata={value}");
 
@@ -97,7 +87,7 @@ public class FileProcessingSettings : ProcessingSettings
     /// <summary>
     /// Read metadata from the supplied YAML (or JSON) file
     /// </summary>
-    public FileProcessingSettings MetadataFile(string file)
+    public DocumentFileProcessingSettings MetadataFile(string file)
     {
         _stringBuilder.Append($" --metadata-file={file}");
 
@@ -107,7 +97,7 @@ public class FileProcessingSettings : ProcessingSettings
     /// <summary>
     /// Preserve tabs instead of converting them to spaces
     /// </summary>
-    public FileProcessingSettings PreserveTabs()
+    public DocumentFileProcessingSettings PreserveTabs()
     {
         _stringBuilder.Append(" --preserve-tabs ");
 
@@ -117,7 +107,7 @@ public class FileProcessingSettings : ProcessingSettings
     /// <summary>
     /// Parse untranslatable HTML and LaTeX as raw
     /// </summary>
-    public FileProcessingSettings ParseRaw()
+    public DocumentFileProcessingSettings ParseRaw()
     {
         _stringBuilder.Append(" --parse-raw ");
 
@@ -127,7 +117,7 @@ public class FileProcessingSettings : ProcessingSettings
     /// <summary>
     /// Normalize the document, including converting it to NFC Unicode normalization form
     /// </summary>
-    public FileProcessingSettings Normalize()
+    public DocumentFileProcessingSettings Normalize()
     {
         _stringBuilder.Append(" --normalize ");
 
@@ -137,7 +127,7 @@ public class FileProcessingSettings : ProcessingSettings
     /// <summary>
     /// Link to a CSS stylesheet
     /// </summary>
-    public FileProcessingSettings CssUrl(string url)
+    public DocumentFileProcessingSettings CssUrl(string url)
     {
         _stringBuilder.Append(" --css={url} ");
 
@@ -147,7 +137,7 @@ public class FileProcessingSettings : ProcessingSettings
     /// <summary>
     /// Print the default template for FORMAT
     /// </summary>
-    public FileProcessingSettings PrintDefaultTemplate(string format)
+    public DocumentFileProcessingSettings PrintDefaultTemplate(string format)
     {
         _stringBuilder.Append(" -D {format} ");
 
@@ -157,7 +147,7 @@ public class FileProcessingSettings : ProcessingSettings
     /// <summary>
     /// Parse each file individually before combining for multifile documents.
     /// </summary>
-    public FileProcessingSettings FileScope()
+    public DocumentFileProcessingSettings FileScope()
     {
         _stringBuilder.Append(" --file-scope ");
 
@@ -167,7 +157,7 @@ public class FileProcessingSettings : ProcessingSettings
     /// <summary>
     /// Additional settings that are not currently provided in the wrapper
     /// </summary>
-    public FileProcessingSettings CustomArguments(string arg)
+    public DocumentFileProcessingSettings CustomArguments(string arg)
     {
         _stringBuilder.Append(arg);
 
@@ -182,7 +172,7 @@ public class FileProcessingSettings : ProcessingSettings
     /// <summary>
     /// Setting Output Arguments
     /// </summary>
-    public FileProcessingSettings SetOutputFileArguments(string? arg)
+    public DocumentFileProcessingSettings SetOutputFileArguments(string? arg)
     {
         OutputFileArguments = arg;
 
@@ -192,7 +182,7 @@ public class FileProcessingSettings : ProcessingSettings
     /// <summary>
     /// Set input files
     /// </summary>
-    public FileProcessingSettings SetInputFiles(params MediaFile[]? files)
+    public DocumentFileProcessingSettings SetInputFiles(params MediaFile[]? files)
     {
         if(files is null)
             throw new NullReferenceException("'CustomInputs' Arguments must be specified if there are no input files");
@@ -255,7 +245,7 @@ public class FileProcessingSettings : ProcessingSettings
     /// </summary>
     private string GetOutputArguments()
     {
-        return OutputFileArguments ?? " - ";
+        return " -o " + (OutputFileArguments ?? " - ");
     }
 
     /// <summary>
@@ -269,7 +259,7 @@ public class FileProcessingSettings : ProcessingSettings
     /// <summary>
     /// Pipe names for input streams
     /// </summary>
-    public string[]? GetInputPipeNames()
+    public override string[]? GetInputPipeNames()
     {
         return PipeNames?.Keys.ToArray();
     }
@@ -306,13 +296,5 @@ public class FileProcessingSettings : ProcessingSettings
 
         InputStreams ??= new List<Stream>();
         InputStreams.AddRange(PipeNames.Select(pipeName => pipeName.Value));
-    }
-
-    /// <summary>
-    /// Get output arguments
-    /// </summary>
-    private string GetOutputArgument()
-    {
-        return OutputFileArguments ?? " - ";
     }
 }

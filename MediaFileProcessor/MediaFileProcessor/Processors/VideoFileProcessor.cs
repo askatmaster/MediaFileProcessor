@@ -12,9 +12,7 @@ public class VideoFileProcessor
 
     public async Task<MemoryStream?> ExecuteAsync(VideoProcessingSettings settings, CancellationToken cancellationToken)
     {
-        var processArguments = settings.GetProcessArguments();
-
-        var process = new MediaFileProcess(_ffmpeg, processArguments, settings, settings.GetInputStreams(), settings.IsStandartOutputRedirect, settings.GetInputPipeNames());
+        var process = new MediaFileProcess(_ffmpeg, settings.GetProcessArguments(), settings, settings.GetInputStreams(), settings.IsStandartOutputRedirect, settings.GetInputPipeNames());
 
         return await process.ExecuteAsync(cancellationToken);
     }

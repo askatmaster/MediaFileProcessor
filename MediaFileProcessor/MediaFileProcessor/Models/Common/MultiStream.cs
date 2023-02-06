@@ -1,14 +1,52 @@
 using System.Collections;
 namespace MediaFileProcessor.Models.Common;
 
+/// <summary>
+/// The `MultiStream` class is a concrete implementation of the `Stream` abstract class.
+/// It allows multiple streams to be combined into one virtual stream that can be read from.
+/// </summary>
 public sealed class MultiStream : Stream
 {
-    private readonly ArrayList streamList = new ();
+    /// <summary>
+    /// A list of streams to be combined into the virtual stream.
+    /// </summary>
+    private readonly ArrayList streamList = new ArrayList();
+
+    /// <summary>
+    /// The current position within the virtual stream.
+    /// </summary>
     private long position;
+
+    /// <summary>
+    /// Gets a value indicating whether the current stream supports reading.
+    /// </summary>
+    /// <returns>
+    /// Always returns `true` as the `MultiStream` class supports reading.
+    /// </returns>
     public override bool CanRead => true;
+
+    /// <summary>
+    /// Gets a value indicating whether the current stream supports seeking.
+    /// </summary>
+    /// <returns>
+    /// Always returns `true` as the `MultiStream` class supports seeking.
+    /// </returns>
     public override bool CanSeek => true;
+
+    /// <summary>
+    /// Gets a value indicating whether the current stream supports writing.
+    /// </summary>
+    /// <returns>
+    /// Always returns `false` as the `MultiStream` class does not support writing.
+    /// </returns>
     public override bool CanWrite => false;
 
+    /// <summary>
+    /// Gets the length of the virtual stream, which is the sum of the lengths of all streams in the `streamList`.
+    /// </summary>
+    /// <returns>
+    /// The length of the virtual stream as a `long`.
+    /// </returns>
     public override long Length
     {
         get
@@ -18,12 +56,27 @@ public sealed class MultiStream : Stream
         }
     }
 
+    /// <summary>
+    /// Gets or sets the position within the virtual stream.
+    /// </summary>
+    /// <returns>
+    /// The current position within the virtual stream as a `long`.
+    /// </returns>
     public override long Position
     {
         get => position;
         set => Seek(value, SeekOrigin.Begin);
     }
 
+    /// <summary>
+    /// Changes the position within the virtual stream.
+    /// </summary>
+    /// <param name="offset">A `long` offset to move the position by.</param>
+    /// <param name="origin">The origin from which to calculate the new position. 
+    /// Must be either `SeekOrigin.Begin`, `SeekOrigin.Current`, or `SeekOrigin.End`.</param>
+    /// <returns>
+    /// The new position within the virtual stream as a `long`.
+    /// </returns>
     public override long Seek(long offset, SeekOrigin origin)
     {
         var len = Length;
@@ -54,6 +107,10 @@ public sealed class MultiStream : Stream
         return position;
     }
 
+    /// <summary>
+    /// Reads all the data in the multiple streams and returns it as an array of byte arrays.
+    /// </summary>
+    /// <returns>An array of byte arrays containing the data of the multiple streams</returns>
     public byte[][] ReadAsDataArray()
     {
         var list = new List<byte[]>(streamList.Count);
@@ -69,6 +126,13 @@ public sealed class MultiStream : Stream
         return list.ToArray();
     }
 
+    /// <summary>
+    /// Reads a specified number of bytes from the multiple streams into a buffer, starting at a specified index.
+    /// </summary>
+    /// <param name="buffer">The buffer to read the data into</param>
+    /// <param name="offset">The starting index in the buffer</param>
+    /// <param name="count">The number of bytes to read</param>
+    /// <returns>The total number of bytes read into the buffer</returns>
     public override int Read(byte[] buffer, int offset, int count)
     {
         long len = 0;
@@ -96,14 +160,39 @@ public sealed class MultiStream : Stream
         return result;
     }
 
+    /// <summary>
+    /// Adds a new stream to the multiple streams list.
+    /// </summary>
+    /// <param name="stream">The stream to add</param>
     public void AddStream(Stream stream)
     {
         streamList.Add(stream);
     }
 
-    public override void SetLength(long value) { }
+    /// <summary>
+    /// Sets the length of the multiple streams.
+    /// </summary>
+    /// <param name="value">The length to set</param>
+    /// <exception cref="NotImplementedException">This method is not implemented in this class</exception>
+    public override void SetLength(long value)
+    {
+        throw new NotImplementedException("This method cannot be implemented in this class");
+    }
 
-    public override void Flush() { }
+    /// <summary>
+    /// Clears all buffers for the multiple streams and causes any buffered data to be written to the underlying devices.
+    /// </summary>
+    public override void Flush()
+    {
+        for (var i = 0; i < streamList.Count; i++)
+            ((Stream)streamList[i]).Flush();
+    }
 
-    public override void Write(byte[] buffer, int offset, int count) { }
+    /// <summary>
+    /// Writes a specified number of bytes to the multiple streams from a buffer, starting at a specified index.
+    /// </summary>
+    public override void Write(byte[] buffer, int offset, int count)
+    {
+        throw new NotImplementedException("This method cannot be implemented in this class");
+    }
 }

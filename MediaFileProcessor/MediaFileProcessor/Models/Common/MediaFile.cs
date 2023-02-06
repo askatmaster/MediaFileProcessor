@@ -1,14 +1,32 @@
-﻿using MediaFileProcessor.Models.Enums;
+﻿using System.Runtime.InteropServices;
+using MediaFileProcessor.Models.Enums;
 namespace MediaFileProcessor.Models.Common;
 
+/// <summary>
+/// The `MediaFile` class represents a media file with either file path, named pipe, stream or byte array as input.
+/// </summary>
 public class MediaFile
 {
+    /// <summary>
+    /// The file path of the media file.
+    /// </summary>
     public string? InputFilePath { get;  }
 
+    /// <summary>
+    /// The stream of the media file.
+    /// </summary>
     public Stream? InputFileStream { get;  }
 
+    /// <summary>
+    /// The input type of the media file.
+    /// </summary>
     public MediaFileInputType InputType { get; }
 
+    /// <summary>
+    /// Initializes a new instance of the `MediaFile` class with file path or template input.
+    /// </summary>
+    /// <param name="inputArgument">The file path or template of the media file.</param>
+    /// <param name="inputType">The input type of the media file.</param>
     public MediaFile(string inputArgument, MediaFileInputType inputType)
     {
         switch(inputType)
@@ -21,13 +39,19 @@ public class MediaFile
 
                 break;
             case MediaFileInputType.Template:
-                InputFilePath = $"\"{inputArgument}\" ";
+                InputFilePath = $"{inputArgument} ";
                 InputType = inputType;
 
                 break;
             case MediaFileInputType.NamedPipe:
-                // InputFilePath = $" \\\\.\\pipe\\{inputArgument} ";
-                InputFilePath = $" \\\\.\\pipe\\{inputArgument} ";
+                if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                    InputFilePath = $" \\\\.\\pipe\\{inputArgument} ";
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                    InputFilePath = $" {inputArgument} ";
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                    throw new Exception("Operating System not supported for multi inputs");
+                else
+                    throw new Exception("Operating System not recognized");
 
                 break;
             case MediaFileInputType.Stream:
@@ -37,6 +61,10 @@ public class MediaFile
         }
     }
 
+    /// <summary>
+    /// Initializes a new instance of the `MediaFile` class with stream input.
+    /// </summary>
+    /// <param name="inputFileStream">The stream of the media file.</param>
     public MediaFile(Stream inputFileStream)
     {
         if (!inputFileStream.CanRead)
@@ -46,6 +74,10 @@ public class MediaFile
         InputType = MediaFileInputType.Stream;
     }
 
+    /// <summary>
+    /// Initializes a new instance of the `MediaFile` class with byte array input.
+    /// </summary>
+    /// <param name="bytes">The byte array of the media file.</param>
     public MediaFile(byte[] bytes)
     {
         if(bytes.Length is 0)

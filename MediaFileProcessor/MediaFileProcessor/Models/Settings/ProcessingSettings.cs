@@ -39,4 +39,6 @@ public abstract class ProcessingSettings
     public abstract string GetProcessArguments(bool setOutputArguments = true);
 
     public abstract Stream[]? GetInputStreams();
+
+    public abstract string[]? GetInputPipeNames();
 }

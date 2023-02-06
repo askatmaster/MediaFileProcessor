@@ -2,8 +2,15 @@
 
 public enum VideoCodecType
 {
+    /// <summary>
+    /// Copy codec type
+    /// </summary>
     COPY,
-    A64MULTI,        //Multicolor charset for Commodore 64 (codec a64_multi)
+
+    /// <summary>
+    /// Multicolor charset for Commodore 64 (codec a64_multi)
+    /// </summary>
+    A64MULTI,
     A64MULTI5,       //Multicolor charset for Commodore 64, extended with 5th color (colram) (codec a64_multi5)
     ALIAS_PIX,       //Alias/Wavefront PIX image
     AMV,             //AMV Video

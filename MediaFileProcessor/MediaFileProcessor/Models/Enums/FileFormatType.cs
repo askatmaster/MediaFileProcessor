@@ -32,5 +32,8 @@ public enum FileFormatType
     PNG,
     RAWVIDEO,
     MP3,
+    RAW,
+    SVG,
+    PSD,
     RM
 }
