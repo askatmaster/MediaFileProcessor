@@ -182,6 +182,8 @@ public class ImageFileProcessor
     {
         var fileName = $"{Guid.NewGuid()}.zip";
 
+        var convertFound = false;
+
         try
         {
             await FileDownloadProcessor.DownloadFile("https://imagemagick.org/archive/binaries/ImageMagick-7.1.0-61-portable-Q16-x64.zip", fileName);
@@ -196,8 +198,14 @@ public class ImageFileProcessor
                 foreach (var entry in dir)
                 {
                     if (Path.GetFileName(entry.FilenameInZip) == "convert.exe")
-                        zip.ExtractFile(entry, @"asd/convert.exe"); // File found, extract it
+                    {
+                        zip.ExtractFile(entry, @"asd/convert.exe"); // File found, extract it}
+                        convertFound = true;
+                    }
                 }
+
+                if(!convertFound)
+                    throw new Exception("convert.exe not found");
             }
         }
         finally

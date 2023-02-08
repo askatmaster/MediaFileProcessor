@@ -20,11 +20,7 @@ public class DocumentFileProcessor
 
     private async Task<MemoryStream?> ExecuteConvertDocxToPdf(MediaFile file, string? outputFile, CancellationToken cancellationToken)
     {
-        var settings = new DocumentFileProcessingSettings().From("docx")
-                                                   .To("pdf")
-                                                   .Standalone()
-                                                   .SetInputFiles(file)
-                                                   .SetOutputFileArguments(outputFile);
+        var settings = new DocumentFileProcessingSettings().From("docx").To("pdf").Standalone().SetInputFiles(file).SetOutputFileArguments(outputFile);
 
         return await ExecuteAsync(settings, cancellationToken);
     }
@@ -47,6 +43,7 @@ public class DocumentFileProcessor
     public static async Task DownloadExecutableFiles()
     {
         var fileName = $"{Guid.NewGuid()}.zip";
+        var pandocFound = false;
 
         try
         {
@@ -62,8 +59,14 @@ public class DocumentFileProcessor
                 foreach (var entry in dir)
                 {
                     if (Path.GetFileName(entry.FilenameInZip) == "pandoc.exe")
-                        zip.ExtractFile(entry, @"asd/pandoc.exe"); // File found, extract it
+                    {
+                        zip.ExtractFile(entry, @"asd/pandoc.exe"); // File found, extract it}
+                        pandocFound = true;
+                    }
                 }
+
+                if(!pandocFound)
+                    throw new Exception("pandoc.exe not found");
             }
         }
         finally

@@ -795,6 +795,9 @@ public class VideoFileProcessor
     {
         var fileName = $"{Guid.NewGuid()}.zip";
 
+        var ffmpegFound = false;
+        var ffprobeFound = false;
+
         try
         {
             await FileDownloadProcessor.DownloadFile("https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip", fileName);
@@ -809,12 +812,24 @@ public class VideoFileProcessor
                 foreach (var entry in dir)
                 {
                     if (Path.GetFileName(entry.FilenameInZip) == "ffmpeg.exe")
+                    {
                         zip.ExtractFile(entry, @"asd/ffmpeg.exe"); // File found, extract it
+                        ffmpegFound = true;
+                    }
 
                     if (Path.GetFileName(entry.FilenameInZip) == "ffprobe.exe")
+                    {
                         zip.ExtractFile(entry, @"asd/ffprobe.exe"); // File found, extract it
+                        ffprobeFound = true;
+                    }
                 }
             }
+
+            if(!ffmpegFound)
+                throw new Exception("ffmpeg.exe not found");
+
+            if(!ffprobeFound)
+                throw new Exception("ffmpeg.exe not found");
         }
         finally
         {

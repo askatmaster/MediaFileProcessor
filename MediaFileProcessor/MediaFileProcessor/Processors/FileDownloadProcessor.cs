@@ -61,10 +61,12 @@ public static class FileDownloadProcessor
                 }
             }
         }
-        finally
+        catch(Exception)
         {
             if(File.Exists(fileName))
                 File.Delete(fileName);
+
+            throw;
         }
     }
 }
