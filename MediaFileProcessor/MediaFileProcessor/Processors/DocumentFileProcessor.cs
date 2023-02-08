@@ -43,4 +43,33 @@ public class DocumentFileProcessor
     {
         return (await ExecuteConvertDocxToPdf(file, null, cancellationToken ?? new CancellationToken()))!.ToArray();
     }
+
+    public static async Task DownloadExecutableFiles()
+    {
+        var fileName = $"{Guid.NewGuid()}.zip";
+
+        try
+        {
+            await FileDownloadProcessor.DownloadFile("https://github.com/jgm/pandoc/releases/download/3.0.1/pandoc-3.0.1-windows-x86_64.zip", fileName);
+
+            // Open an existing zip file for reading
+            using(var zip = ZipFileProcessor.Open(fileName, FileAccess.Read))
+            {
+                // Read the central directory collection
+                var dir = zip.ReadCentralDir();
+
+                // Look for the desired file
+                foreach (var entry in dir)
+                {
+                    if (Path.GetFileName(entry.FilenameInZip) == "pandoc.exe")
+                        zip.ExtractFile(entry, @"asd/pandoc.exe"); // File found, extract it
+                }
+            }
+        }
+        finally
+        {
+            if(File.Exists(fileName))
+                File.Delete(fileName);
+        }
+    }
 }

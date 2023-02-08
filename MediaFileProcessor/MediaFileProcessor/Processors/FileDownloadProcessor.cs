@@ -1,53 +1,70 @@
 ﻿namespace MediaFileProcessor.Processors;
 
-public class FileDownloadProcessor
+/// <summary>
+/// File Download handler
+/// </summary>
+public static class FileDownloadProcessor
 {
-    public static async Task DownloadFile(string url, string fileName)
+    /// <summary>
+    /// Download file
+    /// </summary>
+    /// <param name="url">Address from download</param>
+    /// <param name="fileName">Downloaded FileName</param>
+    /// <param name="deleteIfFail">Delete downloaded data if download was failed in process</param>
+    public static async Task DownloadFile(string url, string fileName, bool deleteIfFail = true)
     {
-        using (var client = new HttpClient())
+        try
         {
-            // Add a user agent header in case the requested URI contains a query.
-            client.DefaultRequestHeaders.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
-
-            using (var response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead))
+            using (var client = new HttpClient())
             {
-                using (var content = response.Content)
+                // Add a user agent header in case the requested URI contains a query.
+                client.DefaultRequestHeaders.Add("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
+
+                using (var response = await client.GetAsync(url, HttpCompletionOption.ResponseHeadersRead))
                 {
-                    // Get the total size of the file
-                    var totalBytes = content.Headers.ContentLength.GetValueOrDefault();
-
-                    using (var fileStream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None))
+                    using (var content = response.Content)
                     {
-                        // Get the stream of the content
-                        using (var contentStream = await content.ReadAsStreamAsync())
+                        // Get the total size of the file
+                        var totalBytes = content.Headers.ContentLength.GetValueOrDefault();
+
+                        using (var fileStream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None))
                         {
-                            // Read the content stream
-                            var buffer = new byte[8192];
-                            int bytesRead;
-                            long bytesReceived = 0;
-
-                            while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                            // Get the stream of the content
+                            using (var contentStream = await content.ReadAsStreamAsync())
                             {
-                                // Write the data to the file
-                                await fileStream.WriteAsync(buffer, 0, bytesRead);
-                                bytesReceived += bytesRead;
+                                // Read the content stream
+                                var buffer = new byte[8192];
+                                int bytesRead;
+                                long bytesReceived = 0;
 
-                                // Calculate the download progress in percentages
-                                var percentage = (double)bytesReceived / totalBytes * 100;
+                                while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                                {
+                                    // Write the data to the file
+                                    await fileStream.WriteAsync(buffer, 0, bytesRead);
+                                    bytesReceived += bytesRead;
 
-                                // Round the percentage to the nearest tenth
-                                percentage = Math.Round(percentage, 1);
+                                    // Calculate the download progress in percentages
+                                    var percentage = (double)bytesReceived / totalBytes * 100;
 
-                                // Set the cursor position to the beginning of the line
-                                Console.SetCursorPosition(0, Console.CursorTop);
+                                    // Round the percentage to the nearest tenth
+                                    percentage = Math.Round(percentage, 1);
 
-                                // Print the download progress percentage to the console
-                                Console.Write(percentage + "%");
+                                    // Set the cursor position to the beginning of the line
+                                    Console.SetCursorPosition(0, Console.CursorTop);
+
+                                    // Print the download progress percentage to the console
+                                    Console.Write(percentage + "%");
+                                }
                             }
                         }
                     }
                 }
             }
+        }
+        finally
+        {
+            if(File.Exists(fileName))
+                File.Delete(fileName);
         }
     }
 }

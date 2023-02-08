@@ -10,14 +10,16 @@ Console.ForegroundColor = ConsoleColor.Green;
 Console.WriteLine("StartStream");
 Console.ResetColor();
 
-var processor = new DocumentFileProcessor();
+// var processor = new DocumentFileProcessor();
 // var _video1 = @"test.avi";
 // var _photo1 =  @"water.png";
-var _docx =  @"TestDoc.docx";
+// var _docx =  @"TestDoc.docx";
 
+// await VideoFileProcessor.DownloadExecutableFiles();
+await ImageFileProcessor.DownloadExecutableFiles();
 
 // await processor.ConvertDocxToPdf(new MediaFile(_docx, MediaFileInputType.Path), "test.pdf");
-await processor.ConvertDocxToPdfAsStream(new MediaFile(new FileStream(_docx, FileMode.Open)));
+// await processor.ConvertDocxToPdfAsStream(new MediaFile(new FileStream(_docx, FileMode.Open)));
 
 // await videoProcessor.AddWaterMarkToVideoAsync(new MediaFile(_video1, MediaFileInputType.Path),
 //                                               new MediaFile(_photo1, MediaFileInputType.Path),

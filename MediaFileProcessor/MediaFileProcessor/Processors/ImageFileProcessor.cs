@@ -178,4 +178,32 @@ public class ImageFileProcessor
         return (await ExecuteImagesToGifAsync(file, delay, inputFormat, null, cancellationToken ?? new CancellationToken()))!.ToArray();
     }
 
+    public static async Task DownloadExecutableFiles()
+    {
+        var fileName = $"{Guid.NewGuid()}.zip";
+
+        try
+        {
+            await FileDownloadProcessor.DownloadFile("https://imagemagick.org/archive/binaries/ImageMagick-7.1.0-61-portable-Q16-x64.zip", fileName);
+
+            // Open an existing zip file for reading
+            using(var zip = ZipFileProcessor.Open(fileName, FileAccess.Read))
+            {
+                // Read the central directory collection
+                var dir = zip.ReadCentralDir();
+
+                // Look for the desired file
+                foreach (var entry in dir)
+                {
+                    if (Path.GetFileName(entry.FilenameInZip) == "convert.exe")
+                        zip.ExtractFile(entry, @"asd/convert.exe"); // File found, extract it
+                }
+            }
+        }
+        finally
+        {
+            if(File.Exists(fileName))
+                File.Delete(fileName);
+        }
+    }
 }
