@@ -180,52 +180,64 @@ public class DocumentFileProcessingSettings : ProcessingSettings
     }
 
     /// <summary>
-    /// Set input files
+    /// This method sets the input files for document file processing
     /// </summary>
+    /// <param name="files">An array of media files that represent the input files for the processing</param>
+    /// <exception cref="NullReferenceException">Thrown when the input 'files' argument is null</exception>
+    /// <returns>An instance of the DocumentFileProcessingSettings object, representing the current state of the processing settings</returns>
     public DocumentFileProcessingSettings SetInputFiles(params MediaFile[]? files)
     {
+        // Check if the input files are specified
         if(files is null)
             throw new NullReferenceException("'CustomInputs' Arguments must be specified if there are no input files");
 
+        // If the number of input files is 0, throw an exception
         switch(files.Length)
         {
             case 0:
                 throw new Exception("No input files");
-            case 1:
-                _stringBuilder.Append(files[0]
-                                         .InputType is MediaFileInputType.Path or MediaFileInputType.Template or MediaFileInputType.NamedPipe
-                                          ? files[0]
-                                             .InputFilePath!
-                                          : StandartInputRedirectArgument);
 
+            // If there is only one input file
+            case 1:
+                // Check the type of input file (Path, Template or NamedPipe)
+                // and append the file path to the string builder
+                _stringBuilder.Append(files[0].InputType is MediaFileInputType.Path or MediaFileInputType.Template or MediaFileInputType.NamedPipe
+                                          ? files[0].InputFilePath! : StandartInputRedirectArgument);
+
+                // Set input streams for the files
                 SetInputStreams(files);
+
                 return this;
         }
 
+        // If there is only one stream type among the input files
         if(files.Count(x => x.InputType == MediaFileInputType.Stream) <= 1)
         {
+            // Aggregate the input file paths (or the standard input redirect argument) into a single string
+            // and append it to the string builder
             _stringBuilder.Append(files.Aggregate(string.Empty,
                                                   (current, file) =>
                                                       current
                                                     + " "
                                                     + (file.InputType is MediaFileInputType.Path or MediaFileInputType.Template or MediaFileInputType.NamedPipe
-                                                          ? file.InputFilePath!
-                                                          : StandartInputRedirectArgument)));
+                                                          ? file.InputFilePath! : StandartInputRedirectArgument)));
 
+            // Set input streams for the files
             SetInputStreams(files);
+
             return this;
         }
 
+        // If there are multiple stream types among the input files
         _stringBuilder.Append(files.Aggregate(string.Empty,
                                               (current, file) => current
-                                                               + " "
-                                                               + (file.InputType is MediaFileInputType.Path or MediaFileInputType.Template or MediaFileInputType.NamedPipe
-                                                                     ? file.InputFilePath!
-                                                                     : SetPipeChannel(Guid.NewGuid()
-                                                                                          .ToString(),
-                                                                                      file))));
+                                                + " "
+                                                + (file.InputType is MediaFileInputType.Path or MediaFileInputType.Template or MediaFileInputType.NamedPipe
+                                                      ? file.InputFilePath! : SetPipeChannel(Guid.NewGuid().ToString(), file))));
 
+        // Set input streams for the files
         SetInputStreams(files);
+
         return this;
     }
 
@@ -281,20 +293,27 @@ public class DocumentFileProcessingSettings : ProcessingSettings
     /// </summary>
     private void SetInputStreams(params MediaFile[]? files)
     {
+        // If null, return without doing anything
         if(files is null)
             return;
 
+        // Check if there is only one input file with Stream type
         if(files.Count(x => x.InputType == MediaFileInputType.Stream) == 1)
         {
+            // If yes, create the InputStreams list if it is null
             InputStreams ??= new List<Stream>();
-            InputStreams.Add(files.First(x => x.InputType == MediaFileInputType.Stream)
-                                  .InputFileStream!);
+            // Add the single stream to InputStreams list
+            InputStreams.Add(files.First(x => x.InputType == MediaFileInputType.Stream).InputFileStream!);
         }
 
+        // Check if PipeNames list is not null and has at least one element
         if (!(PipeNames?.Count > 0))
             return;
 
+        // If yes, create the InputStreams list if it is null
         InputStreams ??= new List<Stream>();
+
+        // Add all streams from PipeNames list to InputStreams
         InputStreams.AddRange(PipeNames.Select(pipeName => pipeName.Value));
     }
 }

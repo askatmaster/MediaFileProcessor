@@ -376,7 +376,7 @@ public class VideoFileProcessor
                                                    .VideoBitRate(500)
                                                    .MaxRate(500)
                                                    .BufSize(1000)
-                                                   .VideoSize(VideoSizeTyoe.CUSTOM, -2, 720)
+                                                   .VideoSize(VideoSizeType.CUSTOM, -2, 720)
                                                    .Format(outputFileFormatType)
                                                    .SetOutputArguments(output);
         return await ExecuteAsync(setting, cancellationToken);

@@ -421,9 +421,9 @@ public class VideoProcessingSettings : ProcessingSettings
     /// <summary>
     /// Video sizes
     /// </summary>
-    public VideoProcessingSettings VideoSize(VideoSizeTyoe videoSize, int witdh, int height)
+    public VideoProcessingSettings VideoSize(VideoSizeType videoSize, int witdh, int height)
     {
-        if(videoSize is VideoSizeTyoe.CUSTOM)
+        if(videoSize is VideoSizeType.CUSTOM)
         {
             _stringBuilder.Append($" -vf \"scale={witdh}:{height}\" ");
         }
@@ -946,6 +946,10 @@ public class VideoProcessingSettings : ProcessingSettings
         InputStreams.AddRange(PipeNames.Select(pipeName => pipeName.Value));
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="streams"></param>
     public void SetInputStreams(params Stream[] streams)
     {
         if(streams.Length is 0)

@@ -72,7 +72,7 @@ public sealed class MultiStream : Stream
     /// Changes the position within the virtual stream.
     /// </summary>
     /// <param name="offset">A `long` offset to move the position by.</param>
-    /// <param name="origin">The origin from which to calculate the new position. 
+    /// <param name="origin">The origin from which to calculate the new position.
     /// Must be either `SeekOrigin.Begin`, `SeekOrigin.Current`, or `SeekOrigin.End`.</param>
     /// <returns>
     /// The new position within the virtual stream as a `long`.
