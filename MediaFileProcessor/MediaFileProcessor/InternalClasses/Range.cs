@@ -158,10 +158,7 @@ namespace System
 
         /// <summary>Indicates whether the current Range object is equal to another object of the same type.</summary>
         /// <param name="value">An object to compare with this object</param>
-        public override bool Equals(object? value) =>
-            value is Range r &&
-            r.Start.Equals(Start) &&
-            r.End.Equals(End);
+        public override bool Equals(object? value) => value is Range r && r.Start.Equals(Start) && r.End.Equals(End);
 
         /// <summary>Indicates whether the current Range object is equal to another Range object.</summary>
         /// <param name="other">An object to compare with this object</param>
@@ -243,6 +240,7 @@ namespace System.Runtime.CompilerServices
 
                 var dest = new T[length];
                 Array.Copy(array, offset, dest, 0, length);
+
                 return dest;
             }
             else
@@ -250,6 +248,7 @@ namespace System.Runtime.CompilerServices
                 // The array is actually a U[] where U:T.
                 var dest = (T[])Array.CreateInstance(array.GetType().GetElementType(), length);
                 Array.Copy(array, offset, dest, 0, length);
+
                 return dest;
             }
         }

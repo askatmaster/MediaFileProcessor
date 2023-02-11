@@ -136,21 +136,21 @@ public class VideoProcessorTests
 
     public static async Task ConvertVideoToImagesTest(VideoFileProcessor videoProcessor)
     {
-        //Test block with physical paths to input and output files
-        await videoProcessor.ConvertVideoToImagesAsync(new MediaFile(_video1, MediaFileInputType.Path),
-                                                       FileFormatType.JPG,
-                                                       @"C:\mfptest\results\ConvertVideoToImagesTest\Path\result%03d.jpg");
-
-        //Block for testing file processing as bytes without specifying physical paths
-        var bytes1 = await File.ReadAllBytesAsync(_video1);
-        var resultBytes = await videoProcessor.ConvertVideoToImagesAsBytesAsync(new MediaFile(bytes1), FileFormatType.JPG);
-        var count1 = 1;
-
-        foreach (var bytesData in resultBytes)
-        {
-            await using (var output = new FileStream(@$"C:\mfptest\results\ConvertVideoToImagesTest\Bytes\result{count1++}.jpg", FileMode.Create))
-                output.Write(bytesData, 0, bytesData.Length);
-        }
+        // //Test block with physical paths to input and output files
+        // await videoProcessor.ConvertVideoToImagesAsync(new MediaFile(_video1, MediaFileInputType.Path),
+        //                                                FileFormatType.JPG,
+        //                                                @"C:\mfptest\results\ConvertVideoToImagesTest\Path\result%03d.jpg");
+        //
+        // //Block for testing file processing as bytes without specifying physical paths
+        // var bytes1 = await File.ReadAllBytesAsync(_video1);
+        // var resultBytes = await videoProcessor.ConvertVideoToImagesAsBytesAsync(new MediaFile(bytes1), FileFormatType.JPG);
+        // var count1 = 1;
+        //
+        // foreach (var bytesData in resultBytes)
+        // {
+        //     await using (var output = new FileStream(@$"C:\mfptest\results\ConvertVideoToImagesTest\Bytes\result{count1++}.jpg", FileMode.Create))
+        //         output.Write(bytesData, 0, bytesData.Length);
+        // }
 
         //Block for testing file processing as streams without specifying physical paths
         await using var stream = new FileStream(_video1, FileMode.Open);

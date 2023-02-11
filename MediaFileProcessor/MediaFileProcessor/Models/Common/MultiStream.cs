@@ -10,7 +10,7 @@ public sealed class MultiStream : Stream
     /// <summary>
     /// A list of streams to be combined into the virtual stream.
     /// </summary>
-    private readonly ArrayList streamList = new ArrayList();
+    private readonly ArrayList streamList = new ();
 
     /// <summary>
     /// The current position within the virtual stream.

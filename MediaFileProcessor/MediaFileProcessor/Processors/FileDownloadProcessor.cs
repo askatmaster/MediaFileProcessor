@@ -63,7 +63,7 @@ public static class FileDownloadProcessor
         }
         catch(Exception)
         {
-            if(File.Exists(fileName))
+            if(deleteIfFail && File.Exists(fileName))
                 File.Delete(fileName);
 
             throw;

@@ -1,4 +1,5 @@
-﻿using MediaFileProcessor.Models.Common;
+﻿using System.Runtime.InteropServices;
+using MediaFileProcessor.Models.Common;
 using MediaFileProcessor.Models.Enums;
 namespace MediaFileProcessor.Extensions;
 
@@ -62,6 +63,23 @@ public static class FileDataExtensions
     }
 
     /// <summary>
+    /// Converts a pipe name to the appropriate pipe directory format for the current operating system.
+    /// </summary>
+    /// <param name="pipeName">The name of the pipe</param>
+    /// <returns>A string representing the pipe directory</returns>
+    public static string ToPipeDir(this string pipeName)
+    {
+        if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            return $@"\\.\pipe\{pipeName}";
+
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            return pipeName;
+
+        // Throw an exception if the operating system cannot be recognized
+        throw new Exception("Operating System not recognized");
+    }
+
+    /// <summary>
     /// Writes the contents of the specified stream to a file.
     /// </summary>
     /// <param name="stream">The stream to write to a file.</param>
@@ -119,9 +137,13 @@ public static class FileDataExtensions
     /// <param name="bytes">The array to search within.</param>
     /// <param name="signature">The signature to search for.</param>
     /// <returns>A tuple representing the start position of the signature within the array and a flag indicating whether the signature was found in its entirety.</returns>
-    public static (int?, bool) SearchFileSignature(this byte[] bytes, byte[] signature)
+    private static (int?, bool) SearchFileSignature(this byte[] bytes, byte[] signature)
     {
         var signatureLength = signature.Length;
+
+        if (signatureLength == 0)
+            return (null, false);
+
         var signatureStartPos = 0;
         var startFlag = -1;
 
@@ -159,7 +181,7 @@ public static class FileDataExtensions
     /// <param name="signature">The byte array representing the signature to search for.</param>
     /// <returns>A tuple containing a list of byte arrays, a byte array and a byte array.
     /// The list of byte arrays represent the found signatures, the byte array represents the data without the found signatures and the byte array represents previous data (if any).</returns>
-    public static (List<byte[]>?, byte[], byte[]?) GetListOfSignature(this byte[] data, byte[] signature)
+    private static (List<byte[]>?, byte[], byte[]?) GetListOfSignature(this byte[] data, byte[] signature)
     {
         // Check if the data is shorter than the signature, in which case there's no match
         if (data.Length < signature.Length)

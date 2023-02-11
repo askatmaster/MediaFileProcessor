@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using MediaFileProcessor.Extensions;
 using MediaFileProcessor.Models.Enums;
 namespace MediaFileProcessor.Models.Common;
 
@@ -44,14 +45,7 @@ public class MediaFile
 
                 break;
             case MediaFileInputType.NamedPipe:
-                if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                    InputFilePath = $" \\\\.\\pipe\\{inputArgument} ";
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                    InputFilePath = $" {inputArgument} ";
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                    throw new Exception("Operating System not supported for multi inputs");
-                else
-                    throw new Exception("Operating System not recognized");
+                InputFilePath = $" {inputArgument.ToPipeDir()} ";
 
                 break;
             case MediaFileInputType.Stream:

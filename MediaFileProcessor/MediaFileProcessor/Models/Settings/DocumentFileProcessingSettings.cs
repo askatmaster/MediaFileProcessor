@@ -1,4 +1,5 @@
-﻿using MediaFileProcessor.Models.Common;
+﻿using MediaFileProcessor.Extensions;
+using MediaFileProcessor.Models.Common;
 using MediaFileProcessor.Models.Enums;
 namespace MediaFileProcessor.Models.Settings;
 
@@ -284,7 +285,7 @@ public class DocumentFileProcessingSettings : ProcessingSettings
         PipeNames ??= new Dictionary<string, Stream>();
         PipeNames.Add(pipeName, file.InputFileStream!);
 
-        return $@"\\.\pipe\{pipeName}";
+        return pipeName.ToPipeDir();
     }
 
     /// <summary>
@@ -302,6 +303,7 @@ public class DocumentFileProcessingSettings : ProcessingSettings
         {
             // If yes, create the InputStreams list if it is null
             InputStreams ??= new List<Stream>();
+
             // Add the single stream to InputStreams list
             InputStreams.Add(files.First(x => x.InputType == MediaFileInputType.Stream).InputFileStream!);
         }

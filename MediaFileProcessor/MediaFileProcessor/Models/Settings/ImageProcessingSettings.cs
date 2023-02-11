@@ -1,4 +1,5 @@
-﻿using MediaFileProcessor.Models.Common;
+﻿using MediaFileProcessor.Extensions;
+using MediaFileProcessor.Models.Common;
 using MediaFileProcessor.Models.Enums;
 namespace MediaFileProcessor.Models.Settings;
 
@@ -2304,12 +2305,13 @@ public class ImageProcessingSettings : ProcessingSettings
                 throw new Exception("No input files");
             case 1:
                 _stringBuilder.Append(files[0]
-                                         .InputType is MediaFileInputType.Path or MediaFileInputType.Template or MediaFileInputType.NamedPipe
+                                          .InputType is MediaFileInputType.Path or MediaFileInputType.Template or MediaFileInputType.NamedPipe
                                           ? files[0]
-                                             .InputFilePath!
+                                              .InputFilePath!
                                           : StandartInputRedirectArgument);
 
                 SetInputStreams(files);
+
                 return this;
         }
 
@@ -2324,19 +2326,21 @@ public class ImageProcessingSettings : ProcessingSettings
                                                           : StandartInputRedirectArgument)));
 
             SetInputStreams(files);
+
             return this;
         }
 
         _stringBuilder.Append(files.Aggregate(string.Empty,
                                               (current, file) => current
-                                                               + " "
-                                                               + (file.InputType is MediaFileInputType.Path or MediaFileInputType.Template or MediaFileInputType.NamedPipe
-                                                                     ? file.InputFilePath!
-                                                                     : SetPipeChannel(Guid.NewGuid()
-                                                                                          .ToString(),
-                                                                                      file))));
+                                                + " "
+                                                + (file.InputType is MediaFileInputType.Path or MediaFileInputType.Template or MediaFileInputType.NamedPipe
+                                                      ? file.InputFilePath!
+                                                      : SetPipeChannel(Guid.NewGuid()
+                                                                           .ToString(),
+                                                                       file))));
 
         SetInputStreams(files);
+
         return this;
     }
 
@@ -2383,7 +2387,7 @@ public class ImageProcessingSettings : ProcessingSettings
         PipeNames ??= new Dictionary<string, Stream>();
         PipeNames.Add(pipeName, file.InputFileStream!);
 
-        return $@"\\.\pipe\{pipeName}";
+        return pipeName.ToPipeDir();
     }
 
     /// <summary>

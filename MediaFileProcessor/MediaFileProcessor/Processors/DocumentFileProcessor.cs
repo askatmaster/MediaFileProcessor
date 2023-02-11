@@ -29,7 +29,6 @@ public class DocumentFileProcessor
                                            settings.GetProcessArguments(),
                                            settings,
                                            settings.GetInputStreams(),
-                                           settings.IsStandartOutputRedirect,
                                            settings.GetInputPipeNames());
 
         return await process.ExecuteAsync(cancellationToken);

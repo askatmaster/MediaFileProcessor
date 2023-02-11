@@ -27,37 +27,29 @@ public class MediaFileProcess
     private string[]? PipeNames { get; }
 
     /// <summary>
-    /// Specifies whether to redirect the output to a stream.
-    /// </summary>
-    private bool RedirectOutputToStream { get; }
-
-    /// <summary>
     /// Initializes a new instance of the <see cref="MediaFileProcess"/> class.
     /// </summary>
     /// <param name="processFileName">The name of the process file.</param>
     /// <param name="arguments">The arguments for the process file.</param>
     /// <param name="settings">The processing settings for the media file process.</param>
     /// <param name="inputStreams">The input streams for the process. Optional parameter.</param>
-    /// <param name="redirectOutputToStream">Specifies whether to redirect the output to a stream. Optional parameter, defaults to false.</param>
     /// <param name="pipeNames">The pipe names for the process. Optional parameter.</param>
     public MediaFileProcess(string processFileName,
                             string arguments,
                             ProcessingSettings settings,
                             Stream[]? inputStreams = null,
-                            bool redirectOutputToStream = false,
                             string[]? pipeNames = null)
     {
         Process = new Process();
         Settings = settings;
         InputStreams = inputStreams;
         PipeNames = pipeNames;
-        RedirectOutputToStream = redirectOutputToStream;
         Process.StartInfo.FileName = processFileName;
         Process.StartInfo.Arguments = arguments;
         Process.StartInfo.CreateNoWindow = Settings.CreateNoWindow;
         Process.StartInfo.UseShellExecute = Settings.UseShellExecute;
         Process.StartInfo.RedirectStandardInput = inputStreams is not null;
-        Process.StartInfo.RedirectStandardOutput = RedirectOutputToStream;
+        Process.StartInfo.RedirectStandardOutput = settings.IsStandartOutputRedirect;
         Process.StartInfo.RedirectStandardError = Settings.RedirectStandardError;
         Process.EnableRaisingEvents = Settings.EnableRaisingEvents;
         Process.StartInfo.WindowStyle = Settings.WindowStyle;
@@ -87,15 +79,15 @@ public class MediaFileProcess
 
     /// <summary>
     /// Asynchronously executes the process and returns the output as a memory stream if
-    /// <see cref="RedirectOutputToStream"/> is set to true.
+    /// RedirectStandardOutput is set to true.
     /// </summary>
     /// <param name="cancellationToken">A cancellation token to cancel the operation</param>
     /// <returns>The memory stream containing the output of the process, or null if
-    /// <see cref="RedirectOutputToStream"/> is set to false</returns>
+    /// RedirectStandardOutput is set to false</returns>
     public async Task<MemoryStream?> ExecuteAsync(CancellationToken cancellationToken)
     {
         MemoryStream? outputStream = null;
-        if(RedirectOutputToStream)
+        if(Process.StartInfo.RedirectStandardOutput)
             outputStream = new MemoryStream();
 
         await Task.Factory.StartNew(() => Run(outputStream, cancellationToken), cancellationToken, TaskCreationOptions.LongRunning, TaskScheduler.Default);
@@ -251,13 +243,13 @@ public class MediaFileProcess
             // Create a new task to copy data from the input stream to the pipe
             tasks[i] = inputStream.CopyToAsync(pipe)
                                   .ContinueWith(_ =>
-                                   {
-                                       // Wait for the data to be transmitted completely
-                                       pipe.WaitForPipeDrain();
+                                  {
+                                      // Wait for the data to be transmitted completely
+                                      pipe.WaitForPipeDrain();
 
-                                       // Disconnect the pipe after the data has been transmitted
-                                       pipe.Disconnect();
-                                   });
+                                      // Disconnect the pipe after the data has been transmitted
+                                      pipe.Disconnect();
+                                  });
         }
 
         // Wait for all tasks to complete

@@ -37,7 +37,6 @@ public class VideoFileProcessor
                                            settings.GetProcessArguments(),
                                            settings,
                                            settings.GetInputStreams(),
-                                           settings.IsStandartOutputRedirect,
                                            settings.GetInputPipeNames());
 
         return await process.ExecuteAsync(cancellationToken);
@@ -481,7 +480,7 @@ public class VideoFileProcessor
                                                              AudioSampleRateType audioSampleRateType = AudioSampleRateType.Hz44100)
     {
         return (await ExecuteGetAudioFromVideoAsync(file, outputFileFormatType, audioSampleRateType, audioChannel, null,  cancellationToken ?? new CancellationToken()))!
-           .ToArray();
+            .ToArray();
     }
 
     //======================================================================================================================================================================
@@ -638,7 +637,7 @@ public class VideoFileProcessor
                                                                CancellationToken? cancellationToken = null)
     {
         return (await ExecuteAddWaterMarkToVideoAsync(videoFile, watermarkFile, position, null, outputFileFormatType, cancellationToken ?? new CancellationToken()))!
-           .ToArray();
+            .ToArray();
     }
 
     //======================================================================================================================================================================
@@ -726,7 +725,7 @@ public class VideoFileProcessor
                                                                 CancellationToken? cancellationToken = null)
     {
         return (await ExecuteExtractVideoFromFileAsync(file, null, outputFileFormatType, videoCodecType, pixelFormat, cancellationToken ?? new CancellationToken()))!
-           .ToArray();
+            .ToArray();
     }
 
     //======================================================================================================================================================================
@@ -994,7 +993,7 @@ public class VideoFileProcessor
                                                          CancellationToken? cancellationToken = null)
     {
         return (await ExecuteCompressVideoAsync(file, compressionRatio, null, outputFileFormatType, videoCodecType, cancellationToken ?? new CancellationToken()))!
-           .ToArray();
+            .ToArray();
     }
 
     //======================================================================================================================================================================
@@ -1256,7 +1255,7 @@ public class VideoFileProcessor
             settings.SetInputStreams(videoFile.InputFileStream!);
         }
 
-        var process = new MediaFileProcess(_ffprobe, settings.GetProcessArguments(false), settings, settings.GetInputStreams(), true);
+        var process = new MediaFileProcess(_ffprobe, settings.GetProcessArguments(false), settings, settings.GetInputStreams());
 
         var result = await process.ExecuteAsync(cancellationToken ?? new CancellationToken());
 

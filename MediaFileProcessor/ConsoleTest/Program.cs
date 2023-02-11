@@ -16,7 +16,9 @@ Console.ResetColor();
 // var _docx =  @"TestDoc.docx";
 
 // await VideoFileProcessor.DownloadExecutableFiles();
-await ImageFileProcessor.DownloadExecutableFiles();
+// await ImageFileProcessor.DownloadExecutableFiles();
+
+await VideoProcessorTests.ConvertVideoToImagesTest(new VideoFileProcessor());
 
 // await processor.ConvertDocxToPdf(new MediaFile(_docx, MediaFileInputType.Path), "test.pdf");
 // await processor.ConvertDocxToPdfAsStream(new MediaFile(new FileStream(_docx, FileMode.Open)));

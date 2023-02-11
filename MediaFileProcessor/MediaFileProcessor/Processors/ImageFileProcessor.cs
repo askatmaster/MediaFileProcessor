@@ -24,7 +24,6 @@ public class ImageFileProcessor
                                            settings.GetProcessArguments(),
                                            settings,
                                            settings.GetInputStreams(),
-                                           settings.IsStandartOutputRedirect,
                                            settings.GetInputPipeNames());
 
         return await process.ExecuteAsync(cancellationToken);

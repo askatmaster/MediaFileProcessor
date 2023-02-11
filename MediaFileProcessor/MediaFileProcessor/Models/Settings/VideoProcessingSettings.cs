@@ -1,4 +1,5 @@
-﻿using MediaFileProcessor.Models.Common;
+﻿using MediaFileProcessor.Extensions;
+using MediaFileProcessor.Models.Common;
 using MediaFileProcessor.Models.Enums;
 using MediaFileProcessor.Models.Video;
 namespace MediaFileProcessor.Models.Settings;
@@ -855,7 +856,8 @@ public class VideoProcessingSettings : ProcessingSettings
             case 0:
                 throw new Exception("No input files");
             case 1:
-                _stringBuilder.Append(files[0].InputType is MediaFileInputType.Path or MediaFileInputType.Template or MediaFileInputType.NamedPipe ? " -i " + files[0].InputFilePath! : StandartInputRedirectArgument);
+                _stringBuilder.Append(files[0].InputType is MediaFileInputType.Path or MediaFileInputType.Template or MediaFileInputType.NamedPipe
+                                          ? " -i " + files[0].InputFilePath! : StandartInputRedirectArgument);
                 SetInputStreams(files);
 
                 return this;
@@ -871,6 +873,7 @@ public class VideoProcessingSettings : ProcessingSettings
                                                           ? " -i " + file.InputFilePath!
                                                           : StandartInputRedirectArgument)));
             SetInputStreams(files);
+
             return this;
         }
 
@@ -882,6 +885,7 @@ public class VideoProcessingSettings : ProcessingSettings
                                                       ? " -i " + file.InputFilePath!
                                                       : SetPipeChannel(Guid.NewGuid().ToString(), file))));
         SetInputStreams(files);
+
         return this;
     }
 
@@ -920,7 +924,7 @@ public class VideoProcessingSettings : ProcessingSettings
         PipeNames ??= new Dictionary<string, Stream>();
         PipeNames.Add(pipeName, file.InputFileStream!);
 
-        return $@"-i \\.\pipe\{pipeName}";
+        return $@"-i {pipeName.ToPipeDir()}";
     }
 
     /// <summary>

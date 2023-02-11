@@ -324,7 +324,7 @@ public class ZipFileProcessor : IDisposable
             foldername = _pathnameInZip + foldername;
 
         if (!foldername.EndsWith(separator, StringComparison.CurrentCulture))
-            foldername = foldername + separator;
+            foldername += separator;
 
         // this.AddStream(_method, foldername, null, File.GetLastWriteTime(_pathname), _comment);
 
@@ -616,10 +616,10 @@ public class ZipFileProcessor : IDisposable
             _zip.Close();
             tempZip.Close();
 
-            File.Delete(_zip.FileName);
-            File.Move(tempZipName, _zip.FileName);
+            File.Delete(_zip.FileName!);
+            File.Move(tempZipName, _zip.FileName!);
 
-            _zip = Open(_zip.FileName, _zip.Access);
+            _zip = Open(_zip.FileName!, _zip.Access);
         }
         catch
         {
@@ -643,10 +643,10 @@ public class ZipFileProcessor : IDisposable
     {
         var buffer = new byte[2];
 
-        ZipFileStream.Seek(_headerOffset + 26, SeekOrigin.Begin);
-        ZipFileStream.Read(buffer, 0, 2);
+        ZipFileStream?.Seek(_headerOffset + 26, SeekOrigin.Begin);
+        ZipFileStream?.Read(buffer, 0, 2);
         var filenameSize = BitConverter.ToUInt16(buffer, 0);
-        ZipFileStream.Read(buffer, 0, 2);
+        ZipFileStream?.Read(buffer, 0, 2);
         var extraSize = BitConverter.ToUInt16(buffer, 0);
 
         return (uint)(30 + filenameSize + extraSize + _headerOffset);
@@ -669,9 +669,9 @@ public class ZipFileProcessor : IDisposable
     */
     private void WriteLocalHeader(ZipFileEntry _zfe)
     {
-        var pos = ZipFileStream.Position;
+        var pos = ZipFileStream!.Position;
         var encoder = _zfe.EncodeUTF8 ? Encoding.UTF8 : DefaultEncoding;
-        var encodedFilename = encoder.GetBytes(_zfe.FilenameInZip);
+        var encodedFilename = encoder.GetBytes(_zfe.FilenameInZip!);
         var extraInfo = CreateExtraInfo(_zfe);
 
         ZipFileStream.Write(new byte[] { 80, 75, 3, 4, 20, 0 }, 0, 6);                            // No extra header
@@ -716,7 +716,7 @@ public class ZipFileProcessor : IDisposable
         var encodedComment = encoder.GetBytes(_zfe.Comment);
         var extraInfo = CreateExtraInfo(_zfe);
 
-        ZipFileStream.Write(new byte[] { 80, 75, 1, 2, 23, 0xB, 20, 0 }, 0, 8);
+        ZipFileStream!.Write(new byte[] { 80, 75, 1, 2, 23, 0xB, 20, 0 }, 0, 8);
         ZipFileStream.Write(BitConverter.GetBytes((ushort)(_zfe.EncodeUTF8 ? 0x0800 : 0)), 0, 2); // filename and comment encoding
         ZipFileStream.Write(BitConverter.GetBytes((ushort)_zfe.Method), 0, 2);                    // zipping method
         ZipFileStream.Write(BitConverter.GetBytes(DateTimeToDosTime(_zfe.ModifyTime)), 0, 4);     // zipping date and time
@@ -791,7 +791,7 @@ public class ZipFileProcessor : IDisposable
     */
     private void WriteEndRecord(long _size, long _offset)
     {
-        var dirOffset = ZipFileStream.Length;
+        var dirOffset = ZipFileStream!.Length;
 
         // Zip64 end of central directory record
         ZipFileStream.Position = dirOffset;
@@ -834,7 +834,7 @@ public class ZipFileProcessor : IDisposable
         uint totalRead = 0;
         Stream outStream;
 
-        var posStart = ZipFileStream.Position;
+        var posStart = ZipFileStream!.Position;
         var sourceStart = _source.CanSeek ? _source.Position : 0;
 
         if (_zfe.Method == Compression.Store)
@@ -859,7 +859,7 @@ public class ZipFileProcessor : IDisposable
             for (uint i = 0;
                  i < bytesRead;
                  i++)
-                _zfe.Crc32 = CrcTable[(_zfe.Crc32 ^ buffer[i]) & 0xFF] ^ (_zfe.Crc32 >> 8);
+                _zfe.Crc32 = CrcTable![(_zfe.Crc32 ^ buffer[i]) & 0xFF] ^ (_zfe.Crc32 >> 8);
 
             totalRead += (uint)bytesRead;
         } while (bytesRead > 0);
@@ -1015,7 +1015,7 @@ public class ZipFileProcessor : IDisposable
     */
     private void UpdateCrcAndSizes(ZipFileEntry _zfe)
     {
-        var lastPos = ZipFileStream.Position; // remember position
+        var lastPos = ZipFileStream!.Position; // remember position
 
         ZipFileStream.Position = _zfe.HeaderOffset + 8;
         ZipFileStream.Write(BitConverter.GetBytes((ushort)_zfe.Method), 0, 2); // zipping method
@@ -1043,7 +1043,7 @@ public class ZipFileProcessor : IDisposable
     // Reads the end-of-central-directory record
     private bool ReadFileInfo()
     {
-        if (ZipFileStream.Length < 22)
+        if (ZipFileStream!.Length < 22)
             return false;
 
         ZipFileStream.Seek(0, SeekOrigin.Begin);

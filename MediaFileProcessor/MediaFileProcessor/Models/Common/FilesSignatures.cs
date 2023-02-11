@@ -108,9 +108,12 @@ public static class FilesSignatures
             FileFormatType.BIN => BIN,
             FileFormatType.TIFF => TIFF,
             FileFormatType.TIF => TIF,
-            FileFormatType.RAW or FileFormatType.SVG => throw new NotSupportedException("The signatures for \"RAW\" and \"SVG\" were not specified in the original question, so their byte arrays are left empty in the code."
+            FileFormatType.RAW or FileFormatType.SVG => throw new NotSupportedException("The signatures for \"RAW\" and \"SVG\" "
+                                                                                      + "were not specified in the original question, "
+                                                                                      + "so their byte arrays are left empty in the code."
                                                                                       + " The actual file signatures for these formats depend on the specific file format and encoding used."
-                                                                                      + " In order to determine the correct signatures, you would need to consult the specifications for the specific file formats you are working with."),
+                                                                                      + " In order to determine the correct signatures, "
+                                                                                      + "you would need to consult the specifications for the specific file formats you are working with."),
             FileFormatType.PSD => PSD,
             _ => throw new NotSupportedException("This format does not have a signature")
         };
