@@ -1358,6 +1358,12 @@ public class VideoFileProcessor
         return (await ExecuteAddHardSubtitlesAsync(videoFile, subsFile, language, null, outputFileFormatType, cancellationToken ?? new CancellationToken()))!.ToArray();
     }
 
+    /// <summary>
+    /// Downloads executable files ffmpeg.exe and ffprobe.exe from a remote ZIP archive.
+    /// </summary>
+    /// <exception cref="Exception">
+    /// Thrown when either of the files ffmpeg.exe or ffprobe.exe is not found in the ZIP archive.
+    /// </exception>
     public static async Task DownloadExecutableFiles()
     {
         var fileName = $"{Guid.NewGuid()}.zip";
@@ -1367,6 +1373,7 @@ public class VideoFileProcessor
 
         try
         {
+            // Downloads the ZIP archive from the remote location specified by _zipAddress.
             await FileDownloadProcessor.DownloadFile(_zipAddress, fileName);
 
             // Open an existing zip file for reading
@@ -1375,7 +1382,7 @@ public class VideoFileProcessor
                 // Read the central directory collection
                 var dir = zip.ReadCentralDir();
 
-                // Look for the desired file
+                // Look for the desired files ffmpeg.exe and ffprobe.exe.
                 foreach (var entry in dir)
                 {
                     if (Path.GetFileName(entry.FilenameInZip) == "ffmpeg.exe")
@@ -1392,6 +1399,7 @@ public class VideoFileProcessor
                 }
             }
 
+            // Check if both the files were found in the ZIP archive.
             if(!ffmpegFound)
                 throw new Exception("ffmpeg.exe not found");
 
@@ -1400,6 +1408,7 @@ public class VideoFileProcessor
         }
         finally
         {
+            // Delete the downloaded ZIP archive after extracting the required files.
             if(File.Exists(fileName))
                 File.Delete(fileName);
         }

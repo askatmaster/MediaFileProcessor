@@ -344,6 +344,12 @@ public class ImageFileProcessor
         return (await ExecuteImagesToGifAsync(file, delay, inputFormat, null, cancellationToken ?? new CancellationToken()))!.ToArray();
     }
 
+    /// <summary>
+    /// Downloads executable files convert.exe from a remote ZIP archive.
+    /// </summary>
+    /// <exception cref="Exception">
+    /// Thrown when either of the files convert.exe is not found in the ZIP archive.
+    /// </exception>
     public static async Task DownloadExecutableFiles()
     {
         var fileName = $"{Guid.NewGuid()}.zip";
@@ -352,6 +358,7 @@ public class ImageFileProcessor
 
         try
         {
+            // Downloads the ZIP archive from the remote location specified by _zipAddress.
             await FileDownloadProcessor.DownloadFile(_zipAddress, fileName);
 
             // Open an existing zip file for reading
@@ -370,12 +377,14 @@ public class ImageFileProcessor
                     }
                 }
 
+                // Check if both the files were found in the ZIP archive.
                 if(!convertFound)
                     throw new Exception("convert.exe not found");
             }
         }
         finally
         {
+            // Delete the downloaded ZIP archive after extracting the required files.
             if(File.Exists(fileName))
                 File.Delete(fileName);
         }

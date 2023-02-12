@@ -331,3 +331,24 @@ public static byte[] GetSignature(this FileFormatType outputFormatType)
 то в входных аргументам следует указать наименования именованных каналов и передать эти имена и входные потоки в соответствующие аргументы конструктора ```MediaFileProcess```.
 Это необходимо т.к. в случае передачи разным потоков в разные входные аргументы применяются именованные каналы.
 Настройку самого исполняемого процесса необходимо выполнить в классе ```ProcessingSettings```.
+
+```csharp
+var inputStreamFile = @"C:\inputFile.txt".ToStream();
+
+var settings = new ProcessingSettings
+{
+    CreateNoWindow = true,
+    UseShellExecute = false,
+    EnableRaisingEvents = false,
+    WindowStyle = ProcessWindowStyle.Normal,
+    ProcessOnExitedHandler = null,
+    IsStandartOutputRedirect = true,
+    OutputDataReceivedEventHandler = null,
+    ErrorDataReceivedHandler = null
+};
+
+var process = new MediaFileProcess("program.exe", "-arg1 value1 -arg2 value2 -arg3 value3", settings, new Stream[] { inputStreamFile } );
+
+var result = await process.ExecuteAsync(new CancellationToken());
+```
+
