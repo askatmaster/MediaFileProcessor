@@ -170,13 +170,10 @@ public class VideoProcessorTests
         var stream = new MultiStream();
         var files = new List<string>();
         for (var i = 1; i <= 4390; i++)
-        {
             files.Add($@"C:\mfptest\results2\result{i:000}.jpg");
-        }
+
         foreach (var file in files)
-        {
             stream.AddStream(new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read));
-        }
 
         //Test block with physical paths to input and output files
         videoProcessor.ConvertImagesToVideoAsync(new MediaFile(stream),

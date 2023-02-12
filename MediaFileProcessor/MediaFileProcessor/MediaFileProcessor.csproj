@@ -5,6 +5,32 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <LangVersion>11</LangVersion>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Title>Library for processing various files (videos, photos, documents, images).</Title>
+        <Authors>Askhat Pazylidinov</Authors>
+        <Description>
+            This library is a universal wrapper for executable processes in the operating system (Windows/Linux).
+            The library allows files to communicate with processes through named pipes, streams, byte arrays, and directory paths.
+            It also has some useful features, such as the ability to decode a stream on the fly and get a set of files from it by their signatures.
+        </Description>
+        <PackageIcon>ava.jpg</PackageIcon>
+        <RepositoryUrl>https://github.com/askatmaster/MediaFileProcessor</RepositoryUrl>
+        <PackageTags>ffmpeg, ffprobe, pandoc, imageMagick, MediaFileProcessor.</PackageTags>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageProjectUrl>https://github.com/askatmaster/MediaFileProcessor</PackageProjectUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageReleaseNotes>
+            In this version, wrappers are implemented in the libraries over such projects as FFmpeg, ImageMagick and Pandoc.
+            This library can also be used to interact with third-party processes.
+        </PackageReleaseNotes>
+        <Copyright>OpenSource</Copyright>
     </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="ava.jpg" Pack="true" PackagePath="\" />
+        <None Include="../../README.md" Pack="true" PackagePath="\" />
+        <None Include="../../LICENSE" Pack="true" PackagePath="\" />
+    </ItemGroup>
 
 </Project>

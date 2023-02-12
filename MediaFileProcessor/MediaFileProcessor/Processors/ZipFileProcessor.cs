@@ -972,32 +972,41 @@ public class ZipFileProcessor : IDisposable
             uint extraId = BitConverter.ToUInt16(buffer, pos);
             uint length = BitConverter.ToUInt16(buffer, pos + 2);
 
-            if (extraId == 0x0001) // ZIP64 Information
+            switch(extraId)
             {
-                tag = BitConverter.ToUInt16(buffer, pos + 8);
-                size = BitConverter.ToUInt16(buffer, pos + 10);
-
-                if (tag == 1 && size >= 24)
+                // ZIP64 Information
+                case 0x0001:
                 {
-                    if (_zfe.FileSize == 0xFFFFFFFF)
-                        _zfe.FileSize = BitConverter.ToInt64(buffer, pos + 12);
-                    if (_zfe.CompressedSize == 0xFFFFFFFF)
-                        _zfe.CompressedSize = BitConverter.ToInt64(buffer, pos + 20);
-                    if (_zfe.HeaderOffset == 0xFFFFFFFF)
-                        _zfe.HeaderOffset = BitConverter.ToInt64(buffer, pos + 28);
+                    tag = BitConverter.ToUInt16(buffer, pos + 8);
+                    size = BitConverter.ToUInt16(buffer, pos + 10);
+
+                    if (tag == 1 && size >= 24)
+                    {
+                        if (_zfe.FileSize == 0xFFFFFFFF)
+                            _zfe.FileSize = BitConverter.ToInt64(buffer, pos + 12);
+                        if (_zfe.CompressedSize == 0xFFFFFFFF)
+                            _zfe.CompressedSize = BitConverter.ToInt64(buffer, pos + 20);
+                        if (_zfe.HeaderOffset == 0xFFFFFFFF)
+                            _zfe.HeaderOffset = BitConverter.ToInt64(buffer, pos + 28);
+                    }
+
+                    break;
                 }
-            }
 
-            if (extraId == 0x000A) // NTFS FileTime
-            {
-                tag = BitConverter.ToUInt16(buffer, pos + 8);
-                size = BitConverter.ToUInt16(buffer, pos + 10);
-
-                if (tag == 1 && size == 24)
+                // NTFS FileTime
+                case 0x000A:
                 {
-                    _zfe.ModifyTime = DateTime.FromFileTime(BitConverter.ToInt64(buffer, pos + 12));
-                    _zfe.AccessTime = DateTime.FromFileTime(BitConverter.ToInt64(buffer, pos + 20));
-                    _zfe.CreationTime = DateTime.FromFileTime(BitConverter.ToInt64(buffer, pos + 28));
+                    tag = BitConverter.ToUInt16(buffer, pos + 8);
+                    size = BitConverter.ToUInt16(buffer, pos + 10);
+
+                    if (tag == 1 && size == 24)
+                    {
+                        _zfe.ModifyTime = DateTime.FromFileTime(BitConverter.ToInt64(buffer, pos + 12));
+                        _zfe.AccessTime = DateTime.FromFileTime(BitConverter.ToInt64(buffer, pos + 20));
+                        _zfe.CreationTime = DateTime.FromFileTime(BitConverter.ToInt64(buffer, pos + 28));
+                    }
+
+                    break;
                 }
             }
 
