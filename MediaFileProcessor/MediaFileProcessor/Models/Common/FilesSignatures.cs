@@ -73,7 +73,7 @@ public static class FilesSignatures
     /// <param name="outputFormatType">File format</param>
     /// <returns>Byte signature</returns>
     /// <exception cref="NotSupportedException">Exception if file format does not have a specific permanent signature or it is not supported</exception>
-    public static byte[] GetSignature(FileFormatType outputFormatType)
+    public static byte[] GetSignature(this FileFormatType outputFormatType)
     {
         return outputFormatType switch
         {

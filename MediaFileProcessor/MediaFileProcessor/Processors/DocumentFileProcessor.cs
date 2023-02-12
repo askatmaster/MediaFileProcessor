@@ -10,7 +10,14 @@ public class DocumentFileProcessor
     /// <summary>
     /// The name of the pandoc executable.
     /// </summary>
-    private static readonly string _pandoc = "pandoc.exe";
+    private static string _pandoc = "pandoc";
+
+    public DocumentFileProcessor(string pandocExePath)
+    {
+        _pandoc = pandocExePath;
+    }
+
+    public DocumentFileProcessor() { }
 
     /// <summary>
     /// The address from which the pandoc executable can be downloaded.
@@ -99,15 +106,15 @@ public class DocumentFileProcessor
                 // Look for the desired file
                 foreach (var entry in dir)
                 {
-                    if (Path.GetFileName(entry.FilenameInZip) == _pandoc)
+                    if (Path.GetFileName(entry.FilenameInZip) == "pandoc.exe")
                     {
-                        zip.ExtractFile(entry, $@"asd/{_pandoc}"); // File found, extract it}
+                        zip.ExtractFile(entry, "pandoc.exe"); // File found, extract it}
                         pandocFound = true;
                     }
                 }
 
                 if(!pandocFound)
-                    throw new Exception($"{_pandoc} not found");
+                    throw new Exception("pandoc.exe not found");
             }
         }
         finally

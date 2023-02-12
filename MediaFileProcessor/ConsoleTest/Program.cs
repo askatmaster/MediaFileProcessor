@@ -1,7 +1,5 @@
-﻿using System.Diagnostics;
-using System.IO.Pipes;
-using System.Text;
-using ConsoleTest;
+﻿using ConsoleTest;
+using MediaFileProcessor.Extensions;
 using MediaFileProcessor.Models.Common;
 using MediaFileProcessor.Models.Enums;
 using MediaFileProcessor.Models.Settings;
@@ -18,7 +16,57 @@ Console.ResetColor();
 // await VideoFileProcessor.DownloadExecutableFiles();
 // await ImageFileProcessor.DownloadExecutableFiles();
 
-await VideoProcessorTests.ConvertVideoToImagesTest(new VideoFileProcessor());
+// var videoFileProcessor = new VideoFileProcessor("pathToFFmpeg.exe", "pathToFFprobe.exe");
+// await VideoProcessorTests.ConvertVideoToImagesTest(processor);
+
+
+
+
+// var fromPath = new MediaFile(@"C:\fileTest.avi", MediaFileInputType.Path);
+//
+// var fromNamedPipe = new MediaFile(@"fileTestPipeName", MediaFileInputType.NamedPipe);
+//
+// var namingTemplate = new MediaFile(@"C:\fileTest%003d.avi", MediaFileInputType.Template);
+//
+// var fs = @"C:\fileTest.avi".ToStream();
+// var fromStream = new MediaFile(fs);
+//
+// var bytes = @"C:\fileTest.avi".ToBytes();
+// var fromBytes = new MediaFile(bytes);
+
+
+
+
+
+
+
+
+
+
+var videoFileProcessor = new VideoFileProcessor();
+
+var settings = new VideoProcessingSettings();
+
+settings.ReplaceIfExist()                        //Overwrite output files without asking.
+        .Seek(TimeSpan.FromMilliseconds(47500))  //The frame to begin seeking from.
+        .SetOutputArguments(@"pathToInputFile"); //Setting Output Arguments
+
+var result = await videoFileProcessor.ExecuteAsync(settings, new CancellationToken());
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // await processor.ConvertDocxToPdf(new MediaFile(_docx, MediaFileInputType.Path), "test.pdf");
 // await processor.ConvertDocxToPdfAsStream(new MediaFile(new FileStream(_docx, FileMode.Open)));

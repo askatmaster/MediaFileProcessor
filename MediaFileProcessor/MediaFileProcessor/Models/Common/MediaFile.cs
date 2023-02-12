@@ -1,5 +1,4 @@
-﻿using System.Runtime.InteropServices;
-using MediaFileProcessor.Extensions;
+﻿using MediaFileProcessor.Extensions;
 using MediaFileProcessor.Models.Enums;
 namespace MediaFileProcessor.Models.Common;
 

@@ -11,7 +11,14 @@ public class ImageFileProcessor
     /// <summary>
     /// The name of the convert executable.
     /// </summary>
-    private static readonly string _convert = "convert.exe";
+    private static string _convert = "convert";
+
+    public ImageFileProcessor(string convertExePath)
+    {
+        _convert = convertExePath;
+    }
+
+    public ImageFileProcessor() { }
 
     /// <summary>
     /// The address from which the convert executable can be downloaded.
@@ -356,15 +363,15 @@ public class ImageFileProcessor
                 // Look for the desired file
                 foreach (var entry in dir)
                 {
-                    if (Path.GetFileName(entry.FilenameInZip) == _convert)
+                    if (Path.GetFileName(entry.FilenameInZip) == "convert.exe")
                     {
-                        zip.ExtractFile(entry, $@"asd/{_convert}"); // File found, extract it}
+                        zip.ExtractFile(entry, "convert.exe"); // File found, extract it
                         convertFound = true;
                     }
                 }
 
                 if(!convertFound)
-                    throw new Exception($"{_convert} not found");
+                    throw new Exception("convert.exe not found");
             }
         }
         finally

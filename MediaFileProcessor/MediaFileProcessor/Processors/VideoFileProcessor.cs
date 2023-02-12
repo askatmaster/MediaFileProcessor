@@ -10,15 +10,23 @@ namespace MediaFileProcessor.Processors;
 /// </summary>
 public class VideoFileProcessor
 {
+    public VideoFileProcessor() { }
+
+    public VideoFileProcessor(string ffmpegExePath, string ffprobeExePath)
+    {
+        _ffmpeg = ffmpegExePath;
+        _ffprobe = ffprobeExePath;
+    }
+
     /// <summary>
     /// The name of the ffmpeg executable.
     /// </summary>
-    private static readonly string _ffmpeg = "ffmpeg.exe";
+    private static string _ffmpeg = "ffmpeg";
 
     /// <summary>
     /// The name of the _ffprobe executable.
     /// </summary>
-    private static readonly string _ffprobe = "ffprobe.exe";
+    private static string _ffprobe = "ffprobe";
 
     /// <summary>
     /// The address from which the ffmpeg and ffprobe executable can be downloaded.
@@ -380,7 +388,7 @@ public class VideoFileProcessor
     {
         var stream = (await ExecuteConvertVideoToImagesAsync(file, outputFormatType, null,  cancellationToken ?? new CancellationToken()))!;
 
-        return stream.GetMultiStreamBySignature(FilesSignatures.GetSignature(outputFormatType));
+        return stream.GetMultiStreamBySignature(outputFormatType.GetSignature());
     }
 
     /// <summary>
@@ -394,7 +402,7 @@ public class VideoFileProcessor
     {
         var stream = (await ExecuteConvertVideoToImagesAsync(file, outputFormatType, null,  cancellationToken ?? new CancellationToken()))!;
 
-        return stream.GetMultiStreamBySignature(FilesSignatures.GetSignature(outputFormatType)).ReadAsDataArray();
+        return stream.GetMultiStreamBySignature(outputFormatType.GetSignature()).ReadAsDataArray();
     }
 
     //======================================================================================================================================================================
@@ -1370,25 +1378,25 @@ public class VideoFileProcessor
                 // Look for the desired file
                 foreach (var entry in dir)
                 {
-                    if (Path.GetFileName(entry.FilenameInZip) == _ffmpeg)
+                    if (Path.GetFileName(entry.FilenameInZip) == "ffmpeg.exe")
                     {
-                        zip.ExtractFile(entry, $@"asd/{_ffmpeg}"); // File found, extract it
+                        zip.ExtractFile(entry, "ffmpeg.exe"); // File found, extract it
                         ffmpegFound = true;
                     }
 
-                    if (Path.GetFileName(entry.FilenameInZip) == _ffprobe)
+                    if (Path.GetFileName(entry.FilenameInZip) == "ffprobe.exe")
                     {
-                        zip.ExtractFile(entry, $@"asd/{_ffprobe}"); // File found, extract it
+                        zip.ExtractFile(entry, "ffprobe.exe"); // File found, extract it
                         ffprobeFound = true;
                     }
                 }
             }
 
             if(!ffmpegFound)
-                throw new Exception($"{_ffmpeg} not found");
+                throw new Exception("ffmpeg.exe not found");
 
             if(!ffprobeFound)
-                throw new Exception($"{_ffprobe} not found");
+                throw new Exception("ffprobe.exe not found");
         }
         finally
         {
