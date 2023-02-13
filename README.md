@@ -82,6 +82,17 @@ The specified configuration methods will give us the following arguments to star
 ```-y  -ss 00:00:47.500  -i pathToOutputFile  -frames:v 1  -f image2 pathToInputFile```.
 It is necessary to OBSERVE the ORDER of the configurations, because some arguments must be given before the input argument and some after.
 
+## Get Video File Info
+
+```csharp
+var videoProcessor = new VideoFileProcessor();
+
+var stream = @"pathToOutputFile".ToStream();
+var data = await videoProcessor.GetVideoInfo(new MediaFile(stream));
+
+var info = JsonConvert.DeserializeObject<VideoFileInfo>(data, _jsonSnakeCaseSerializerSettings)!;
+```
+
 ### Attention!
 
 When setting the process configuration, you can set the input data using the ```SetInputFiles``` method, which accepts an array of parameters in the form of instances of the ```MediaFile``` class.
