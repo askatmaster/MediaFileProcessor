@@ -819,6 +819,50 @@ public class VideoProcessingSettings : ProcessingSettings
     }
 
     /// <summary>
+    /// KMS CRTC ID to define the capture source. The first active plane on the given CRTC will be used.
+    /// </summary>
+    public VideoProcessingSettings CRTC(int id)
+    {
+        _stringBuilder.Append($" -crtc_id {id}");
+
+        return this;
+    }
+
+    /// <summary>
+    /// Set maximum size of buffer for incoming data, in frames. For DV, this is an exact value. For HDV, it is not frame exact, since HDV does not have a fixed frame size.
+    /// </summary>
+    public VideoProcessingSettings IncomingDataBuffer(int value)
+    {
+        _stringBuilder.Append($" -dvbuffer {value}");
+
+        return this;
+    }
+
+    /// <summary>
+    /// Override autodetection of DV/HDV.
+    /// This should only be used if auto detection does not work, or if usage of a different device type should be prohibited.
+    /// Treating a DV device as HDV (or vice versa) will not work and result in undefined behavior. The values auto, dv and hdv are supported.
+    /// </summary>
+    public VideoProcessingSettings DvDevice(string type)
+    {
+        _stringBuilder.Append($" -dvtype {type}");
+
+        return this;
+    }
+
+    /// <summary>
+    /// Select the capture device by specifying its GUID. Capturing will only be performed from the specified device and fails if no device with the given GUID is found.
+    /// This is useful to select the input if multiple devices are connected at the same time.
+    /// Look at /sys/bus/firewire/devices to find out the GUIDs.
+    /// </summary>
+    public VideoProcessingSettings CaptureDeviceGuid(string guid)
+    {
+        _stringBuilder.Append($" -dvguid {guid}");
+
+        return this;
+    }
+
+    /// <summary>
     /// Setting Output Arguments
     /// </summary>
     public VideoProcessingSettings SetOutputArguments(string? arg)
@@ -848,14 +892,19 @@ public class VideoProcessingSettings : ProcessingSettings
     /// </summary>
     public VideoProcessingSettings SetInputFiles(params MediaFile[]? files)
     {
+        // Check if the input files are specified
         if(files is null || files.Length == 0)
             throw new NullReferenceException("'CustomInputs' Arguments must be specified if there are no input files");
 
+        // If the number of input files is 0, throw an exception
         switch(files.Length)
         {
             case 0:
                 throw new Exception("No input files");
+            // If there is only one input file
             case 1:
+                // Check the type of input file (Path, Template or NamedPipe)
+                // and append the file path to the string builder
                 _stringBuilder.Append(files[0].InputType is MediaFileInputType.Path or MediaFileInputType.Template or MediaFileInputType.NamedPipe
                                           ? " -i " + files[0].InputFilePath! : StandartInputRedirectArgument);
                 SetInputStreams(files);
@@ -863,8 +912,11 @@ public class VideoProcessingSettings : ProcessingSettings
                 return this;
         }
 
+        // If there is only one stream type among the input files
         if(files.Count(x => x.InputType == MediaFileInputType.Stream) <= 1)
         {
+            // Aggregate the input file paths (or the standard input redirect argument) into a single string
+            // and append it to the string builder
             _stringBuilder.Append(files.Aggregate(string.Empty,
                                                   (current, file) =>
                                                       current
@@ -872,11 +924,13 @@ public class VideoProcessingSettings : ProcessingSettings
                                                     + (file.InputType is MediaFileInputType.Path or MediaFileInputType.Template or MediaFileInputType.NamedPipe
                                                           ? " -i " + file.InputFilePath!
                                                           : StandartInputRedirectArgument)));
+            // Set input streams for the files
             SetInputStreams(files);
 
             return this;
         }
 
+        // If there are multiple stream types among the input files
         _stringBuilder.Append(files.Aggregate(string.Empty,
                                               (current, file) =>
                                                   current
@@ -884,6 +938,7 @@ public class VideoProcessingSettings : ProcessingSettings
                                                 + (file.InputType is MediaFileInputType.Path or MediaFileInputType.Template or MediaFileInputType.NamedPipe
                                                       ? " -i " + file.InputFilePath!
                                                       : SetPipeChannel(Guid.NewGuid().ToString(), file))));
+        // Set input streams for the files
         SetInputStreams(files);
 
         return this;
