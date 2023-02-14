@@ -1,12 +1,13 @@
 ﻿using MediaFileProcessor.Models.Common;
 using MediaFileProcessor.Models.Enums;
 using MediaFileProcessor.Models.Settings;
+using MediaFileProcessor.Processors.Interfaces;
 namespace MediaFileProcessor.Processors;
 
 /// <summary>
 /// This class is responsible for processing Document files.
 /// </summary>
-public class ImageFileProcessor
+public class ImageFileProcessor : IImageFileProcessor
 {
     /// <summary>
     /// The name of the convert executable.
@@ -25,7 +26,7 @@ public class ImageFileProcessor
     /// </summary>
     private static readonly string _zipAddress = "https://imagemagick.org/archive/binaries/ImageMagick-7.1.0-61-portable-Q16-x64.zip";
 
-    private async Task<MemoryStream?> ExecuteAsync(ImageProcessingSettings settings, CancellationToken cancellationToken)
+    public async Task<MemoryStream?> ExecuteAsync(ImageProcessingSettings settings, CancellationToken cancellationToken)
     {
         var process = new MediaFileProcess(_convert,
                                            settings.GetProcessArguments(),

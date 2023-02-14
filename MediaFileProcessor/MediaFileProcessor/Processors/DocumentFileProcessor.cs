@@ -1,11 +1,12 @@
 ﻿using MediaFileProcessor.Models.Common;
 using MediaFileProcessor.Models.Settings;
+using MediaFileProcessor.Processors.Interfaces;
 namespace MediaFileProcessor.Processors;
 
 /// <summary>
 /// This class is responsible for converting Document files.
 /// </summary>
-public class DocumentFileProcessor
+public class DocumentFileProcessor : IDocumentFileProcessor
 {
     /// <summary>
     /// The name of the pandoc executable.
@@ -30,7 +31,7 @@ public class DocumentFileProcessor
     /// <param name="settings">The settings used for the conversion process.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
     /// <returns>A `MemoryStream` containing the converted PDF file.</returns>
-    private async Task<MemoryStream?> ExecuteAsync(DocumentFileProcessingSettings settings, CancellationToken cancellationToken)
+    public async Task<MemoryStream?> ExecuteAsync(DocumentFileProcessingSettings settings, CancellationToken cancellationToken)
     {
         var process = new MediaFileProcess(_pandoc,
                                            settings.GetProcessArguments(),
