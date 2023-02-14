@@ -26,6 +26,12 @@ public class ImageFileProcessor : IImageFileProcessor
     /// </summary>
     private static readonly string _zipAddress = "https://imagemagick.org/archive/binaries/ImageMagick-7.1.0-61-portable-Q16-x64.zip";
 
+    /// <summary>
+    /// Executes image processing asynchronously.
+    /// </summary>
+    /// <param name="settings">The settings used for the processing process.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
+    /// <returns>A `MemoryStream` containing the converted PDF file.</returns>
     public async Task<MemoryStream?> ExecuteAsync(ImageProcessingSettings settings, CancellationToken cancellationToken)
     {
         var process = new MediaFileProcess(_convert,
