@@ -508,6 +508,36 @@ public class VideoProcessingSettings : ProcessingSettings
     }
 
     /// <summary>
+    /// Enable bitexact mode for (de)muxer and (de/en)coder
+    /// </summary>
+    public VideoProcessingSettings BitExact()
+    {
+        _stringBuilder.Append(" -bitexact ");
+
+        return this;
+    }
+
+    /// <summary>
+    /// Set the maximum demux-decode delay.
+    /// </summary>
+    public VideoProcessingSettings MuxDelay(int seconds)
+    {
+        _stringBuilder.Append($" -muxdelay {seconds} ");
+
+        return this;
+    }
+
+    /// <summary>
+    /// Set the initial demux-decode delay.
+    /// </summary>
+    public VideoProcessingSettings MuxPreload(int seconds)
+    {
+        _stringBuilder.Append($" -muxpreload {seconds} ");
+
+        return this;
+    }
+
+    /// <summary>
     /// The -map option is used to select which threads from the input(s) should be included in the output(s).
     /// This -map parameter can also be used to exclude certain threads with negative mapping.
     /// </summary>

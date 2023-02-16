@@ -25,12 +25,7 @@ public class DocumentFileProcessor : IDocumentFileProcessor
     /// </summary>
     private static readonly string _zipAddress = "https://github.com/jgm/pandoc/releases/download/3.0.1/pandoc-3.0.1-windows-x86_64.zip";
 
-    /// <summary>
-    /// Executes the conversion of the document file to PDF asynchronously.
-    /// </summary>
-    /// <param name="settings">The settings used for the conversion process.</param>
-    /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
-    /// <returns>A `MemoryStream` containing the converted PDF file.</returns>
+    /// <inheritdoc />
     public async Task<MemoryStream?> ExecuteAsync(DocumentFileProcessingSettings settings, CancellationToken cancellationToken)
     {
         var process = new MediaFileProcess(_pandoc,
@@ -56,34 +51,19 @@ public class DocumentFileProcessor : IDocumentFileProcessor
         return await ExecuteAsync(settings, cancellationToken);
     }
 
-    /// <summary>
-    /// Converts a .docx file to a PDF file and saves it to disk asynchronously.
-    /// </summary>
-    /// <param name="file">The .docx file to be converted.</param>
-    /// <param name="outputFile">The file name of the converted PDF file.</param>
-    /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
+    /// <inheritdoc />
     public async Task ConvertDocxToPdf(MediaFile file, string? outputFile, CancellationToken? cancellationToken = null)
     {
         await ExecuteConvertDocxToPdf(file, outputFile, cancellationToken ?? new CancellationToken());
     }
 
-    /// <summary>
-    /// Converts the DOCX file to a PDF file as a stream.
-    /// </summary>
-    /// <param name="file">The media file to be converted.</param>
-    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
-    /// <returns>The memory stream that contains the converted PDF file.</returns>
+    /// <inheritdoc />
     public async Task<MemoryStream> ConvertDocxToPdfAsStream(MediaFile file, CancellationToken? cancellationToken = null)
     {
         return (await ExecuteConvertDocxToPdf(file, null, cancellationToken ?? new CancellationToken()))!;
     }
 
-    /// <summary>
-    /// Converts the DOCX file to a PDF file as a byte array.
-    /// </summary>
-    /// <param name="file">The media file to be converted.</param>
-    /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
-    /// <returns>The byte array that contains the converted PDF file.</returns>
+    /// <inheritdoc />
     public async Task<byte[]> ConvertDocxToPdfAsBytes(MediaFile file, CancellationToken? cancellationToken = null)
     {
         return (await ExecuteConvertDocxToPdf(file, null, cancellationToken ?? new CancellationToken()))!.ToArray();
