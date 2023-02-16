@@ -3,12 +3,13 @@ using MediaFileProcessor.Extensions;
 using MediaFileProcessor.Models.Common;
 using MediaFileProcessor.Models.Enums;
 using MediaFileProcessor.Models.Settings;
+using MediaFileProcessor.Processors.Interfaces;
 namespace MediaFileProcessor.Processors;
 
 /// <summary>
 /// This class is responsible for processing video files.
 /// </summary>
-public class VideoFileProcessor
+public class VideoFileProcessor : IVideoFileProcessor
 {
     public VideoFileProcessor() { }
 
@@ -531,7 +532,7 @@ public class VideoFileProcessor
     /// <param name="outputFileFormatType">The desired `FileFormatType` of the converted file.</param>
     /// <param name="cancellationToken">An optional `CancellationToken` that can be used to cancel the operation.</param>
     /// <returns>A `Task` representing the asynchronous operation that returns the result as a `MemoryStream`.</returns>
-    public  async Task<MemoryStream> ConvertVideoAsStreamAsync(MediaFile file, FileFormatType outputFileFormatType, CancellationToken? cancellationToken = null)
+    public async Task<MemoryStream> ConvertVideoAsStreamAsync(MediaFile file, FileFormatType outputFileFormatType, CancellationToken? cancellationToken = null)
     {
         return (await ExecuteConvertVideoAsync(file, null, outputFileFormatType, cancellationToken ?? new CancellationToken()))!;
     }
@@ -777,7 +778,6 @@ public class VideoFileProcessor
     /// <param name="cancellationToken">A cancellation token to cancel the asynchronous operation. Default is null.</param>
     /// <param name="audioCodecType">The audio codec type to use during the addition process. Default is AudioCodecType.COPY.</param>
     /// <param name="videoCodecType">The video codec type to use during the addition process. Default is VideoCodecType.COPY.</param>
-    /// <returns></returns>
     public  async Task AddAudioToVideoAsync(MediaFile audioFile,
                                             MediaFile videoFile,
                                             string output,

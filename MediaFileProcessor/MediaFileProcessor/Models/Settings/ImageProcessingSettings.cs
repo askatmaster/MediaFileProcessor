@@ -1087,7 +1087,6 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Applies a matte color to the frame color
     /// </summary>
     /// <param name="color"></param>
-    /// <returns></returns>
     public ImageProcessingSettings MatteColor(string color)
     {
         _stringBuilder.Append($" -mattecolor {color} ");
