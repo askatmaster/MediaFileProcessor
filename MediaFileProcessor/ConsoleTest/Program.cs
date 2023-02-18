@@ -1,10 +1,12 @@
-﻿using MediaFileProcessor.Processors;
+﻿using System.Diagnostics;
+using ConsoleTest;
+using MediaFileProcessor.Processors;
 Console.ForegroundColor = ConsoleColor.Green;
 Console.WriteLine("StartStream");
 Console.ResetColor();
 
-
-await VideoFileProcessor.DownloadExecutableFiles();
+var videoProcessor = new VideoFileProcessor();
+await VideoProcessorTests.AddAudioToVideoTest(videoProcessor);
 
 
 Console.ForegroundColor = ConsoleColor.Green;

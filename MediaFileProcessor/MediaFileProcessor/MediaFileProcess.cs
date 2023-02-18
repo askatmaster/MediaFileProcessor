@@ -7,7 +7,7 @@ namespace MediaFileProcessor;
 /// <summary>
 /// Represents a media file processing class
 /// </summary>
-public class MediaFileProcess
+public class MediaFileProcess : IDisposable
 {
     private Process Process { get; }
 
@@ -19,12 +19,24 @@ public class MediaFileProcess
     /// <summary>
     /// The input streams for the process.
     /// </summary>
-    private Stream[]? InputStreams { get; }
+    private Stream[]? InputStreams { get; set; }
+
+    /// <summary>
+    /// Named pipes through which data will be transferred
+    /// </summary>
+    private NamedPipeServerStream[]? NamedPipes { get; set; }
 
     /// <summary>
     /// The pipe names for the process.
     /// </summary>
-    private string[]? PipeNames { get; }
+    private string[]? PipeNames { get; set; }
+
+    /// <summary>
+    /// Flag indicating whether the executable process has been executed.
+    /// If true then you should no longer try to execute this process.
+    /// Any arguments like named pipes or input or output streams can be closed or their pointers shifted
+    /// </summary>
+    private bool IsDisposed { get; set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MediaFileProcess"/> class.
@@ -63,6 +75,9 @@ public class MediaFileProcess
 
         if(Settings.ErrorDataReceivedHandler is not null)
             Process.ErrorDataReceived += Settings.ErrorDataReceivedHandler;
+
+        AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionHandler;
+        AppDomain.CurrentDomain.ProcessExit += DomainProcessExitHandler;
     }
 
     /// <summary>
@@ -75,6 +90,7 @@ public class MediaFileProcess
     {
         Process.WaitForExit();
         Process.Exited -= ProcessOnExited;
+        Dispose();
     }
 
     /// <summary>
@@ -86,6 +102,10 @@ public class MediaFileProcess
     /// RedirectStandardOutput is set to false</returns>
     public async Task<MemoryStream?> ExecuteAsync(CancellationToken cancellationToken)
     {
+        if(IsDisposed)
+            throw new ObjectDisposedException("The process is no longer executable. "
+                                            + "Any arguments like named pipes or input or output streams can be closed or their pointers shifted");
+
         MemoryStream? outputStream = null;
         if(Process.StartInfo.RedirectStandardOutput)
             outputStream = new MemoryStream();
@@ -127,7 +147,7 @@ public class MediaFileProcess
                             return;
 
                         //Killing the process.
-                        Process.Kill();
+                        Dispose();
                     }
                     catch(Exception)
                     {
@@ -221,20 +241,20 @@ public class MediaFileProcess
     private void MultiInputWindowsOS()
     {
         // Create an array of NamedPipeServerStream instances with the size of the input streams
-        var pipes = new NamedPipeServerStream[InputStreams!.Length];
+        NamedPipes = new NamedPipeServerStream[InputStreams!.Length];
 
         // Loop through the pipes array and initialize each instance of NamedPipeServerStream with the name of the pipe
         // and other required parameters for pipe transmission.
-        for (var i = 0; i < pipes.Length; i++)
-            pipes[i] = new NamedPipeServerStream(PipeNames![i], PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
+        for (var i = 0; i < NamedPipes.Length; i++)
+            NamedPipes[i] = new NamedPipeServerStream(PipeNames![i], PipeDirection.InOut, 1, PipeTransmissionMode.Byte, PipeOptions.Asynchronous);
 
         // Create an array of tasks with the size of the pipes array
-        var tasks = new Task[pipes.Length];
+        var tasks = new Task[NamedPipes.Length];
 
         // Loop through the pipes array and connect each pipe with its corresponding input stream
-        for (var i = 0; i < pipes.Length; i++)
+        for (var i = 0; i < NamedPipes.Length; i++)
         {
-            var pipe = pipes[i];
+            var pipe = NamedPipes[i];
             var inputStream = InputStreams[i];
 
             // Wait for the connection to be established
@@ -274,10 +294,6 @@ public class MediaFileProcess
 
         // Wait for all tasks to complete
         Task.WaitAll(tasks);
-
-        // Loop through the pipe names and delete the files
-        foreach (var pipeFile in PipeNames)
-            File.Delete(pipeFile);
     }
 
     // ReadStandartOutput is a method that reads the standard output from the process and writes it to the
@@ -299,5 +315,65 @@ public class MediaFileProcess
             // Write the data to the output stream
             outputStream.Write(buffer, 0, lastRead);
         } while (lastRead > 0);
+    }
+
+    /// <summary>
+    /// Implements the IDisposable interface to release unmanaged resources used by this object.
+    /// </summary>
+    public void Dispose()
+    {
+        if (InputStreams != null)
+        {
+            foreach(var inputStream in InputStreams)
+                inputStream.Dispose();
+            InputStreams = null;
+        }
+
+        if (NamedPipes != null)
+        {
+            foreach(var namedPipe in NamedPipes)
+                namedPipe.Dispose();
+            NamedPipes = null;
+        }
+
+        if (PipeNames != null)
+        {
+            foreach (var pipeFile in PipeNames)
+                File.Delete(pipeFile);
+
+            PipeNames = null;
+        }
+
+        // Dispose of the process and kill it
+        Process.Dispose();
+
+        try
+        {
+            if(Process.HasExited)
+                Process.Kill();
+        }
+        catch (InvalidOperationException e)
+        {
+            if(e.Message != "No process is associated with this object.")
+                throw;
+        }
+
+        IsDisposed = true;
+    }
+
+    /// <summary>
+    /// This method is executed in the event of an application crash so that child executable processes do not remain alive in the background
+    /// </summary>
+    private void UnhandledExceptionHandler(object sender, UnhandledExceptionEventArgs e)
+    {
+        Dispose();
+    }
+
+    /// <summary>
+    /// This method is executed in the event of an application exit so that child executable processes do not remain alive in the background
+    /// </summary>
+    private void DomainProcessExitHandler(object sender, EventArgs e)
+    {
+        Dispose();
     }
 }

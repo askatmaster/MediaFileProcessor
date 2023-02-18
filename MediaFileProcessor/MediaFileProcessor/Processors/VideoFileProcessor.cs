@@ -37,13 +37,14 @@ public class VideoFileProcessor : IVideoFileProcessor
     /// <inheritdoc />
     public async Task<MemoryStream?> ExecuteAsync(VideoProcessingSettings settings, CancellationToken cancellationToken)
     {
-        var process = new MediaFileProcess(_ffmpeg,
-                                           settings.GetProcessArguments(),
-                                           settings,
-                                           settings.GetInputStreams(),
-                                           settings.GetInputPipeNames());
-
-        return await process.ExecuteAsync(cancellationToken);
+        using(var process = new MediaFileProcess(_ffmpeg,
+                                                 settings.GetProcessArguments(),
+                                                 settings,
+                                                 settings.GetInputStreams(),
+                                                 settings.GetInputPipeNames()))
+        {
+            return  await process.ExecuteAsync(cancellationToken);
+        }
     }
 
     //======================================================================================================================================================================
@@ -76,19 +77,19 @@ public class VideoFileProcessor : IVideoFileProcessor
 
     /// <inheritdoc />
     public async Task GetFrameFromVideoAsync(TimeSpan timestamp,
-                                              MediaFile file,
-                                              string outputFile,
-                                              FileFormatType outputFormat,
-                                              CancellationToken? cancellationToken = null)
+                                             MediaFile file,
+                                             string outputFile,
+                                             FileFormatType outputFormat,
+                                             CancellationToken? cancellationToken = null)
     {
         await ExecuteGetFrameFromVideoAsync(timestamp, file, outputFile, outputFormat, cancellationToken ?? new CancellationToken());
     }
 
     /// <inheritdoc />
     public async Task<MemoryStream> GetFrameFromVideoAsStreamAsync(TimeSpan timestamp,
-                                                                    MediaFile file,
-                                                                    FileFormatType outputFormat,
-                                                                    CancellationToken? cancellationToken = null)
+                                                                   MediaFile file,
+                                                                   FileFormatType outputFormat,
+                                                                   CancellationToken? cancellationToken = null)
     {
         return (await ExecuteGetFrameFromVideoAsync(timestamp, file, null, outputFormat, cancellationToken ?? new CancellationToken()))!;
     }
@@ -131,31 +132,31 @@ public class VideoFileProcessor : IVideoFileProcessor
 
     /// <inheritdoc />
     public async Task CutVideoAsync(TimeSpan startTime,
-                                     TimeSpan endTime,
-                                     MediaFile file,
-                                     string outputFile,
-                                     FileFormatType outputFormat,
-                                     CancellationToken? cancellationToken = null)
+                                    TimeSpan endTime,
+                                    MediaFile file,
+                                    string outputFile,
+                                    FileFormatType outputFormat,
+                                    CancellationToken? cancellationToken = null)
     {
         await ExecuteCutVideoAsync(startTime, endTime, file, outputFile, outputFormat, cancellationToken ?? new CancellationToken());
     }
 
     /// <inheritdoc />
     public async Task<MemoryStream> CutVideoAsStreamAsync(TimeSpan startTime,
-                                                           TimeSpan endTime,
-                                                           MediaFile file,
-                                                           FileFormatType outputFormat,
-                                                           CancellationToken? cancellationToken = null)
+                                                          TimeSpan endTime,
+                                                          MediaFile file,
+                                                          FileFormatType outputFormat,
+                                                          CancellationToken? cancellationToken = null)
     {
         return (await ExecuteCutVideoAsync(startTime, endTime, file, null, outputFormat, cancellationToken ?? new CancellationToken()))!;
     }
 
     /// <inheritdoc />
     public async Task<byte[]> CutVideoAsBytesAsync(TimeSpan startTime,
-                                                    TimeSpan endTime,
-                                                    MediaFile file,
-                                                    FileFormatType outputFormat,
-                                                    CancellationToken? cancellationToken = null)
+                                                   TimeSpan endTime,
+                                                   MediaFile file,
+                                                   FileFormatType outputFormat,
+                                                   CancellationToken? cancellationToken = null)
     {
         return (await ExecuteCutVideoAsync(startTime, endTime, file, null, outputFormat, cancellationToken ?? new CancellationToken()))!.ToArray();
     }
@@ -195,12 +196,12 @@ public class VideoFileProcessor : IVideoFileProcessor
 
     /// <inheritdoc />
     public async Task ConvertImagesToVideoAsync(MediaFile file,
-                                                 int frameRate,
-                                                 string outputFile,
-                                                 string pixelFormat,
-                                                 FileFormatType outputFileFormatType,
-                                                 CancellationToken? cancellationToken = null,
-                                                 VideoCodecType videoCodecType = VideoCodecType.LIBX264)
+                                                int frameRate,
+                                                string outputFile,
+                                                string pixelFormat,
+                                                FileFormatType outputFileFormatType,
+                                                CancellationToken? cancellationToken = null,
+                                                VideoCodecType videoCodecType = VideoCodecType.LIBX264)
     {
         await ExecuteConvertImagesToVideoAsync(file,
                                                frameRate,
@@ -213,11 +214,11 @@ public class VideoFileProcessor : IVideoFileProcessor
 
     /// <inheritdoc />
     public async Task<MemoryStream> ConvertImagesToVideoAsStreamAsync(MediaFile file,
-                                                                       int frameRate,
-                                                                       string pixelFormat,
-                                                                       FileFormatType outputFileFormatType,
-                                                                       VideoCodecType videoCodecType = VideoCodecType.LIBX264,
-                                                                       CancellationToken? cancellationToken = null)
+                                                                      int frameRate,
+                                                                      string pixelFormat,
+                                                                      FileFormatType outputFileFormatType,
+                                                                      VideoCodecType videoCodecType = VideoCodecType.LIBX264,
+                                                                      CancellationToken? cancellationToken = null)
     {
         return (await ExecuteConvertImagesToVideoAsync(file,
                                                        frameRate,
@@ -230,11 +231,11 @@ public class VideoFileProcessor : IVideoFileProcessor
 
     /// <inheritdoc />
     public async Task<byte[]> ConvertImagesToVideoAsBytesAsync(MediaFile file,
-                                                                int frameRate,
-                                                                string pixelFormat,
-                                                                FileFormatType? outputFileFormatType,
-                                                                VideoCodecType videoCodecType = VideoCodecType.LIBX264,
-                                                                CancellationToken? cancellationToken = null)
+                                                               int frameRate,
+                                                               string pixelFormat,
+                                                               FileFormatType? outputFileFormatType,
+                                                               VideoCodecType videoCodecType = VideoCodecType.LIBX264,
+                                                               CancellationToken? cancellationToken = null)
     {
         return (await ExecuteConvertImagesToVideoAsync(file,
                                                        frameRate,
@@ -342,31 +343,31 @@ public class VideoFileProcessor : IVideoFileProcessor
 
     /// <inheritdoc />
     public async Task GetAudioFromVideoAsync(MediaFile file,
-                                              FileFormatType outputFileFormatType,
-                                              string output,
-                                              int audioChannel = 2,
-                                              CancellationToken? cancellationToken = null,
-                                              AudioSampleRateType audioSampleRateType = AudioSampleRateType.Hz44100)
+                                             FileFormatType outputFileFormatType,
+                                             string output,
+                                             int audioChannel = 2,
+                                             CancellationToken? cancellationToken = null,
+                                             AudioSampleRateType audioSampleRateType = AudioSampleRateType.Hz44100)
     {
         await ExecuteGetAudioFromVideoAsync(file, outputFileFormatType, audioSampleRateType, audioChannel, output,  cancellationToken ?? new CancellationToken());
     }
 
     /// <inheritdoc />
     public async Task<MemoryStream> GetAudioFromVideoAsStreamAsync(MediaFile file,
-                                                                    FileFormatType outputFileFormatType,
-                                                                    int audioChannel = 2,
-                                                                    CancellationToken? cancellationToken = null,
-                                                                    AudioSampleRateType audioSampleRateType = AudioSampleRateType.Hz44100)
+                                                                   FileFormatType outputFileFormatType,
+                                                                   int audioChannel = 2,
+                                                                   CancellationToken? cancellationToken = null,
+                                                                   AudioSampleRateType audioSampleRateType = AudioSampleRateType.Hz44100)
     {
         return (await ExecuteGetAudioFromVideoAsync(file, outputFileFormatType, audioSampleRateType, audioChannel, null,  cancellationToken ?? new CancellationToken()))!;
     }
 
     /// <inheritdoc />
     public async Task<byte[]> GetAudioFromVideoAsBytesAsync(MediaFile file,
-                                                             FileFormatType outputFileFormatType,
-                                                             int audioChannel = 2,
-                                                             CancellationToken? cancellationToken = null,
-                                                             AudioSampleRateType audioSampleRateType = AudioSampleRateType.Hz44100)
+                                                            FileFormatType outputFileFormatType,
+                                                            int audioChannel = 2,
+                                                            CancellationToken? cancellationToken = null,
+                                                            AudioSampleRateType audioSampleRateType = AudioSampleRateType.Hz44100)
     {
         return (await ExecuteGetAudioFromVideoAsync(file, outputFileFormatType, audioSampleRateType, audioChannel, null,  cancellationToken ?? new CancellationToken()))!
             .ToArray();
@@ -456,31 +457,31 @@ public class VideoFileProcessor : IVideoFileProcessor
 
     /// <inheritdoc />
     public async Task AddWaterMarkToVideoAsync(MediaFile videoFile,
-                                                MediaFile watermarkFile,
-                                                PositionType position,
-                                                string output,
-                                                FileFormatType outputFileFormatType,
-                                                CancellationToken? cancellationToken = null)
+                                               MediaFile watermarkFile,
+                                               PositionType position,
+                                               string output,
+                                               FileFormatType outputFileFormatType,
+                                               CancellationToken? cancellationToken = null)
     {
         await ExecuteAddWaterMarkToVideoAsync(videoFile, watermarkFile, position, output, outputFileFormatType, cancellationToken ?? new CancellationToken());
     }
 
     /// <inheritdoc />
     public async Task<MemoryStream> AddWaterMarkToVideoAsStreamAsync(MediaFile videoFile,
-                                                                      MediaFile watermarkFile,
-                                                                      PositionType position,
-                                                                      FileFormatType outputFileFormatType,
-                                                                      CancellationToken? cancellationToken = null)
+                                                                     MediaFile watermarkFile,
+                                                                     PositionType position,
+                                                                     FileFormatType outputFileFormatType,
+                                                                     CancellationToken? cancellationToken = null)
     {
         return (await ExecuteAddWaterMarkToVideoAsync(videoFile, watermarkFile, position, null, outputFileFormatType, cancellationToken ?? new CancellationToken()))!;
     }
 
     /// <inheritdoc />
     public async Task<byte[]> AddWaterMarkToVideoAsBytesAsync(MediaFile videoFile,
-                                                               MediaFile watermarkFile,
-                                                               PositionType position,
-                                                               FileFormatType outputFileFormatType,
-                                                               CancellationToken? cancellationToken = null)
+                                                              MediaFile watermarkFile,
+                                                              PositionType position,
+                                                              FileFormatType outputFileFormatType,
+                                                              CancellationToken? cancellationToken = null)
     {
         return (await ExecuteAddWaterMarkToVideoAsync(videoFile, watermarkFile, position, null, outputFileFormatType, cancellationToken ?? new CancellationToken()))!
             .ToArray();
@@ -519,31 +520,31 @@ public class VideoFileProcessor : IVideoFileProcessor
 
     /// <inheritdoc />
     public async Task ExtractVideoFromFileAsync(MediaFile file,
-                                                 string output,
-                                                 FileFormatType outputFileFormatType,
-                                                 VideoCodecType videoCodecType = VideoCodecType.COPY,
-                                                 string pixelFormat = "yuv420p",
-                                                 CancellationToken? cancellationToken = null)
+                                                string output,
+                                                FileFormatType outputFileFormatType,
+                                                VideoCodecType videoCodecType = VideoCodecType.COPY,
+                                                string pixelFormat = "yuv420p",
+                                                CancellationToken? cancellationToken = null)
     {
         await ExecuteExtractVideoFromFileAsync(file, output, outputFileFormatType, videoCodecType, pixelFormat, cancellationToken ?? new CancellationToken());
     }
 
     /// <inheritdoc />
     public async Task<MemoryStream> ExtractVideoFromFileAsStreamAsync(MediaFile file,
-                                                                       FileFormatType outputFileFormatType,
-                                                                       VideoCodecType videoCodecType = VideoCodecType.COPY,
-                                                                       string pixelFormat = "yuv420p",
-                                                                       CancellationToken? cancellationToken = null)
+                                                                      FileFormatType outputFileFormatType,
+                                                                      VideoCodecType videoCodecType = VideoCodecType.COPY,
+                                                                      string pixelFormat = "yuv420p",
+                                                                      CancellationToken? cancellationToken = null)
     {
         return (await ExecuteExtractVideoFromFileAsync(file, null, outputFileFormatType, videoCodecType, pixelFormat, cancellationToken ?? new CancellationToken()))!;
     }
 
     /// <inheritdoc />
     public async Task<byte[]> ExtractVideoFromFileAsBytesAsync(MediaFile file,
-                                                                FileFormatType outputFileFormatType,
-                                                                VideoCodecType videoCodecType = VideoCodecType.COPY,
-                                                                string pixelFormat = "yuv420p",
-                                                                CancellationToken? cancellationToken = null)
+                                                               FileFormatType outputFileFormatType,
+                                                               VideoCodecType videoCodecType = VideoCodecType.COPY,
+                                                               string pixelFormat = "yuv420p",
+                                                               CancellationToken? cancellationToken = null)
     {
         return (await ExecuteExtractVideoFromFileAsync(file, null, outputFileFormatType, videoCodecType, pixelFormat, cancellationToken ?? new CancellationToken()))!
             .ToArray();
@@ -582,12 +583,12 @@ public class VideoFileProcessor : IVideoFileProcessor
 
     /// <inheritdoc />
     public async Task AddAudioToVideoAsync(MediaFile audioFile,
-                                            MediaFile videoFile,
-                                            string output,
-                                            FileFormatType outputFileFormatType,
-                                            CancellationToken? cancellationToken = null,
-                                            AudioCodecType audioCodecType = AudioCodecType.COPY,
-                                            VideoCodecType videoCodecType = VideoCodecType.COPY)
+                                           MediaFile videoFile,
+                                           string output,
+                                           FileFormatType outputFileFormatType,
+                                           CancellationToken? cancellationToken = null,
+                                           AudioCodecType audioCodecType = AudioCodecType.COPY,
+                                           VideoCodecType videoCodecType = VideoCodecType.COPY)
     {
         await ExecuteAddAudioToVideoAsync(audioFile,
                                           videoFile,
@@ -600,11 +601,11 @@ public class VideoFileProcessor : IVideoFileProcessor
 
     /// <inheritdoc />
     public async Task<MemoryStream> AddAudioToVideoAsStreamAsync(MediaFile audioFile,
-                                                                  MediaFile videoFile,
-                                                                  FileFormatType outputFileFormatType,
-                                                                  CancellationToken? cancellationToken = null,
-                                                                  AudioCodecType audioCodecType = AudioCodecType.COPY,
-                                                                  VideoCodecType videoCodecType = VideoCodecType.COPY)
+                                                                 MediaFile videoFile,
+                                                                 FileFormatType outputFileFormatType,
+                                                                 CancellationToken? cancellationToken = null,
+                                                                 AudioCodecType audioCodecType = AudioCodecType.COPY,
+                                                                 VideoCodecType videoCodecType = VideoCodecType.COPY)
     {
         return (await ExecuteAddAudioToVideoAsync(audioFile,
                                                   videoFile,
@@ -617,11 +618,11 @@ public class VideoFileProcessor : IVideoFileProcessor
 
     /// <inheritdoc />
     public async Task<byte[]> AddAudioToVideoAsBytesAsync(MediaFile audioFile,
-                                                           MediaFile videofile,
-                                                           FileFormatType outputFileFormatType,
-                                                           CancellationToken? cancellationToken = null,
-                                                           AudioCodecType audioCodecType = AudioCodecType.COPY,
-                                                           VideoCodecType videoCodecType = VideoCodecType.COPY)
+                                                          MediaFile videofile,
+                                                          FileFormatType outputFileFormatType,
+                                                          CancellationToken? cancellationToken = null,
+                                                          AudioCodecType audioCodecType = AudioCodecType.COPY,
+                                                          VideoCodecType videoCodecType = VideoCodecType.COPY)
     {
         return (await ExecuteAddAudioToVideoAsync(audioFile,
                                                   videofile,
@@ -711,31 +712,31 @@ public class VideoFileProcessor : IVideoFileProcessor
 
     /// <inheritdoc />
     public async Task CompressVideoAsync(MediaFile file,
-                                          int compressionRatio,
-                                          string output,
-                                          FileFormatType outputFileFormatType,
-                                          VideoCodecType videoCodecType = VideoCodecType.H264,
-                                          CancellationToken? cancellationToken = null)
+                                         int compressionRatio,
+                                         string output,
+                                         FileFormatType outputFileFormatType,
+                                         VideoCodecType videoCodecType = VideoCodecType.H264,
+                                         CancellationToken? cancellationToken = null)
     {
         await ExecuteCompressVideoAsync(file, compressionRatio, output, outputFileFormatType, videoCodecType, cancellationToken ?? new CancellationToken());
     }
 
     /// <inheritdoc />
     public async Task<MemoryStream> CompressVideoAsStreamAsync(MediaFile file,
-                                                                int compressionRatio,
-                                                                FileFormatType outputFileFormatType,
-                                                                VideoCodecType videoCodecType = VideoCodecType.H264,
-                                                                CancellationToken? cancellationToken = null)
+                                                               int compressionRatio,
+                                                               FileFormatType outputFileFormatType,
+                                                               VideoCodecType videoCodecType = VideoCodecType.H264,
+                                                               CancellationToken? cancellationToken = null)
     {
         return (await ExecuteCompressVideoAsync(file, compressionRatio, null, outputFileFormatType, videoCodecType, cancellationToken ?? new CancellationToken()))!;
     }
 
     /// <inheritdoc />
     public async Task<byte[]> CompressVideoAsBytesAsync(MediaFile file,
-                                                         int compressionRatio,
-                                                         FileFormatType outputFileFormatType,
-                                                         VideoCodecType videoCodecType = VideoCodecType.H264,
-                                                         CancellationToken? cancellationToken = null)
+                                                        int compressionRatio,
+                                                        FileFormatType outputFileFormatType,
+                                                        VideoCodecType videoCodecType = VideoCodecType.H264,
+                                                        CancellationToken? cancellationToken = null)
     {
         return (await ExecuteCompressVideoAsync(file, compressionRatio, null, outputFileFormatType, videoCodecType, cancellationToken ?? new CancellationToken()))!
             .ToArray();
@@ -776,9 +777,9 @@ public class VideoFileProcessor : IVideoFileProcessor
 
     /// <inheritdoc />
     public async Task<MemoryStream> CompressImageAsStreamAsync(MediaFile file,
-                                                                int level,
-                                                                FileFormatType outputFileFormatType,
-                                                                CancellationToken? cancellationToken = null)
+                                                               int level,
+                                                               FileFormatType outputFileFormatType,
+                                                               CancellationToken? cancellationToken = null)
     {
         return (await ExecuteCompressImageAsync(file, level, null, outputFileFormatType, cancellationToken ?? new CancellationToken()))!;
     }
@@ -883,23 +884,23 @@ public class VideoFileProcessor : IVideoFileProcessor
 
     /// <inheritdoc />
     public async Task ConcatVideosAsync(MediaFile[] files,
-                                         string output,
-                                         FileFormatType outputFileFormatType,
-                                         string videoBSF = "h264_mp4toannexb",
-                                         CancellationToken? cancellationToken = null,
-                                         VideoCodecType videoCodecType = VideoCodecType.LIBX264,
-                                         AudioCodecType audioCodecType = AudioCodecType.AAC)
+                                        string output,
+                                        FileFormatType outputFileFormatType,
+                                        string videoBSF = "h264_mp4toannexb",
+                                        CancellationToken? cancellationToken = null,
+                                        VideoCodecType videoCodecType = VideoCodecType.LIBX264,
+                                        AudioCodecType audioCodecType = AudioCodecType.AAC)
     {
         await ExecuteConcatVideosAsync(files, output, videoCodecType, audioCodecType, videoBSF, outputFileFormatType, cancellationToken ?? new CancellationToken());
     }
 
     /// <inheritdoc />
     public async Task<MemoryStream> ConcatVideosAsStreamAsync(MediaFile[] files,
-                                                               FileFormatType outputFileFormatType,
-                                                               string videoBSF = "h264_mp4toannexb",
-                                                               VideoCodecType videoCodecType = VideoCodecType.LIBX264,
-                                                               AudioCodecType audioCodecType = AudioCodecType.AAC,
-                                                               CancellationToken? cancellationToken = null)
+                                                              FileFormatType outputFileFormatType,
+                                                              string videoBSF = "h264_mp4toannexb",
+                                                              VideoCodecType videoCodecType = VideoCodecType.LIBX264,
+                                                              AudioCodecType audioCodecType = AudioCodecType.AAC,
+                                                              CancellationToken? cancellationToken = null)
     {
         return (await ExecuteConcatVideosAsync(files,
                                                null,
@@ -912,11 +913,11 @@ public class VideoFileProcessor : IVideoFileProcessor
 
     /// <inheritdoc />
     public async Task<byte[]> ConcatVideosAsBytesAsync(MediaFile[] files,
-                                                        FileFormatType outputFileFormatType,
-                                                        string videoBSF = "h264_mp4toannexb",
-                                                        CancellationToken? cancellationToken = null,
-                                                        VideoCodecType videoCodecType = VideoCodecType.LIBX264,
-                                                        AudioCodecType audioCodecType = AudioCodecType.AAC)
+                                                       FileFormatType outputFileFormatType,
+                                                       string videoBSF = "h264_mp4toannexb",
+                                                       CancellationToken? cancellationToken = null,
+                                                       VideoCodecType videoCodecType = VideoCodecType.LIBX264,
+                                                       AudioCodecType audioCodecType = AudioCodecType.AAC)
     {
         return (await ExecuteConcatVideosAsync(files,
                                                null,
@@ -989,31 +990,31 @@ public class VideoFileProcessor : IVideoFileProcessor
 
     /// <inheritdoc />
     public async Task AddHardSubtitlesAsync(MediaFile videoFile,
-                                             MediaFile subsFile,
-                                             string language,
-                                             string outputFile,
-                                             FileFormatType outputFileFormatType,
-                                             CancellationToken? cancellationToken = null)
+                                            MediaFile subsFile,
+                                            string language,
+                                            string outputFile,
+                                            FileFormatType outputFileFormatType,
+                                            CancellationToken? cancellationToken = null)
     {
         await ExecuteAddHardSubtitlesAsync(videoFile, subsFile, language, outputFile, outputFileFormatType, cancellationToken ?? new CancellationToken());
     }
 
     /// <inheritdoc />
     public async Task<MemoryStream> AddHardSubtitlesAsStreamAsync(MediaFile videoFile,
-                                                                   MediaFile subsFile,
-                                                                   string language,
-                                                                   FileFormatType outputFileFormatType,
-                                                                   CancellationToken? cancellationToken = null)
+                                                                  MediaFile subsFile,
+                                                                  string language,
+                                                                  FileFormatType outputFileFormatType,
+                                                                  CancellationToken? cancellationToken = null)
     {
         return (await ExecuteAddHardSubtitlesAsync(videoFile, subsFile, language, null, outputFileFormatType, cancellationToken ?? new CancellationToken()))!;
     }
 
     /// <inheritdoc />
     public async Task<byte[]> AddHardSubtitlesAsBytesAsync(MediaFile videoFile,
-                                                            MediaFile subsFile,
-                                                            string language,
-                                                            FileFormatType outputFileFormatType,
-                                                            CancellationToken? cancellationToken = null)
+                                                           MediaFile subsFile,
+                                                           string language,
+                                                           FileFormatType outputFileFormatType,
+                                                           CancellationToken? cancellationToken = null)
     {
         return (await ExecuteAddHardSubtitlesAsync(videoFile, subsFile, language, null, outputFileFormatType, cancellationToken ?? new CancellationToken()))!.ToArray();
     }
