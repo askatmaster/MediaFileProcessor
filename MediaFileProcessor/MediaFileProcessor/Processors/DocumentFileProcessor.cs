@@ -28,13 +28,12 @@ public class DocumentFileProcessor : IDocumentFileProcessor
     /// <inheritdoc />
     public async Task<MemoryStream?> ExecuteAsync(DocumentFileProcessingSettings settings, CancellationToken cancellationToken)
     {
-        var process = new MediaFileProcess(_pandoc,
-                                           settings.GetProcessArguments(),
-                                           settings,
-                                           settings.GetInputStreams(),
-                                           settings.GetInputPipeNames());
-
-        return await process.ExecuteAsync(cancellationToken);
+        using(var process = new MediaFileProcess(_pandoc,
+                                                 settings.GetProcessArguments(),
+                                                 settings,
+                                                 settings.GetInputStreams(),
+                                                 settings.GetInputPipeNames()))
+            return await process.ExecuteAsync(cancellationToken);
     }
 
     /// <summary>

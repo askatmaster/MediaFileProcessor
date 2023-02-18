@@ -297,11 +297,11 @@ public class VideoProcessorTests
 
     public static async Task AddAudioToVideoTest(VideoFileProcessor videoProcessor)
     {
-        //Test block with physical paths to input and output files
-        // await videoProcessor.AddAudioToVideoAsync(new MediaFile(_audio1, MediaFileInputType.Path),
-        //                                           new MediaFile(_video1, MediaFileInputType.Path),
-        //                                           @"results\AddAudioToVideoTest\resultPath.avi",
-        //                                           FileFormatType.AVI);
+        // Test block with physical paths to input and output files
+         await videoProcessor.AddAudioToVideoAsync(new MediaFile(_audio1, MediaFileInputType.Path),
+                                                   new MediaFile(_video1, MediaFileInputType.Path),
+                                                   @"results\AddAudioToVideoTest\resultPath.avi",
+                                                   FileFormatType.AVI);
 
         //Block for testing file processing as bytes without specifying physical paths
         var bytesA = await File.ReadAllBytesAsync(_audio1);
@@ -311,13 +311,13 @@ public class VideoProcessorTests
             output.Write(resultBytes);
 
         //Block for testing file processing as streams without specifying physical paths
-        // await using var streamA = new FileStream(_audio1, FileMode.Open);
-        // await using var streamV = new FileStream(_video1, FileMode.Open);
-        // var resultStream = await videoProcessor.AddAudioToVideoAsStreamAsync(new MediaFile(streamA),
-        //                                                                      new MediaFile(streamV),
-        //                                                                      FileFormatType.AVI);
-        // await using (var output = new FileStream(@"results\AddAudioToVideoTest\resultStream.avi", FileMode.Create))
-        //     resultStream.WriteTo(output);
+        await using var streamA = new FileStream(_audio1, FileMode.Open);
+        await using var streamV = new FileStream(_video1, FileMode.Open);
+        var resultStream = await videoProcessor.AddAudioToVideoAsStreamAsync(new MediaFile(streamA),
+                                                                             new MediaFile(streamV),
+                                                                             FileFormatType.AVI);
+        await using (var output = new FileStream(@"results\AddAudioToVideoTest\resultStream.avi", FileMode.Create))
+            resultStream.WriteTo(output);
     }
 
     public static async Task ConvertVideoToGifTest(VideoFileProcessor videoProcessor)

@@ -90,7 +90,7 @@ public class MediaFileProcess : IDisposable
     {
         Process.WaitForExit();
         Process.Exited -= ProcessOnExited;
-        Dispose();
+        IsDisposed = true;
     }
 
     /// <summary>

@@ -29,13 +29,12 @@ public class ImageFileProcessor : IImageFileProcessor
     /// <inheritdoc />
     public async Task<MemoryStream?> ExecuteAsync(ImageProcessingSettings settings, CancellationToken cancellationToken)
     {
-        var process = new MediaFileProcess(_convert,
-                                           settings.GetProcessArguments(),
-                                           settings,
-                                           settings.GetInputStreams(),
-                                           settings.GetInputPipeNames());
-
-        return await process.ExecuteAsync(cancellationToken);
+        using(var process = new MediaFileProcess(_convert,
+                                                 settings.GetProcessArguments(),
+                                                 settings,
+                                                 settings.GetInputStreams(),
+                                                 settings.GetInputPipeNames()))
+            return await process.ExecuteAsync(cancellationToken);
     }
 
     //======================================================================================================================================================================

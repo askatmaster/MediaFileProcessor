@@ -60,7 +60,7 @@ public class ProcessingSettings
     /// <summary>
     /// Property to determine if standard output is redirected or not.
     /// </summary>
-    public bool IsStandartOutputRedirect { get; set; } = OutputFileArguments == null || OutputFileArguments.Trim() == " - ";
+    public bool IsStandartOutputRedirect => OutputFileArguments == null || OutputFileArguments.Trim() == " - ";
 
     /// <summary>
     /// Property to hold a dictionary of pipe names and their associated streams.

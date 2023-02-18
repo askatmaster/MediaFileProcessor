@@ -42,9 +42,7 @@ public class VideoFileProcessor : IVideoFileProcessor
                                                  settings,
                                                  settings.GetInputStreams(),
                                                  settings.GetInputPipeNames()))
-        {
             return  await process.ExecuteAsync(cancellationToken);
-        }
     }
 
     //======================================================================================================================================================================
