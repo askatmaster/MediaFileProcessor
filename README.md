@@ -1,7 +1,7 @@
 # MediaFileProcessor
 C#(.NET Standard 2.0) OpenSource library for processing various files (videos, photos, documents, images).
 
-```dotnet add package MediaFileProcessor --version 1.0.0```
+```dotnet add package MediaFileProcessor --version 1.0.1```
 
 This library is a universal wrapper for executable processes in the operating system (Windows/Linux).
 The library allows files to communicate with processes through named pipes, streams, byte arrays, and directory paths.
@@ -30,7 +30,6 @@ var fromStream = new MediaFile(fs);
 var bytes = @"C:\fileTest.avi".ToBytes();
 var fromBytes = new MediaFile(bytes);
 ```
-![MediaFileCreate.jpg](ReadmeImages%2FMediaFileCreate.jpg)
 
 When creating an instance from a path, a named pipe, and a naming pattern, you must specify the receive type given via the ```MediaFileInputType``` parameter.
 
@@ -140,6 +139,10 @@ The current version of the library has already implemented some options for proc
 - Combine a set of video files into a single video file
 - Add subtitles
 - Get detailed information on video file metadata
+
+These functions I tested with some of the most requested formats mp4 avi png jpg bmp wav and mpeg
+Other formats may require additional settings.
+In the future, I'm going to develop the library to possibly install settings under the hood for any format.
 
 ### Example "Extract frame from video"
 Below is an example of using frame extraction from a video file at a certain timing, provided that the file exists PHYSICALLY in the directory

@@ -1,5 +1,7 @@
 # MediaFileProcessor
-C# OpenSource library for processing various files (videos, photos, documents, images).
+C#(.NET Standard 2.0) OpenSource library for processing various files (videos, photos, documents, images).
+
+```dotnet add package MediaFileProcessor --version 1.0.1```
 
 Данная библиотека является универсальной оболочкой для исполняемых процессов в операционной системе (Windows/Linux).
 Библиотека позволяет файлам взаимодействовать с процессами через именованные каналы, потоки, массивы байтов и пути в директориях.
@@ -28,11 +30,12 @@ var fromStream = new MediaFile(fs);
 var bytes = @"C:\fileTest.avi".ToBytes();
 var fromBytes = new MediaFile(bytes);
 ```
-![MediaFileCreate.jpg](ReadmeImages%2FMediaFileCreate.jpg)
 
 При создании экземпляра из пути, именованного канала и шаблона именования необходимо указать тип получения данный через параметр ```MediaFileInputType```.
 
 # Инструкция FFmpeg
+
+
 
 Для обработки видеофайлов средствами FFmpeg необходимо иметь его исполняемый файл ffmpeg.exe.
 Если вы не хотите скачивать его собственноручно то можете использовать следующий код:
@@ -80,6 +83,17 @@ var result = await videoFileProcessor.ExecuteAsync(settings, new CancellationTok
 ```-y  -ss 00:00:47.500  -i pathToOutputFile  -frames:v 1  -f image2 pathToInputFile```.
 Необходимо СОБЛЮДАТЬ ПОРЯДОК конфигуарций, т.к. некоторые аргументы должны быть заданы до указания входного аргумента и некоторые после. 
 
+## Получить информацию о видеофайле
+
+```csharp
+var videoProcessor = new VideoFileProcessor();
+
+var stream = @"pathToOutputFile".ToStream();
+var data = await videoProcessor.GetVideoInfo(new MediaFile(stream));
+
+var info = JsonConvert.DeserializeObject<VideoFileInfo>(data, _jsonSnakeCaseSerializerSettings)!;
+```
+
 ### Внимание
 
 При настройке конфигурации процесса вы можете задать входные данные используя метод ```SetInputFiles``` он принимает массив параметров в виде экземпляров класса ```MediaFile```.
@@ -111,7 +125,6 @@ var result = await videoFileProcessor.ExecuteAsync(settings, new CancellationTok
 ```
 
 В текущей версии библиотеки уже реализованы некоторые варианты обработки видеофайлов с помощью ffmpeg:
-
 - Извлечь кадр из видео
 - Обрезать видео
 - Конвертировать видео в набор изображений покадрово
@@ -127,6 +140,10 @@ var result = await videoFileProcessor.ExecuteAsync(settings, new CancellationTok
 - Соединить набор видеофайлов в единый видеофайл
 - Добавить субтитры
 - Получить подробную информацию по метаданныхм видеофайла
+
+Указанные функции я тестировал с некоторыми наиболее востребованными форматами mp4 avi png jpg bmp wav и mpeg
+Другие форматы могут потребовать дополнительных настроек.
+В будущем я собираюсь развить библиотеку до возможно подкапотной установки настроек под любые форматы.
 
 ### Пример "Извлечь кадр из видео"
 Ниже представлен пример применения извлечения кадра из видеофайла на определенном тайминге при условии что файл существует ФИЗИЧЕСКИ в директории 
