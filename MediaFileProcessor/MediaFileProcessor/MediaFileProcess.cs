@@ -339,7 +339,10 @@ public class MediaFileProcess : IDisposable
         if (PipeNames != null)
         {
             foreach (var pipeFile in PipeNames)
-                File.Delete(pipeFile);
+            {
+                if(File.Exists(pipeFile))
+                    File.Delete(pipeFile);
+            }
 
             PipeNames = null;
         }
