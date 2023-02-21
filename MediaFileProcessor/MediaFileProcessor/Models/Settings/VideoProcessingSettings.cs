@@ -38,6 +38,16 @@ public class VideoProcessingSettings : ProcessingSettings
     }
 
     /// <summary>
+    /// Enable to skip writing the name inside a hdlr box. Default is false.
+    /// </summary>
+    public VideoProcessingSettings EmptyHdlrName(bool value)
+    {
+        _stringBuilder.Append($" -empty_hdlr_name {value} ");
+
+        return this;
+    }
+
+    /// <summary>
     /// Hardware Acceleration Output Format - Force HWAccel if selected
     /// </summary>
     public VideoProcessingSettings HardwareAcceleration(HardwareAccelerationType hardwareAcceleration, bool hardwareAccelerationOutputFormatCopy)
