@@ -73,6 +73,28 @@ public class VideoFileProcessor : IVideoFileProcessor
         return await ExecuteAsync(settings, cancellationToken);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="file"></param>
+    /// <param name="outputFile"></param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public async Task MP4SetStartMoovAsync(MediaFile file,
+                                                          string outputFile,
+                                                          CancellationToken cancellationToken)
+    {
+        var settings = new VideoProcessingSettings().ReplaceIfExist()
+                                                    .SetInputFiles(file)
+                                                    .MovFralgs("faststart")
+                                                    .AudioCodec(AudioCodecType.COPY)
+                                                    .VideoCodec(VideoCodecType.COPY)
+                                                    .SetOutputArguments(outputFile);
+
+
+        await ExecuteAsync(settings, cancellationToken);
+    }
+
     /// <inheritdoc />
     public async Task GetFrameFromVideoAsync(TimeSpan timestamp,
                                              MediaFile file,
