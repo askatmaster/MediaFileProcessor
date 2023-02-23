@@ -37,11 +37,7 @@ public class VideoFileProcessor : IVideoFileProcessor
     /// <inheritdoc />
     public async Task<MemoryStream?> ExecuteAsync(VideoProcessingSettings settings, CancellationToken cancellationToken)
     {
-        using(var process = new MediaFileProcess(_ffmpeg,
-                                                 settings.GetProcessArguments(),
-                                                 settings,
-                                                 settings.GetInputStreams(),
-                                                 settings.GetInputPipeNames()))
+        using(var process = new MediaFileProcess(_ffmpeg, settings.GetProcessArguments(), settings, settings.GetInputStreams(), settings.GetInputPipeNames()))
             return  await process.ExecuteAsync(cancellationToken);
     }
 
@@ -80,19 +76,50 @@ public class VideoFileProcessor : IVideoFileProcessor
     /// <param name="outputFile"></param>
     /// <param name="cancellationToken"></param>
     /// <returns></returns>
-    public async Task MP4SetStartMoovAsync(MediaFile file,
-                                                          string outputFile,
-                                                          CancellationToken cancellationToken)
+    public async Task<MemoryStream?> MP4SetStartMoovAsync(MediaFile file, string? outputFile = null, CancellationToken cancellationToken = default)
     {
-        var settings = new VideoProcessingSettings().ReplaceIfExist()
-                                                    .SetInputFiles(file)
-                                                    .MovFralgs("faststart")
-                                                    .AudioCodec(AudioCodecType.COPY)
-                                                    .VideoCodec(VideoCodecType.COPY)
-                                                    .SetOutputArguments(outputFile);
+        string? fileName = null;
+        string? resultFileName = null;
 
+        try
+        {
+            var settings = new VideoProcessingSettings().ReplaceIfExist();
 
-        await ExecuteAsync(settings, cancellationToken);
+            if(file.InputType == MediaFileInputType.Stream)
+            {
+                fileName = @$"{Guid.NewGuid()}.mp4";
+                using (var output = new FileStream(fileName, FileMode.Create))
+                    await file.InputFileStream!.CopyToAsync(output);
+            }
+
+            if(outputFile is null)
+                resultFileName = @$"{Guid.NewGuid()}.mp4";
+
+            settings.SetInputFiles(fileName is not null ? new MediaFile(fileName, MediaFileInputType.Path) : file);
+
+            settings.MovFralgs("faststart").AudioCodec(AudioCodecType.COPY).VideoCodec(VideoCodecType.COPY).SetOutputArguments(resultFileName ?? outputFile);
+
+            if(outputFile is null)
+            {
+                await ExecuteAsync(settings, cancellationToken);
+
+                return new MemoryStream(File.ReadAllBytes(resultFileName!));
+            }
+            else
+            {
+                await ExecuteAsync(settings, cancellationToken);
+
+                return null;
+            }
+        }
+        finally
+        {
+            if(fileName is not null)
+                File.Delete(fileName);
+
+            if(resultFileName is not null)
+                File.Delete(resultFileName);
+        }
     }
 
     /// <inheritdoc />
@@ -390,7 +417,7 @@ public class VideoFileProcessor : IVideoFileProcessor
                                                             AudioSampleRateType audioSampleRateType = AudioSampleRateType.Hz44100)
     {
         return (await ExecuteGetAudioFromVideoAsync(file, outputFileFormatType, audioSampleRateType, audioChannel, null,  cancellationToken ?? new CancellationToken()))!
-            .ToArray();
+           .ToArray();
     }
 
     //======================================================================================================================================================================
@@ -504,7 +531,7 @@ public class VideoFileProcessor : IVideoFileProcessor
                                                               CancellationToken? cancellationToken = null)
     {
         return (await ExecuteAddWaterMarkToVideoAsync(videoFile, watermarkFile, position, null, outputFileFormatType, cancellationToken ?? new CancellationToken()))!
-            .ToArray();
+           .ToArray();
     }
 
     //======================================================================================================================================================================
@@ -567,7 +594,7 @@ public class VideoFileProcessor : IVideoFileProcessor
                                                                CancellationToken? cancellationToken = null)
     {
         return (await ExecuteExtractVideoFromFileAsync(file, null, outputFileFormatType, videoCodecType, pixelFormat, cancellationToken ?? new CancellationToken()))!
-            .ToArray();
+           .ToArray();
     }
 
     //======================================================================================================================================================================
@@ -759,7 +786,7 @@ public class VideoFileProcessor : IVideoFileProcessor
                                                         CancellationToken? cancellationToken = null)
     {
         return (await ExecuteCompressVideoAsync(file, compressionRatio, null, outputFileFormatType, videoCodecType, cancellationToken ?? new CancellationToken()))!
-            .ToArray();
+           .ToArray();
     }
 
     //======================================================================================================================================================================
