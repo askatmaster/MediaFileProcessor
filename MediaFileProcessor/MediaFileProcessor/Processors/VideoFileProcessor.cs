@@ -70,14 +70,26 @@ public class VideoFileProcessor : IVideoFileProcessor
     }
 
     /// <summary>
-    /// 
+    /// This method moves the MOOV atom of the MP4 format to the beginning because FFmpeg must know how to process this file when reading files from a stream.
+    /// The MP4 file processing information is usually at the end and FFmpeg cannot process it as a stream.
+    /// When moving a MOOV atom, ffmpeg cannot retrieve a file from a stream and output the result as a stream.
+    /// To move an atom, it is necessary to have a file physically in the directory, the result of processing must also be written to the directory.
+    /// If the MP4 file is in your stream form and needs to shift the MOOV atom, and get the result in wanting necessarily in the video stream.
+    /// Then this method will create a physical file from your input stream and pass it to FFmpeg for processing and convert the result from the file to a stream and return this stream.
+    /// All intermediate files created will then be deleted.
     /// </summary>
-    /// <param name="file"></param>
-    /// <param name="outputFile"></param>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
+    /// <param name="file">Входной файл</param>
+    /// <param name="outputFile">
+    /// The output file. If outputFile is specified, the result will be generated from it.
+    /// If the outputFile is null, the result will be retrieved as a stream.
+    /// </param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>If outputFile is specified, null will be returned. And if outputfile is not specified the stream containing the resulting file will be returned</returns>
     public async Task<MemoryStream?> MP4SetStartMoovAsync(MediaFile file, string? outputFile = null, CancellationToken cancellationToken = default)
     {
+        if(file.InputType is MediaFileInputType.NamedPipe or MediaFileInputType.Template)
+            throw new ArgumentException("NamedPipe and Template inputs is not sopported in current version.");
+
         string? fileName = null;
         string? resultFileName = null;
 
@@ -85,7 +97,7 @@ public class VideoFileProcessor : IVideoFileProcessor
         {
             var settings = new VideoProcessingSettings().ReplaceIfExist();
 
-            if(file.InputType == MediaFileInputType.Stream)
+            if(file.InputType is MediaFileInputType.Stream)
             {
                 fileName = @$"{Guid.NewGuid()}.mp4";
                 using (var output = new FileStream(fileName, FileMode.Create))
