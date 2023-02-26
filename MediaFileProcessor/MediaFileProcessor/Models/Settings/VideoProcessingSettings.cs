@@ -112,6 +112,26 @@ public class VideoProcessingSettings : ProcessingSettings
     }
 
     /// <summary>
+    /// Dump video coding statistics to vstats_HHMMSS.log.
+    /// </summary>
+    public VideoProcessingSettings VStats()
+    {
+        _stringBuilder.Append(" -vstats ");
+
+        return this;
+    }
+
+    /// <summary>
+    /// Calculate PSNR of compressed frames. This option is deprecated, pass the PSNR flag to the encoder instead, using -flags +psnr.
+    /// </summary>
+    public VideoProcessingSettings PSNR()
+    {
+        _stringBuilder.Append(" -psnr ");
+
+        return this;
+    }
+
+    /// <summary>
     /// When used as an input option (before -i), limit the duration of data read from the input file.
     /// When used as an output option (before an output url), stop writing the output after its duration reaches duration.
     /// -to and -t are mutually exclusive and -t has priority
@@ -214,6 +234,27 @@ public class VideoProcessingSettings : ProcessingSettings
     public VideoProcessingSettings DataFramesOutput(int number)
     {
         _stringBuilder.Append($" -dframes {number}");
+
+        return this;
+    }
+
+    /// <summary>
+    /// Set the number of audio frames to output. This is an obsolete alias for -frames:a, which you should use instead.
+    /// </summary>
+    public VideoProcessingSettings AudioFramesOutput(int number)
+    {
+        _stringBuilder.Append($" -aframes {number}");
+
+        return this;
+    }
+
+    /// <summary>
+    /// Create the filtergraph specified by filtergraph and use it to filter the stream.
+    /// This is an alias for -filter:a
+    /// </summary>
+    public VideoProcessingSettings AudioFilterGraph(int number)
+    {
+        _stringBuilder.Append($" -af {number}");
 
         return this;
     }
