@@ -229,6 +229,19 @@ public class VideoProcessingSettings : ProcessingSettings
     }
 
     /// <summary>
+    /// Fix subtitles durations. For each subtitle, wait for the next packet in the same stream and adjust the duration of the first to avoid overlap.
+    /// This is necessary with some subtitles codecs, especially DVB subtitles, because the duration in the original packet is only a rough estimate and the end is actually marked by an empty subtitle frame.
+    /// Failing to use this option when necessary can result in exaggerated durations or muxing failures due to non-monotonic timestamps.
+    /// Note that this option will delay the output of all data until the next subtitle packet is decoded: it may increase memory consumption and latency a lot
+    /// </summary>
+    public VideoProcessingSettings FixSubDuration()
+    {
+        _stringBuilder.Append(" -fix_sub_duration");
+
+        return this;
+    }
+
+    /// <summary>
     /// Set the number of data frames to output. This is an obsolete alias for -frames:d, which you should use instead
     /// </summary>
     public VideoProcessingSettings DataFramesOutput(int number)
@@ -829,6 +842,28 @@ public class VideoProcessingSettings : ProcessingSettings
     public VideoProcessingSettings Lossless(bool value)
     {
         _stringBuilder.Append($" -lossless {value} ");
+
+        return this;
+    }
+
+    /// <summary>
+    /// This option enables or disables accurate seeking in input files with the -ss option. It is enabled by default, so seeking is accurate when transcoding.
+    /// Use -noaccurate_seek to disable it, which may be useful e.g. when copying some streams and transcoding the others
+    /// </summary>
+    public VideoProcessingSettings AccurateSeek()
+    {
+        _stringBuilder.Append(" -accurate_seek ");
+
+        return this;
+    }
+
+    /// <summary>
+    /// Allows discarding specific streams or frames from streams. Any input stream can be fully discarded,
+    /// using value all whereas selective discarding of frames from a stream occurs at the demuxer and is not supported by all demuxers.
+    /// </summary>
+    public VideoProcessingSettings Discard()
+    {
+        _stringBuilder.Append(" -discard ");
 
         return this;
     }
