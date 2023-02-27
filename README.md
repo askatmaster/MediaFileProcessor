@@ -122,6 +122,19 @@ settings.ReplaceIfExist()                        //Overwrite output files withou
 var result = await videoFileProcessor.ExecuteAsync(settings, new CancellationToken());
 ```
 
+### Important Note When Processing MP4 Files!
+When processing MP4 video files into a video stream or byte set, use this method.
+```csharp
+public async Task<MemoryStream?> MP4SetStartMoovAsync(MediaFile file, string? outputFile = null, CancellationToken cancellationToken = default)
+```
+
+This method moves the MOOV atom of the MP4 format to the beginning because FFmpeg must know how to process this file when reading files from a stream. 
+The MP4 file processing information is usually at the end and FFmpeg cannot process it as a stream.
+When moving a MOOV atom, ffmpeg cannot retrieve a file from a stream and output the result as a stream.
+To move an atom, it is necessary to have a file physically in the directory, the result of processing must also be written to the directory. If the MP4 file is in your stream form and needs to shift the MOOV atom, and get the result in wanting necessarily in the video stream.
+Then this method will create a physical file from your input stream and pass it to FFmpeg for processing and convert the result from the file to a stream and return this stream.
+All intermediate files created will then be deleted.
+
 The current version of the library has already implemented some options for processing video files using ffmpeg:
 
 - Extract frame from video
