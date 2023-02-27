@@ -1,7 +1,7 @@
 # MediaFileProcessor
 C#(.NET Standard 2.0) OpenSource library for processing various files (videos, photos, documents, images).
 
-```dotnet add package MediaFileProcessor --version 1.0.1```
+```dotnet add package MediaFileProcessor --version 1.0.2```
 
 This library is a universal wrapper for executable processes in the operating system (Windows/Linux).
 The library allows files to communicate with processes through named pipes, streams, byte arrays, and directory paths.
