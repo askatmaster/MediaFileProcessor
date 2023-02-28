@@ -57,21 +57,13 @@ public enum FileFormatType
     TIFF = 5,
 
     /// <summary>
-    /// The file format type for TIF files.
-    /// </summary>
-    /// <remarks>
-    /// TIF is an abbreviation for TIFF, and it is used interchangeably with TIFF.
-    /// </remarks>
-    TIF = 6,
-
-    /// <summary>
     /// The file format type for MATROSKA files.
     /// </summary>
     /// <remarks>
     /// MATROSKA is a free and open-source multimedia container format,
     /// and it is commonly used for storing high-definition video and audio.
     /// </remarks>
-    MATROSKA = 7,
+    MKV = 7,
     /// <summary>
     /// The file format type for AVI files.
     /// </summary>
@@ -90,6 +82,7 @@ public enum FileFormatType
     /// </remarks>
     MPEG = 9,
 
+    //TODO tests
     /// <summary>
     /// The file format type for MPEG-TS files.
     /// </summary>
@@ -99,6 +92,7 @@ public enum FileFormatType
     /// </remarks>
     MPEGTS = 10,
 
+    //TODO tests
     /// <summary>
     /// The file format type for SVCD files.
     /// </summary>
@@ -153,6 +147,7 @@ public enum FileFormatType
     /// </remarks>
     WEBM = 16,
 
+    //TODO tests
     /// <summary>
     /// GXF file format. This format is commonly used in broadcast applications to store video and audio content.
     /// </summary>

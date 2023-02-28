@@ -15,15 +15,13 @@ public static class FilesSignatures
 
     private static byte[] TIFF => new byte[] { 0x4D, 0x4D, 0x00, 0x2A };
 
-    private static byte[] TIF => new byte[] { 0x49, 0x49, 0x2A, 0x00 };
-
     private static byte[] _3GP => new byte[] { 0x33, 0x67, 0x70, 0x33 };
 
     private static byte[] MP4 => new byte[] { 0x00, 0x00, 0x00, 0x18, 0x66, 0x74, 0x79, 0x70, 0x4D, 0x53, 0x4E, 0x56 };
 
     private static byte[] MOV => new byte[] { 0x6D, 0x6F, 0x6F, 0x76 };
 
-    private static byte[] MATROSKA => new byte[] { 0x1A, 0x45, 0xDF, 0xA3 };
+    private static byte[] MKV => new byte[] { 0x1A, 0x45, 0xDF, 0xA3 };
 
     private static byte[] AVI => new byte[] { 0x52, 0x49, 0x46, 0x46 };
 
@@ -83,7 +81,7 @@ public static class FilesSignatures
             FileFormatType._3GP => _3GP,
             FileFormatType.MP4 => MP4,
             FileFormatType.MOV => MOV,
-            FileFormatType.MATROSKA => MATROSKA,
+            FileFormatType.MKV => MKV,
             FileFormatType.AVI => AVI,
             FileFormatType.MPEG => MPEG,
             FileFormatType.MPEGTS => MPEGTS,
@@ -107,7 +105,6 @@ public static class FilesSignatures
             FileFormatType.ICO => ICO,
             FileFormatType.BIN => BIN,
             FileFormatType.TIFF => TIFF,
-            FileFormatType.TIF => TIF,
             FileFormatType.RAW or FileFormatType.SVG => throw new NotSupportedException("The signatures for \"RAW\" and \"SVG\" "
                                                                                       + "were not specified in the original question, "
                                                                                       + "so their byte arrays are left empty in the code."

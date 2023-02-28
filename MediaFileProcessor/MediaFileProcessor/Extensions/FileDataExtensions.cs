@@ -9,13 +9,24 @@ namespace MediaFileProcessor.Extensions;
 public static class FileDataExtensions
 {
     /// <summary>
+    /// Checks if the specified string value exists in the specified enum type T.
+    /// </summary>
+    /// <typeparam name="T">The enum type to search for the value in.</typeparam>
+    /// <param name="value">The string value to search for.</param>
+    /// <returns>True if the value exists in the enum type T, false otherwise.</returns>
+    public static bool ExistsInEnum<T>(this string value) where T : Enum
+    {
+        return Enum.GetNames(typeof(T)).Any(i => "." + i.Replace("_", "").ToLower() == value.ToLower());
+    }
+
+    /// <summary>
     /// Converts the specified file name to a stream.
     /// </summary>
     /// <param name="fileName">The file name to convert.</param>
     /// <param name="mode">The mode to open the file stream with. Defaults to FileMode.Open.</param>
     /// <returns>A FileStream representing the specified file name.</returns>
     /// <exception cref="FileNotFoundException">Thrown if the file specified in <paramref name="fileName"/> does not exist.</exception>
-    public static FileStream ToStream(this string fileName, FileMode mode = FileMode.Open)
+    public static FileStream ToFileStream(this string fileName, FileMode mode = FileMode.Open)
     {
         if(!File.Exists(fileName))
             throw new FileNotFoundException($"File not found: {fileName}");
@@ -43,7 +54,7 @@ public static class FileDataExtensions
     /// <param name="bytes">The byte array to convert.</param>
     /// <returns>A MemoryStream representing the specified byte array.</returns>
     /// <exception cref="ArgumentException">Thrown if <paramref name="bytes"/> is an empty array.</exception>
-    public static MemoryStream ToStream(this byte[] bytes)
+    public static MemoryStream ToFileStream(this byte[] bytes)
     {
         if(bytes.Length is 0)
             throw new ArgumentException("Byte array is empty");
