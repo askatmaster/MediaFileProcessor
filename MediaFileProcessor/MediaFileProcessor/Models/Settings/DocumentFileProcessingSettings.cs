@@ -202,7 +202,7 @@ public class DocumentFileProcessingSettings : ProcessingSettings
             case 1:
                 // Check the type of input file (Path, Template or NamedPipe)
                 // and append the file path to the string builder
-                _stringBuilder.Append(files[0].InputType is MediaFileInputType.Path or MediaFileInputType.Template or MediaFileInputType.NamedPipe
+                _stringBuilder.Append(files[0].InputType is MediaFileInputType.Path or MediaFileInputType.NamedPipe
                                           ? files[0].InputFilePath! : StandartInputRedirectArgument);
 
                 // Set input streams for the files
@@ -220,7 +220,7 @@ public class DocumentFileProcessingSettings : ProcessingSettings
                                                   (current, file) =>
                                                       current
                                                     + " "
-                                                    + (file.InputType is MediaFileInputType.Path or MediaFileInputType.Template or MediaFileInputType.NamedPipe
+                                                    + (file.InputType is MediaFileInputType.Path or MediaFileInputType.NamedPipe
                                                           ? file.InputFilePath! : StandartInputRedirectArgument)));
 
             // Set input streams for the files
@@ -233,7 +233,7 @@ public class DocumentFileProcessingSettings : ProcessingSettings
         _stringBuilder.Append(files.Aggregate(string.Empty,
                                               (current, file) => current
                                                 + " "
-                                                + (file.InputType is MediaFileInputType.Path or MediaFileInputType.Template or MediaFileInputType.NamedPipe
+                                                + (file.InputType is MediaFileInputType.Path or MediaFileInputType.NamedPipe
                                                       ? file.InputFilePath! : SetPipeChannel(Guid.NewGuid().ToString(), file))));
 
         // Set input streams for the files

@@ -39,15 +39,6 @@ public class VideoProcessorTests
     {
         var videoProcessor = new VideoFileProcessor();
 
-        Console.WriteLine("GetFrameFromVideoTest");
-        GetFrameFromVideoTest(videoProcessor).GetAwaiter().GetResult();
-
-        Console.WriteLine("CutVideoTest");
-        CutVideoTest(videoProcessor).GetAwaiter().GetResult();
-
-        Console.WriteLine("ConvertVideoToImagesTest");
-        ConvertVideoToImagesTest(videoProcessor).GetAwaiter().GetResult();
-
         Console.WriteLine("ConvertImagesToVideoTest");
         ConvertImagesToVideoTest(videoProcessor).GetAwaiter().GetResult();
 
@@ -83,86 +74,6 @@ public class VideoProcessorTests
 
         Console.WriteLine("GetVideoInfoTest");
         var data = GetVideoInfoTest(videoProcessor).GetAwaiter().GetResult();
-    }
-
-    public static async Task GetFrameFromVideoTest(VideoFileProcessor videoProcessor)
-    {
-        //Test block with physical paths to input and output files
-        await videoProcessor.GetFrameFromVideoAsync(TimeSpan.FromMilliseconds(47500),
-                                                    new MediaFile(_video1, MediaFileInputType.Path),
-                                                    @"resultPath.jpg",
-                                                    FileFormatType.JPG);
-
-        //Block for testing file processing as bytes without specifying physical paths
-        var bytes = await File.ReadAllBytesAsync(_video1);
-        var resultBytes = await videoProcessor.GetFrameFromVideoAsBytesAsync(TimeSpan.FromMilliseconds(47500), new MediaFile(bytes), FileFormatType.JPG);
-        await using (var output = new FileStream(@"C:\mfptest\results\GetFrameFromVideoTest\resultBytes.jpg", FileMode.Create))
-            output.Write(resultBytes);
-
-        //Block for testing file processing as streams without specifying physical paths
-        await using var stream = new FileStream(_video1, FileMode.Open);
-        var resultStream = await videoProcessor.GetFrameFromVideoAsStreamAsync(TimeSpan.FromMilliseconds(47500), new MediaFile(stream), FileFormatType.JPG);
-        await using (var output = new FileStream(@"C:\mfptest\results\GetFrameFromVideoTest\resultStream.jpg", FileMode.Create))
-            resultStream.WriteTo(output);
-    }
-
-    public static async Task CutVideoTest(VideoFileProcessor videoProcessor)
-    {
-        //Test block with physical paths to input and output files
-        await videoProcessor.CutVideoAsync(TimeSpan.FromMilliseconds(27500),
-                                           TimeSpan.FromMilliseconds(47500),
-                                           new MediaFile(_video1, MediaFileInputType.Path),
-                                           @"C:\mfptest\results\CutVideoTest\resultPath.avi",
-                                           FileFormatType.AVI);
-
-        //Block for testing file processing as bytes without specifying physical paths
-        var bytes = await File.ReadAllBytesAsync(_video1);
-        var resultBytes = await videoProcessor.CutVideoAsBytesAsync(TimeSpan.FromMilliseconds(27500),
-                                                                    TimeSpan.FromMilliseconds(47500),
-                                                                    new MediaFile(bytes),
-                                                                    FileFormatType.AVI);
-        await using (var output = new FileStream(@"C:\mfptest\results\CutVideoTest\resultBytes.avi", FileMode.Create))
-            output.Write(resultBytes, 0, resultBytes.Length);
-
-        //Block for testing file processing as streams without specifying physical paths
-        await using var stream = new FileStream(_video1, FileMode.Open);
-        var resultStream = await videoProcessor.CutVideoAsStreamAsync(TimeSpan.FromMilliseconds(27500),
-                                                                      TimeSpan.FromMilliseconds(47500),
-                                                                      new MediaFile(stream),
-                                                                      FileFormatType.AVI);
-        await using (var output = new FileStream(@"C:\mfptest\results\CutVideoTest\resultStream.avi", FileMode.Create))
-            resultStream.WriteTo(output);
-    }
-
-    public static async Task ConvertVideoToImagesTest(VideoFileProcessor videoProcessor)
-    {
-        //Test block with physical paths to input and output files
-        await videoProcessor.ConvertVideoToImagesAsync(new MediaFile(_video1, MediaFileInputType.Path),
-                                                       FileFormatType.JPG,
-                                                       @"C:\mfptest\results\ConvertVideoToImagesTest\Path\result%03d.jpg");
-
-        //Block for testing file processing as bytes without specifying physical paths
-        var bytes1 = await File.ReadAllBytesAsync(_video1);
-        var resultBytes = await videoProcessor.ConvertVideoToImagesAsBytesAsync(new MediaFile(bytes1), FileFormatType.JPG);
-        var count1 = 1;
-
-        foreach (var bytesData in resultBytes)
-        {
-            await using (var output = new FileStream(@$"C:\mfptest\results\ConvertVideoToImagesTest\Bytes\result{count1++}.jpg", FileMode.Create))
-                output.Write(bytesData, 0, bytesData.Length);
-        }
-
-        //Block for testing file processing as streams without specifying physical paths
-        await using var stream = new FileStream(_video1, FileMode.Open);
-        var resultStream = await videoProcessor.ConvertVideoToImagesAsStreamAsync(new MediaFile(stream), FileFormatType.JPG);
-        var count = 1;
-        var data = resultStream.ReadAsDataArray();
-
-        foreach (var bytes in data)
-        {
-            await using (var output = new FileStream(@$"C:\mfptest\results\ConvertVideoToImagesTest\Stream\result{count++}.jpg", FileMode.Create))
-                output.Write(bytes, 0, bytes.Length);
-        }
     }
 
     public static async Task ConvertImagesToVideoTest(VideoFileProcessor videoProcessor)
@@ -205,7 +116,7 @@ public class VideoProcessorTests
     public static async Task GetAudioFromVideoTest(VideoFileProcessor videoProcessor)
     {
         //Test block with physical paths to input and output files
-        await videoProcessor.GetAudioFromVideoAsync(new MediaFile(_video1, MediaFileInputType.Path),
+        await videoProcessor.GetAudioFromVideoAsync(new MediaFile(_video1),
                                                     FileFormatType.MP3,
                                                     @"C:\mfptest\results\GetAudioFromVideoTest\resultPath.mp3");
 
@@ -226,7 +137,7 @@ public class VideoProcessorTests
     public static async Task ConvertVideoTest(VideoFileProcessor videoProcessor)
     {
         //Test block with physical paths to input and output files
-        await videoProcessor.ConvertVideoAsync(new MediaFile(_video1, MediaFileInputType.Path),
+        await videoProcessor.ConvertVideoAsync(new MediaFile(_video1),
                                                @"C:\mfptest\results\ConvertVideoTest\resultPath.mp4",
                                                FileFormatType.MP4);
 
@@ -247,8 +158,8 @@ public class VideoProcessorTests
     public static async Task AddWaterMarkToVideoTest(VideoFileProcessor videoProcessor)
     {
         //Test block with physical paths to input and output files
-        await videoProcessor.AddWaterMarkToVideoAsync(new MediaFile(_video1, MediaFileInputType.Path),
-                                                      new MediaFile(_photo1, MediaFileInputType.Path),
+        await videoProcessor.AddWaterMarkToVideoAsync(new MediaFile(_video1),
+                                                      new MediaFile(_photo1),
                                                       PositionType.UpperLeft,
                                                       @"C:\mfptest\results\AddWaterMarkToVideoTest\resultPath.avi",
                                                       FileFormatType.AVI);
@@ -277,7 +188,7 @@ public class VideoProcessorTests
     public static async Task ExtractVideoFromFileTest(VideoFileProcessor videoProcessor)
     {
         //Test block with physical paths to input and output files
-        await videoProcessor.ExtractVideoFromFileAsync(new MediaFile(_video1, MediaFileInputType.Path),
+        await videoProcessor.ExtractVideoFromFileAsync(new MediaFile(_video1),
                                                        @"C:\mfptest\results\ExtractVideoFromFileTest\resultPath.avi",
                                                        FileFormatType.AVI);
 
@@ -298,8 +209,8 @@ public class VideoProcessorTests
     public static async Task AddAudioToVideoTest(VideoFileProcessor videoProcessor)
     {
         // Test block with physical paths to input and output files
-         await videoProcessor.AddAudioToVideoAsync(new MediaFile(_audio1, MediaFileInputType.Path),
-                                                   new MediaFile(_video1, MediaFileInputType.Path),
+         await videoProcessor.AddAudioToVideoAsync(new MediaFile(_audio1),
+                                                   new MediaFile(_video1),
                                                    @"results\AddAudioToVideoTest\resultPath.avi",
                                                    FileFormatType.AVI);
 
@@ -323,7 +234,7 @@ public class VideoProcessorTests
     public static async Task ConvertVideoToGifTest(VideoFileProcessor videoProcessor)
     {
         //Test block with physical paths to input and output files
-        await videoProcessor.ConvertVideoToGifAsync(new MediaFile(_video1, MediaFileInputType.Path),
+        await videoProcessor.ConvertVideoToGifAsync(new MediaFile(_video1),
                                                     5,
                                                     320,
                                                     0,
@@ -345,7 +256,7 @@ public class VideoProcessorTests
     public static async Task CompressVideoTest(VideoFileProcessor videoProcessor)
     {
         //Test block with physical paths to input and output files
-        await videoProcessor.CompressVideoAsync(new MediaFile(_video1, MediaFileInputType.Path),
+        await videoProcessor.CompressVideoAsync(new MediaFile(_video1),
                                                 20,
                                                 @"C:\mfptest\results\CompressVideoTest\resultPath.avi",
                                                 FileFormatType.AVI);
@@ -366,7 +277,7 @@ public class VideoProcessorTests
     public static async Task CompressImageTest(VideoFileProcessor videoProcessor)
     {
         //Test block with physical paths to input and output files
-        await videoProcessor.CompressImageAsync(new MediaFile(_photo1, MediaFileInputType.Path),
+        await videoProcessor.CompressImageAsync(new MediaFile(_photo1),
                                                 100,
                                                 @"C:\mfptest\results\CompressImageTest\resultPath.jpg",
                                                 FileFormatType.JPG);
@@ -388,7 +299,7 @@ public class VideoProcessorTests
     public static async Task ConcatVideosTest(VideoFileProcessor videoProcessor)
     {
         //Test block with physical paths to input and output files
-        await videoProcessor.ConcatVideosAsync(new [] { new MediaFile(_video1, MediaFileInputType.Path), new MediaFile(_video12, MediaFileInputType.Path) },
+        await videoProcessor.ConcatVideosAsync(new [] { new MediaFile(_video1), new MediaFile(_video12) },
                                                @"C:\mfptest\results\ConcatVideosTest\resultPath.avi",
                                                FileFormatType.AVI);
 
@@ -411,8 +322,8 @@ public class VideoProcessorTests
     public static async Task AddSubsTest(VideoFileProcessor videoProcessor)
     {
         //Test block with physical paths to input and output files
-        await videoProcessor.AddHardSubtitlesAsync(new MediaFile(_video2, MediaFileInputType.Path),
-                                                   new MediaFile(_subsEn, MediaFileInputType.Path),
+        await videoProcessor.AddHardSubtitlesAsync(new MediaFile(_video2),
+                                                   new MediaFile(_subsEn),
                                                    @"eng",
                                                    @"C:\mfptest\results\result.mp4",
                                                    FileFormatType.MP4);

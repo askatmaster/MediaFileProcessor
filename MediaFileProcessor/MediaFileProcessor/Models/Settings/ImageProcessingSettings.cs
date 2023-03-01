@@ -2304,7 +2304,7 @@ public class ImageProcessingSettings : ProcessingSettings
                 throw new Exception("No input files");
             case 1:
                 _stringBuilder.Append(files[0]
-                                          .InputType is MediaFileInputType.Path or MediaFileInputType.Template or MediaFileInputType.NamedPipe
+                                          .InputType is MediaFileInputType.Path or MediaFileInputType.NamedPipe
                                           ? files[0]
                                               .InputFilePath!
                                           : StandartInputRedirectArgument);
@@ -2320,7 +2320,7 @@ public class ImageProcessingSettings : ProcessingSettings
                                                   (current, file) =>
                                                       current
                                                     + " "
-                                                    + (file.InputType is MediaFileInputType.Path or MediaFileInputType.Template or MediaFileInputType.NamedPipe
+                                                    + (file.InputType is MediaFileInputType.Path or MediaFileInputType.NamedPipe
                                                           ? file.InputFilePath!
                                                           : StandartInputRedirectArgument)));
 
@@ -2332,7 +2332,7 @@ public class ImageProcessingSettings : ProcessingSettings
         _stringBuilder.Append(files.Aggregate(string.Empty,
                                               (current, file) => current
                                                 + " "
-                                                + (file.InputType is MediaFileInputType.Path or MediaFileInputType.Template or MediaFileInputType.NamedPipe
+                                                + (file.InputType is MediaFileInputType.Path or MediaFileInputType.NamedPipe
                                                       ? file.InputFilePath!
                                                       : SetPipeChannel(Guid.NewGuid()
                                                                            .ToString(),

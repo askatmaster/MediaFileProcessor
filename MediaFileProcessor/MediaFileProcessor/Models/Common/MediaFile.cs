@@ -23,34 +23,22 @@ public class MediaFile
     public MediaFileInputType InputType { get; }
 
     /// <summary>
-    /// Initializes a new instance of the `MediaFile` class with file path or template input.
+    /// Initializes a new instance of the `MediaFile` class with file Path or template NamedPipe.
     /// </summary>
     /// <param name="inputArgument">The file path or template of the media file.</param>
-    /// <param name="inputType">The input type of the media file.</param>
-    public MediaFile(string inputArgument, MediaFileInputType inputType)
+    public MediaFile(string inputArgument)
     {
-        switch(inputType)
+        var fileExtension = inputArgument.GetExtension();
+
+        if(fileExtension != null)
         {
-            case MediaFileInputType.Path when !File.Exists(inputArgument):
-                throw new FileNotFoundException($"File not found: {inputArgument}");
-            case MediaFileInputType.Path:
-                InputFilePath = $"{inputArgument} ";
-                InputType = inputType;
-
-                break;
-            case MediaFileInputType.Template:
-                InputFilePath = $"{inputArgument} ";
-                InputType = inputType;
-
-                break;
-            case MediaFileInputType.NamedPipe:
-                InputFilePath = $" {inputArgument.ToPipeDir()} ";
-
-                break;
-            case MediaFileInputType.Stream:
-                throw new ArgumentException("Input is not compatible with Stream or Bytes types");
-            default:
-                throw new ArgumentOutOfRangeException(nameof(inputType), inputType, null);
+            InputType = MediaFileInputType.Path;
+            InputFilePath = $"{inputArgument} ";
+        }
+        else
+        {
+            InputFilePath = $" {inputArgument.ToPipeDir()} ";
+            InputType = MediaFileInputType.NamedPipe;
         }
     }
 

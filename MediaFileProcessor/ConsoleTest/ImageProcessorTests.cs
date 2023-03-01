@@ -19,7 +19,7 @@ public class ImageProcessorTests
     public static async Task CompressImageTest(ImageFileProcessor processor)
     {
         //Test block with physical paths to input and output files
-        await processor.CompressImageAsync(new MediaFile(_image, MediaFileInputType.Path), ImageFormat.JPG, 60, FilterType.Lanczos, "x1080", @"G:\MagickImageFile\result.jpg", ImageFormat.JPG);
+        await processor.CompressImageAsync(new MediaFile(_image), ImageFormat.JPG, 60, FilterType.Lanczos, "x1080", @"G:\MagickImageFile\result.jpg", ImageFormat.JPG);
 
         //Block for testing file processing as streams without specifying physical paths
         await using var stream = new FileStream(_image, FileMode.Open);

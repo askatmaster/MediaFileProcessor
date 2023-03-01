@@ -14,74 +14,6 @@ public interface IVideoFileProcessor
     Task<MemoryStream?> ExecuteAsync(VideoProcessingSettings settings, CancellationToken cancellationToken);
 
     /// <summary>
-    /// Gets a frame from a video at the specified timestamp and saves it to a specified output file.
-    /// </summary>
-    /// <param name="timestamp">The timestamp at which to extract the frame from the video.</param>
-    /// <param name="file">The media file representing the video to extract the frame from.</param>
-    /// <param name="outputFile">The output file to save the extracted frame to.</param>
-    /// <param name="outputFormat">The format to use for the output file.</param>
-    /// <param name="cancellationToken">The optional cancellation token used to cancel the process if necessary.</param>
-    Task GetFrameFromVideoAsync(TimeSpan timestamp, MediaFile file, string outputFile, FileFormatType outputFormat, CancellationToken? cancellationToken = null);
-
-    /// <summary>
-    /// Retrieves a frame from a video file at a specified time and returns it as a memory stream.
-    /// </summary>
-    /// <param name="timestamp">The time at which the frame should be retrieved.</param>
-    /// <param name="file">The media file from which the frame should be retrieved.</param>
-    /// <param name="outputFormat">The format in which the retrieved frame should be returned.</param>
-    /// <param name="cancellationToken">The cancellation token for the operation.</param>
-    /// <returns>A memory stream containing the requested frame.</returns>
-    Task<MemoryStream> GetFrameFromVideoAsStreamAsync(TimeSpan timestamp, MediaFile file, FileFormatType outputFormat, CancellationToken? cancellationToken = null);
-
-    /// <summary>
-    /// Retrieves a frame from a video file at a specified time and returns it as a byte array.
-    /// </summary>
-    /// <param name="timestamp">The time at which the frame should be retrieved.</param>
-    /// <param name="file">The media file from which the frame should be retrieved.</param>
-    /// <param name="outputFormat">The format in which the retrieved frame should be returned.</param>
-    /// <param name="cancellationToken">The cancellation token for the operation.</param>
-    /// <returns>A byte array containing the requested frame.</returns>
-    Task<byte[]> GetFrameFromVideoAsBytesAsync(TimeSpan timestamp, MediaFile file, FileFormatType outputFormat, CancellationToken? cancellationToken = null);
-
-    /// <summary>
-    /// Cuts a portion of a video file and saves the result to a specified file.
-    /// </summary>
-    /// <param name="startTime">The start time of the portion to be cut.</param>
-    /// <param name="endTime">The end time of the portion to be cut.</param>
-    /// <param name="file">The media file to be cut.</param>
-    /// <param name="outputFile">The name of the output file.</param>
-    /// <param name="outputFormat">The format in which the cut portion should be saved.</param>
-    /// <param name="cancellationToken">The cancellation token for the operation.</param>
-    /// <returns>A task that represents the asynchronous operation.</returns>
-    Task CutVideoAsync(TimeSpan startTime, TimeSpan endTime, MediaFile file, string outputFile, FileFormatType outputFormat, CancellationToken? cancellationToken = null);
-
-    /// <summary>
-    /// Cuts a portion of a video file and returns the result as a memory stream.
-    /// </summary>
-    /// <param name="startTime">The start time of the portion to be cut.</param>
-    /// <param name="endTime">The end time of the portion to be cut.</param>
-    /// <param name="file">The media file to be cut.</param>
-    /// <param name="outputFormat">The format in which the cut portion should be saved.</param>
-    /// <param name="cancellationToken">The cancellation token for the operation.</param>
-    /// <returns>A memory stream that contains the cut portion of the video file.</returns>
-    Task<MemoryStream> CutVideoAsStreamAsync(TimeSpan startTime,
-                                             TimeSpan endTime,
-                                             MediaFile file,
-                                             FileFormatType outputFormat,
-                                             CancellationToken? cancellationToken = null);
-
-    /// <summary>
-    /// Cuts a portion of a video file and returns the result as a byte array.
-    /// </summary>
-    /// <param name="startTime">The start time of the portion to be cut.</param>
-    /// <param name="endTime">The end time of the portion to be cut.</param>
-    /// <param name="file">The media file to be cut.</param>
-    /// <param name="outputFormat">The format in which the cut portion should be saved.</param>
-    /// <param name="cancellationToken">The cancellation token for the operation.</param>
-    /// <returns>A byte array that contains the cut portion of the video file.</returns>
-    Task<byte[]> CutVideoAsBytesAsync(TimeSpan startTime, TimeSpan endTime, MediaFile file, FileFormatType outputFormat, CancellationToken? cancellationToken = null);
-
-    /// <summary>
     /// Converts images to video and saves it to the specified file path.
     /// </summary>
     /// <param name="file">The file that contains the list of images to be converted to video.</param>
@@ -132,33 +64,6 @@ public interface IVideoFileProcessor
                                                   FileFormatType? outputFileFormatType,
                                                   VideoCodecType videoCodecType = VideoCodecType.LIBX264,
                                                   CancellationToken? cancellationToken = null);
-
-    /// <summary>
-    /// Converts a video file to image files.
-    /// </summary>
-    /// <param name="file">The input video file</param>
-    /// <param name="outputFormatType">The output image format type</param>
-    /// <param name="outputImagesPattern">The pattern to name the output images</param>
-    /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
-    Task ConvertVideoToImagesAsync(MediaFile file, FileFormatType outputFormatType, string outputImagesPattern, CancellationToken? cancellationToken = null);
-
-    /// <summary>
-    /// Converts a video file to a multi-stream of images.
-    /// </summary>
-    /// <param name="file">The input video file</param>
-    /// <param name="outputFormatType">The output image format type</param>
-    /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
-    /// <returns>The multi-stream of images</returns>
-    Task<MultiStream> ConvertVideoToImagesAsStreamAsync(MediaFile file, FileFormatType outputFormatType, CancellationToken? cancellationToken = null);
-
-    /// <summary>
-    /// Converts a video file to a multi-array of image bytes.
-    /// </summary>
-    /// <param name="file">The input video file</param>
-    /// <param name="outputFormatType">The output image format type</param>
-    /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation</param>
-    /// <returns>The multi-array of image bytes</returns>
-    Task<byte[][]> ConvertVideoToImagesAsBytesAsync(MediaFile file, FileFormatType outputFormatType, CancellationToken? cancellationToken = null);
 
     /// <summary>
     /// Extracts audio from a video file and saves it to a specified file path.

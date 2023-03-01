@@ -5,16 +5,7 @@ Console.ForegroundColor = ConsoleColor.Green;
 Console.WriteLine("StartStream");
 Console.ResetColor();
 
-// await TestAVI.TestGetFrameFromVideo();
-
-var filePath = @"tests/TestGetFrameFromVideo/resultStream.JPG";
-
-var fileExtension = Path.GetExtension(filePath);
-
-Console.WriteLine("File extension: " + fileExtension);
-
-if(fileExtension.ExistsInEnum<FileFormatType>())
-    Console.WriteLine("good");
+await TestAVI.ConvertVideoToImagesAsync();
 
 Console.ForegroundColor = ConsoleColor.Green;
 Console.WriteLine("Done");

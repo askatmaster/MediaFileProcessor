@@ -16,11 +16,6 @@ public enum MediaFileInputType
     Stream = 1,
 
     /// <summary>
-    /// Input media file is specified by a template.
-    /// </summary>
-    Template = 2,
-
-    /// <summary>
     /// Input media file is specified by a named pipe.
     /// </summary>
     NamedPipe = 3

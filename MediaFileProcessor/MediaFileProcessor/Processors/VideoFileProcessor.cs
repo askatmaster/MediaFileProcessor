@@ -52,21 +52,23 @@ public class VideoFileProcessor : IVideoFileProcessor
     /// <param name="outputFormat">The format to use for the output file (if specified).</param>
     /// <param name="cancellationToken">The cancellation token used to cancel the process if necessary.</param>
     /// <returns>A MemoryStream representing the extracted frame, or null if the process was cancelled.</returns>
-    private async Task<MemoryStream?> ExecuteGetFrameFromVideoAsync(TimeSpan timestamp,
-                                                                    MediaFile file,
-                                                                    string? outputFile,
-                                                                    FileFormatType outputFormat,
-                                                                    CancellationToken cancellationToken)
+    public async Task<MemoryStream?> ExtractFrameFromVideoAsync(TimeSpan timestamp,
+                                                                MediaFile file,
+                                                                string? outputFile = null,
+                                                                FileFormatType? outputFormat = null,
+                                                                CancellationToken? cancellationToken = null)
     {
-        var settings = new VideoProcessingSettings().ReplaceIfExist()
-                                                    .Seek(timestamp)
-                                                    .SetInputFiles(file)
-                                                    .FramesNumber(1)
-                                                    .Format(outputFormat)
-                                                    .SetOutputArguments(outputFile);
+        var settings = new VideoProcessingSettings().ReplaceIfExist().Seek(timestamp).SetInputFiles(file).FramesNumber(1);
 
+        if(outputFile is null && outputFormat is null)
+            throw new Exception("If the outputFile is not specified then the outputFormat must be indicated necessarily");
 
-        return await ExecuteAsync(settings, cancellationToken);
+        if(outputFile != null)
+            settings.Format(outputFile.GetFileFormatType());
+        else
+            settings.Format(outputFormat!.Value);
+
+        return await ExecuteAsync(settings, cancellationToken ?? new CancellationToken());
     }
 
     /// <summary>
@@ -87,8 +89,8 @@ public class VideoFileProcessor : IVideoFileProcessor
     /// <returns>If outputFile is specified, null will be returned. And if outputfile is not specified the stream containing the resulting file will be returned</returns>
     public async Task<MemoryStream?> MP4SetStartMoovAsync(MediaFile file, string? outputFile = null, CancellationToken cancellationToken = default)
     {
-        if(file.InputType is MediaFileInputType.NamedPipe or MediaFileInputType.Template)
-            throw new ArgumentException("NamedPipe and Template inputs is not sopported in current version.");
+        if(file.InputType is MediaFileInputType.NamedPipe)
+            throw new ArgumentException("NamedPipe input is not sopported in current version.");
 
         string? fileName = null;
         string? resultFileName = null;
@@ -107,7 +109,7 @@ public class VideoFileProcessor : IVideoFileProcessor
             if(outputFile is null)
                 resultFileName = @$"{Guid.NewGuid()}.mp4";
 
-            settings.SetInputFiles(fileName is not null ? new MediaFile(fileName, MediaFileInputType.Path) : file);
+            settings.SetInputFiles(fileName is not null ? new MediaFile(fileName) : file);
 
             settings.MovFralgs("faststart").AudioCodec(AudioCodecType.COPY).VideoCodec(VideoCodecType.COPY).SetOutputArguments(resultFileName ?? outputFile);
 
@@ -134,31 +136,6 @@ public class VideoFileProcessor : IVideoFileProcessor
         }
     }
 
-    /// <inheritdoc />
-    public async Task GetFrameFromVideoAsync(TimeSpan timestamp,
-                                             MediaFile file,
-                                             string outputFile,
-                                             FileFormatType outputFormat,
-                                             CancellationToken? cancellationToken = null)
-    {
-        await ExecuteGetFrameFromVideoAsync(timestamp, file, outputFile, outputFormat, cancellationToken ?? new CancellationToken());
-    }
-
-    /// <inheritdoc />
-    public async Task<MemoryStream> GetFrameFromVideoAsStreamAsync(TimeSpan timestamp,
-                                                                   MediaFile file,
-                                                                   FileFormatType outputFormat,
-                                                                   CancellationToken? cancellationToken = null)
-    {
-        return (await ExecuteGetFrameFromVideoAsync(timestamp, file, null, outputFormat, cancellationToken ?? new CancellationToken()))!;
-    }
-
-    /// <inheritdoc />
-    public async Task<byte[]> GetFrameFromVideoAsBytesAsync(TimeSpan timestamp, MediaFile file, FileFormatType outputFormat, CancellationToken? cancellationToken = null)
-    {
-        return (await ExecuteGetFrameFromVideoAsync(timestamp, file, null, outputFormat, cancellationToken ?? new CancellationToken()))!.ToArray();
-    }
-
     //======================================================================================================================================================================
 
     /// <summary>
@@ -171,53 +148,24 @@ public class VideoFileProcessor : IVideoFileProcessor
     /// <param name="outputFormat">The format in which the cut portion should be returned.</param>
     /// <param name="cancellationToken">The cancellation token for the operation.</param>
     /// <returns>A memory stream containing the cut portion of the video file, or `null` if an output file was specified.</returns>
-    private  async Task<MemoryStream?> ExecuteCutVideoAsync(TimeSpan startTime,
-                                                            TimeSpan endTime,
-                                                            MediaFile file,
-                                                            string? outputFile,
-                                                            FileFormatType outputFormat,
-                                                            CancellationToken cancellationToken)
+    public  async Task<MemoryStream?> CutVideoAsync(TimeSpan startTime,
+                                                    TimeSpan endTime,
+                                                    MediaFile file,
+                                                    string? outputFile = null,
+                                                    FileFormatType? outputFormat = null,
+                                                    CancellationToken? cancellationToken = null)
     {
-        var settings = new VideoProcessingSettings().ReplaceIfExist()
-                                                    .SetInputFiles(file)
-                                                    .Seek(startTime)
-                                                    .TimePosition(endTime)
-                                                    .CopyAllCodec()
-                                                    .Format(outputFormat)
-                                                    .SetOutputArguments(outputFile);
+        var settings = new VideoProcessingSettings().ReplaceIfExist().SetInputFiles(file).Seek(startTime).TimePosition(endTime).CopyAllCodec();
 
-        return await ExecuteAsync(settings, cancellationToken);
-    }
+        if(outputFile is null && outputFormat is null)
+            throw new Exception("If the outputFile is not specified then the outputFormat must be indicated necessarily");
 
-    /// <inheritdoc />
-    public async Task CutVideoAsync(TimeSpan startTime,
-                                    TimeSpan endTime,
-                                    MediaFile file,
-                                    string outputFile,
-                                    FileFormatType outputFormat,
-                                    CancellationToken? cancellationToken = null)
-    {
-        await ExecuteCutVideoAsync(startTime, endTime, file, outputFile, outputFormat, cancellationToken ?? new CancellationToken());
-    }
+        if(outputFile != null)
+            settings.Format(outputFile.GetFileFormatType());
+        else
+            settings.Format(outputFormat!.Value);
 
-    /// <inheritdoc />
-    public async Task<MemoryStream> CutVideoAsStreamAsync(TimeSpan startTime,
-                                                          TimeSpan endTime,
-                                                          MediaFile file,
-                                                          FileFormatType outputFormat,
-                                                          CancellationToken? cancellationToken = null)
-    {
-        return (await ExecuteCutVideoAsync(startTime, endTime, file, null, outputFormat, cancellationToken ?? new CancellationToken()))!;
-    }
-
-    /// <inheritdoc />
-    public async Task<byte[]> CutVideoAsBytesAsync(TimeSpan startTime,
-                                                   TimeSpan endTime,
-                                                   MediaFile file,
-                                                   FileFormatType outputFormat,
-                                                   CancellationToken? cancellationToken = null)
-    {
-        return (await ExecuteCutVideoAsync(startTime, endTime, file, null, outputFormat, cancellationToken ?? new CancellationToken()))!.ToArray();
+        return await ExecuteAsync(settings, cancellationToken ?? new CancellationToken());
     }
 
     //======================================================================================================================================================================
@@ -315,12 +263,18 @@ public class VideoFileProcessor : IVideoFileProcessor
     /// <param name="outputImagesPattern">The pattern for the output images file names.</param>
     /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
     /// <returns>The result of the conversion as a MemoryStream.</returns>
-    private  async Task<MemoryStream?> ExecuteConvertVideoToImagesAsync(MediaFile file,
-                                                                        FileFormatType? outputFileFormatType,
-                                                                        string? outputImagesPattern,
-                                                                        CancellationToken cancellationToken)
+    public  async Task<MultiStream?> ConvertVideoToImagesAsync(MediaFile file,
+                                                                string? outputImagesPattern = null,
+                                                                FileFormatType? outputFileFormatType = null,
+                                                                CancellationToken? cancellationToken = null)
     {
         var settings = new VideoProcessingSettings().ReplaceIfExist().SetInputFiles(file).SetOutputArguments(outputImagesPattern);
+
+        if(outputImagesPattern is null && outputFileFormatType is null)
+            throw new Exception("If the outputImagesPattern is not specified then the outputFileFormatType must be indicated necessarily");
+
+        if(outputImagesPattern != null)
+            outputFileFormatType = outputImagesPattern.GetFileFormatType();
 
         switch(outputFileFormatType)
         {
@@ -332,8 +286,15 @@ public class VideoFileProcessor : IVideoFileProcessor
 
                 break;
             case FileFormatType.PNG:
-                settings.VideoCodec(VideoCodecType.PNG);
-                settings.Format(FileFormatType.RAWVIDEO);
+                if(outputImagesPattern == null)
+                {
+                    settings.VideoCodec(VideoCodecType.PNG);
+                    settings.Format(FileFormatType.RAWVIDEO);
+                }
+                else
+                {
+                    settings.Format(FileFormatType.PNG);
+                }
 
                 break;
             case FileFormatType.BMP:
@@ -345,29 +306,9 @@ public class VideoFileProcessor : IVideoFileProcessor
                 throw new NotSupportedException("This output format is not supported");
         }
 
-        return await ExecuteAsync(settings, cancellationToken);
-    }
+        var stream = await ExecuteAsync(settings, cancellationToken ?? new CancellationToken());
 
-    /// <inheritdoc />
-    public async Task ConvertVideoToImagesAsync(MediaFile file, FileFormatType outputFormatType, string outputImagesPattern, CancellationToken? cancellationToken = null)
-    {
-        await ExecuteConvertVideoToImagesAsync(file, outputFormatType, outputImagesPattern,  cancellationToken ?? new CancellationToken());
-    }
-
-    /// <inheritdoc />
-    public async Task<MultiStream> ConvertVideoToImagesAsStreamAsync(MediaFile file, FileFormatType outputFormatType, CancellationToken? cancellationToken = null)
-    {
-        var stream = (await ExecuteConvertVideoToImagesAsync(file, outputFormatType, null,  cancellationToken ?? new CancellationToken()))!;
-
-        return stream.GetMultiStreamBySignature(outputFormatType.GetSignature());
-    }
-
-    /// <inheritdoc />
-    public async Task<byte[][]> ConvertVideoToImagesAsBytesAsync(MediaFile file, FileFormatType outputFormatType, CancellationToken? cancellationToken = null)
-    {
-        var stream = (await ExecuteConvertVideoToImagesAsync(file, outputFormatType, null,  cancellationToken ?? new CancellationToken()))!;
-
-        return stream.GetMultiStreamBySignature(outputFormatType.GetSignature()).ReadAsDataArray();
+        return stream?.GetMultiStreamBySignature(outputFileFormatType.Value.GetSignature());
     }
 
     //======================================================================================================================================================================

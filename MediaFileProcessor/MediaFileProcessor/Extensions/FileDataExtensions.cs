@@ -35,6 +35,16 @@ public static class FileDataExtensions
     }
 
     /// <summary>
+    /// Gets the extension of the specified file name.
+    /// </summary>
+    /// <param name="fileName">The file name to get the extension for.</param>
+    /// <returns>The extension of the specified file name.</returns>
+    public static string? GetExtension(this string fileName)
+    {
+        return Path.GetExtension(fileName).Replace(".", "");
+    }
+
+    /// <summary>
     /// Converts the specified file name to an array of bytes.
     /// </summary>
     /// <param name="fileName">The file name to convert.</param>
@@ -111,7 +121,7 @@ public static class FileDataExtensions
     {
         var ext = Path.GetExtension(fileName);
 
-        if (Enum.TryParse(ext, out FileFormatType output))
+        if (Enum.TryParse(ext.ToUpper().Replace(".", ""), out FileFormatType output))
             return output;
 
         throw new Exception("The file extension could not be recognized");

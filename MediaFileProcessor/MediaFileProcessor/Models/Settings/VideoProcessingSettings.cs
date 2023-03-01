@@ -409,12 +409,8 @@ public class VideoProcessingSettings : ProcessingSettings
     {
         _stringBuilder.Append(" -target ");
 
-        _stringBuilder.Append(targetStandard is not null
-                                  ? $" {targetStandard.ToString()
-                                                      .ToLowerInvariant()}-{target.ToString()
-                                                                                  .ToLowerInvariant()} "
-                                  : $" {target.ToString()
-                                              .ToLowerInvariant()} ");
+        _stringBuilder.Append(targetStandard is not null ? $" {targetStandard.ToString().ToLowerInvariant()}-{target.ToString().ToLowerInvariant()} "
+                                  : $" {target.ToString().ToLowerInvariant()} ");
 
         return this;
     }
@@ -547,6 +543,17 @@ public class VideoProcessingSettings : ProcessingSettings
             format = format.Replace("_", "");
 
         _stringBuilder.Append($" -f {format} ");
+
+        return this;
+    }
+
+    /// <summary>
+    /// Set Format. If you want to install a format that is not provided
+    /// </summary>
+    public VideoProcessingSettings Format(string? format)
+    {
+        if(format != null)
+            _stringBuilder.Append($" -f {format} ");
 
         return this;
     }
@@ -1087,8 +1094,8 @@ public class VideoProcessingSettings : ProcessingSettings
             case 1:
                 // Check the type of input file (Path, Template or NamedPipe)
                 // and append the file path to the string builder
-                _stringBuilder.Append(files[0].InputType is MediaFileInputType.Path or MediaFileInputType.Template or MediaFileInputType.NamedPipe
-                                          ? " -i " + files[0].InputFilePath! : StandartInputRedirectArgument);
+                _stringBuilder.Append(files[0].InputType is MediaFileInputType.Path or MediaFileInputType.NamedPipe ? " -i " + files[0].InputFilePath!
+                                          : StandartInputRedirectArgument);
                 SetInputStreams(files);
 
                 return this;
@@ -1103,8 +1110,7 @@ public class VideoProcessingSettings : ProcessingSettings
                                                   (current, file) =>
                                                       current
                                                     + " "
-                                                    + (file.InputType is MediaFileInputType.Path or MediaFileInputType.Template or MediaFileInputType.NamedPipe
-                                                          ? " -i " + file.InputFilePath!
+                                                    + (file.InputType is MediaFileInputType.Path or MediaFileInputType.NamedPipe ? " -i " + file.InputFilePath!
                                                           : StandartInputRedirectArgument)));
 
             // Set input streams for the files
@@ -1118,8 +1124,7 @@ public class VideoProcessingSettings : ProcessingSettings
                                               (current, file) =>
                                                   current
                                                 + " "
-                                                + (file.InputType is MediaFileInputType.Path or MediaFileInputType.Template or MediaFileInputType.NamedPipe
-                                                      ? " -i " + file.InputFilePath!
+                                                + (file.InputType is MediaFileInputType.Path or MediaFileInputType.NamedPipe ? " -i " + file.InputFilePath!
                                                       : SetPipeChannel(Guid.NewGuid().ToString(), file))));
 
         // Set input streams for the files
