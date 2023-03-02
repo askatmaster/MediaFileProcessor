@@ -58,7 +58,7 @@ public class VideoFileProcessor : IVideoFileProcessor
                                                                 FileFormatType? outputFormat = null,
                                                                 CancellationToken? cancellationToken = null)
     {
-        var settings = new VideoProcessingSettings().ReplaceIfExist().Seek(timestamp).SetInputFiles(file).FramesNumber(1);
+        var settings = new VideoProcessingSettings().ReplaceIfExist().Seek(timestamp).SetInputFiles(file).FramesNumber(1).SetOutputArguments(outputFile);
 
         if(outputFile is null && outputFormat is null)
             throw new Exception("If the outputFile is not specified then the outputFormat must be indicated necessarily");
@@ -66,7 +66,10 @@ public class VideoFileProcessor : IVideoFileProcessor
         if(outputFile != null)
             settings.Format(outputFile.GetFileFormatType());
         else
-            settings.Format(outputFormat!.Value);
+        {
+            settings.VideoCodec(VideoCodecType.PNG);
+            settings.Format(FileFormatType.RAWVIDEO);
+        }
 
         return await ExecuteAsync(settings, cancellationToken ?? new CancellationToken());
     }

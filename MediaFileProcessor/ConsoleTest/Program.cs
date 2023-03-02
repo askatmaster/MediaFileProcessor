@@ -5,7 +5,7 @@ Console.ForegroundColor = ConsoleColor.Green;
 Console.WriteLine("StartStream");
 Console.ResetColor();
 
-await TestAVI.ConvertVideoToImagesAsync();
+await TestAVI.TestExtractFrameFromVideo();
 
 Console.ForegroundColor = ConsoleColor.Green;
 Console.WriteLine("Done");

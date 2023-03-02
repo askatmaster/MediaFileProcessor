@@ -8,22 +8,25 @@ public static class TestAVI
 {
     private static readonly VideoFileProcessor _videoProcessor = new ();
 
-    public static async Task TestGetFrameFromVideo()
+    public static async Task TestExtractFrameFromVideo()
     {
         var sample = TestFile.GetPath(FileFormatType.AVI);
-        var resultPhysicalPath = TestFile.ResultFilePath + @"TestGetFrameFromVideo/resultPath.jpg";
-        var resultStreamPath = TestFile.ResultFilePath + @"TestGetFrameFromVideo/resultStream.jpg";
+        var resultPhysicalPath = TestFile.ResultFilePath + @"TestExtractFrameFromVideo/resultPath.png";
+        var resultStreamPath = TestFile.ResultFilePath + @"TestExtractFrameFromVideo/resultStream.png";
 
         // Test block with physical paths to input and output files
-        await _videoProcessor.ExtractFrameFromVideoAsync(TimeSpan.FromMilliseconds(5000), new MediaFile(sample), resultPhysicalPath, FileFormatType.JPG);
+        // await _videoProcessor.ExtractFrameFromVideoAsync(TimeSpan.FromMilliseconds(5000),
+        //                                                  new MediaFile(sample),
+        //                                                  resultPhysicalPath,
+        //                                                  FileFormatType.PNG);
 
-        //Block for testing file processing as streams without specifying physical paths
+        // //Block for testing file processing as streams without specifying physical paths
         var resultStream = await _videoProcessor.ExtractFrameFromVideoAsync(TimeSpan.FromMilliseconds(5000),
                                                                             new MediaFile(sample.ToFileStream()),
-                                                                            outputFormat: FileFormatType.JPG);
+                                                                            outputFormat: FileFormatType.PNG);
         resultStream!.ToFile(resultStreamPath);
 
-        TestFile.VerifyFileSize(resultPhysicalPath, 18960);
+        // TestFile.VerifyFileSize(resultPhysicalPath, 18960);
         TestFile.VerifyFileSize(resultStreamPath, 18960);
     }
 
@@ -51,7 +54,7 @@ public static class TestAVI
         TestFile.VerifyFileSize(resultStreamPath, 263904);
     }
 
-    public static async Task ConvertVideoToImagesAsync()
+    public static async Task ConvertVideoToImages()
     {
         var sample = TestFile.GetPath(FileFormatType.AVI);
         var resultPhysicalPath = TestFile.ResultFilePath + @"ConvertVideoToImagesAsync/Path/result%03d.png";

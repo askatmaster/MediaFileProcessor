@@ -64,6 +64,7 @@ public static class FilesSignatures
     private static byte[] RM => new byte[] { 0x2E, 0x52, 0x4D, 0x46 };
 
     private static byte[] PSD => new byte[] { 0x38, 0x42, 0x50, 0x53 };
+    private static byte[] WEBP => new byte[] { 0x52, 0x49, 0x46, 0x46, 0x00, 0x00, 0x0, 0x00, 0x57, 0x45, 0x42, 0x50 };
 
     /// <summary>
     /// Get file signature in bytes by its format
@@ -105,6 +106,7 @@ public static class FilesSignatures
             FileFormatType.ICO => ICO,
             FileFormatType.BIN => BIN,
             FileFormatType.TIFF => TIFF,
+            FileFormatType.WEBP => WEBP,
             FileFormatType.RAW or FileFormatType.SVG => throw new NotSupportedException("The signatures for \"RAW\" and \"SVG\" "
                                                                                       + "were not specified in the original question, "
                                                                                       + "so their byte arrays are left empty in the code."

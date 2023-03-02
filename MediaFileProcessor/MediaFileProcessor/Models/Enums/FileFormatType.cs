@@ -231,5 +231,13 @@ public enum FileFormatType
     /// <summary>
     /// The RM format. This is a multimedia format that is commonly used for streaming audio and video over the internet.
     /// </summary>
-    RM = 33
+    RM = 33,
+
+    /// <summary>
+    /// WebP, on the other hand, is an image file format that is designed to be used on the web.
+    /// It uses both lossy and lossless compression algorithms to reduce the size of images without significantly reducing their quality.
+    /// WebP is designed to be a smaller, faster-loading alternative to other image file formats such as JPEG and PNG.
+    /// It is supported by most modern web browsers and is often used by web developers to optimize the performance of their websites.
+    /// </summary>
+    WEBP = 34,
 }
