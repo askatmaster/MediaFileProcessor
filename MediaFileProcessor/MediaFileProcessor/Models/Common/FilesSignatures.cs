@@ -5,8 +5,6 @@ public static class FilesSignatures
 {
     private static byte[] JPG => new byte[] { 0xFF, 0xD8, 0xFF };
 
-    private static byte[] JPEG => new byte[] { 0xFF, 0xD8, 0xFF };
-
     private static byte[] PNG => new byte[] { 0x89, 0x50, 0x4e, 0x47, 0x0D, 0x0A, 0x1A, 0x0A };
 
     private static byte[] ICO => new byte[] { 0x00, 0x00, 0x01, 0x00 };
@@ -76,7 +74,6 @@ public static class FilesSignatures
     {
         return outputFormatType switch
         {
-            FileFormatType.JPEG => JPEG,
             FileFormatType.JPG => JPG,
             FileFormatType.PNG => PNG,
             FileFormatType._3GP => _3GP,

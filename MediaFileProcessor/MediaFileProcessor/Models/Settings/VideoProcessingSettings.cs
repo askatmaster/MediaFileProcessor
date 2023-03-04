@@ -538,7 +538,7 @@ public class VideoProcessingSettings : ProcessingSettings
     /// </summary>
     public VideoProcessingSettings Format(FileFormatType formatType)
     {
-        var format = formatType is FileFormatType.JPG or FileFormatType.JPEG or FileFormatType.PNG ? "image2" : formatType.ToString().ToLowerInvariant();
+        var format = formatType is FileFormatType.JPG ? "image2" : formatType.ToString().ToLowerInvariant();
         if (format.StartsWith("_"))
             format = format.Replace("_", "");
 

@@ -184,9 +184,12 @@ public enum FileFormatType
     JPG = 23,
 
     /// <summary>
-    /// JPEG file format. This format is used to store images and is commonly used for digital photography and graphics.
+    /// WebP, on the other hand, is an image file format that is designed to be used on the web.
+    /// It uses both lossy and lossless compression algorithms to reduce the size of images without significantly reducing their quality.
+    /// WebP is designed to be a smaller, faster-loading alternative to other image file formats such as JPEG and PNG.
+    /// It is supported by most modern web browsers and is often used by web developers to optimize the performance of their websites.
     /// </summary>
-    JPEG = 24,
+    WEBP = 24,
 
     /// <summary>
     /// IMAGE2PIPE file format. This format is used to stream images through pipes, it's supported by FFmpeg.
@@ -234,10 +237,9 @@ public enum FileFormatType
     RM = 33,
 
     /// <summary>
-    /// WebP, on the other hand, is an image file format that is designed to be used on the web.
-    /// It uses both lossy and lossless compression algorithms to reduce the size of images without significantly reducing their quality.
-    /// WebP is designed to be a smaller, faster-loading alternative to other image file formats such as JPEG and PNG.
-    /// It is supported by most modern web browsers and is often used by web developers to optimize the performance of their websites.
+    /// M4V is a video file format that is similar to the more popular MP4 format.
+    /// M4V files are typically used to store video content that has been downloaded or purchased from the iTunes Store,
+    /// and they are often protected by Apple's FairPlay DRM (Digital Rights Management) system to prevent unauthorized distribution.
     /// </summary>
-    WEBP = 34,
+    M4V = 34
 }
