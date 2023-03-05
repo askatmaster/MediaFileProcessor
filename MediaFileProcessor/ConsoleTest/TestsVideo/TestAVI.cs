@@ -58,7 +58,7 @@ public static class TestAVI
             FileFormatType.RM,
             FileFormatType.VOB,
             FileFormatType.WEBM,
-            FileFormatType.WMV,
+            FileFormatType.WMV
         };
 
         var supportedImageFormats = new Dictionary<FileFormatType, Dictionary<FileFormatType, int[]>>

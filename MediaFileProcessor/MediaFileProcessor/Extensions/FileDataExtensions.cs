@@ -39,7 +39,7 @@ public static class FileDataExtensions
     /// </summary>
     /// <param name="fileName">The file name to get the extension for.</param>
     /// <returns>The extension of the specified file name.</returns>
-    public static string? GetExtension(this string fileName)
+    public static string GetExtension(this string fileName)
     {
         return Path.GetExtension(fileName).Replace(".", "");
     }

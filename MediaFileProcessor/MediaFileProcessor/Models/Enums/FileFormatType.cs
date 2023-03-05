@@ -92,15 +92,11 @@ public enum FileFormatType
     /// </remarks>
     MPEGTS = 10,
 
-    //TODO tests
     /// <summary>
-    /// The file format type for SVCD files.
+    /// WAV (Waveform Audio File Format) is a standard digital audio file format developed by Microsoft and IBM.
+    /// It is widely used on Windows-based computers and is also supported on other operating systems.
     /// </summary>
-    /// <remarks>
-    /// SVCD is a file format for storing video on CDs,
-    /// and it provides better video quality than VCD with a resolution of 480x576 pixels.
-    /// </remarks>
-    SVCD = 11,
+    WAV = 11,
 
     /// <summary>
     /// The file format type for GIF files.
@@ -241,5 +237,26 @@ public enum FileFormatType
     /// M4V files are typically used to store video content that has been downloaded or purchased from the iTunes Store,
     /// and they are often protected by Apple's FairPlay DRM (Digital Rights Management) system to prevent unauthorized distribution.
     /// </summary>
-    M4V = 34
+    M4V = 34,
+
+    /// <summary>
+    /// WMA (Windows Media Audio) is a proprietary audio compression format developed by Microsoft.
+    /// It was first released in 1999 as a competitor to MP3, which was the dominant audio format at the time.
+    /// </summary>
+    WMA = 35,
+
+    /// <summary>
+    /// An alternative to the MP3 format that has become popular thanks to Apple.
+    /// With compression and loss, but with higher sound quality.
+    /// Used for downloading from iTunes and streaming from Apple Music.
+    /// </summary>
+    AAC = 36,
+
+    /// <summary>
+    /// Lossless compression format with support for Hi-Res compatible sample rates and metadata storage;
+    /// the file size is half that of WAV. Due to the lack of royalties,
+    /// it is considered the best format for downloading and storing albums in Hi-Res audio.
+    /// Its main drawback is the lack of support for Apple devices (and, therefore, incompatibility with iTunes).
+    /// </summary>
+    FLAC = 37
 }

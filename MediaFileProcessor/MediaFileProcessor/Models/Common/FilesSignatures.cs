@@ -3,66 +3,172 @@ namespace MediaFileProcessor.Models.Common;
 
 public static class FilesSignatures
 {
-    private static byte[] JPG => new byte[] { 0xFF, 0xD8, 0xFF };
+    private static List<byte[]> JPG => new ()
+    {
+        new byte[] { 0xFF, 0xD8, 0xFF, 0xE0, 0, 0, 0x4A, 0x46, 0x49, 0x46, 0x00 },
+        new byte[] { 0xFF, 0xD8, 0xFF, 0xE1, 0, 0, 0x45, 0x78, 0x69, 0x66, 0x00 },
+        new byte[] { 0xFF, 0xD8, 0xFF, 0xDB, 0, 0, 0 }
+    };
 
-    private static byte[] PNG => new byte[] { 0x89, 0x50, 0x4e, 0x47, 0x0D, 0x0A, 0x1A, 0x0A };
+    private static List<byte[]> PNG => new ()
+    {
+        new byte[] { 0x89, 0x50, 0x4e, 0x47, 0x0D, 0x0A, 0x1A, 0x0A }
+    };
 
-    private static byte[] ICO => new byte[] { 0x00, 0x00, 0x01, 0x00 };
+    private static List<byte[]> ICO => new ()
+    {
+        new byte[] { 0x00, 0x00, 0x01, 0x00, 0x01, 0x00 }
+    };
 
-    private static byte[] BIN => new byte[] { 0x53, 0x50, 0x30, 0x31 };
+    private static List<byte[]> TIFF => new()
+    {
+        new byte[] { 0x4D, 0x4D, 0x00, 0x2A },
+        new byte[] { 0x49, 0x49, 0x2A, 0x00 }
+    };
 
-    private static byte[] TIFF => new byte[] { 0x4D, 0x4D, 0x00, 0x2A };
+    private static List<byte[]> _3GP => new ()
+    {
+        new byte[] { 0, 0, 0, 0, 0x66, 0x74, 0x79, 0x70, 0x33, 0x67, 0x70 }
+    };
 
-    private static byte[] _3GP => new byte[] { 0x33, 0x67, 0x70, 0x33 };
+    private static List<byte[]> MP4 => new ()
+    {
+        new byte[] { 0, 0, 0, 0, 0x66, 0x74, 0x79, 0x70 },
+        new byte[] { 0, 0, 0, 0, 0x66, 0x74, 0x79, 0x70 },
+        new byte[] { 0, 0, 0, 0, 0x66, 0x74, 0x79, 0x70, 0x6D, 0x70, 0x34, 0x32 },
+        new byte[] { 0, 0, 0, 0, 0x66, 0x74, 0x79, 0x70, 0x69, 0x73, 0x6F, 0x6D },
+        new byte[] { 0, 0, 0, 0, 0x66, 0x74, 0x79, 0x70, 0x69, 0x73, 0x6F, 0x6D },
+        new byte[] { 0, 0, 0, 0, 0x66, 0x74, 0x79, 0x70, 0x69, 0x73, 0x6F, 0x6D }
+    };
 
-    private static byte[] MP4 => new byte[] { 0x00, 0x00, 0x00, 0x18, 0x66, 0x74, 0x79, 0x70, 0x4D, 0x53, 0x4E, 0x56 };
+    private static List<byte[]> MOV => new ()
+    {
+        new byte[] { 0, 0, 0, 0, 0x66, 0x74, 0x79, 0x70, 0x71, 0x74, 0x20, 0x20, 0x00, 0x00, 0x02, 0x00 }
+    };
 
-    private static byte[] MOV => new byte[] { 0x6D, 0x6F, 0x6F, 0x76 };
+    private static List<byte[]> MKV => new ()
+    {
+        new byte[] { 0x1A, 0x45, 0xDF, 0xA3 }
+    };
 
-    private static byte[] MKV => new byte[] { 0x1A, 0x45, 0xDF, 0xA3 };
+    private static List<byte[]> AVI => new ()
+    {
+        new byte[] { 0x52, 0x49, 0x46, 0x46, 0, 0, 0, 0, 0x41, 0x56, 0x49, 0x20 },
+        new byte[] { 0x52, 0x49, 0x46, 0x46, 0, 0, 0, 0, 0x41, 0x56, 0x49, 0x2D },
+        new byte[] { 0x52, 0x49, 0x46, 0x46, 0, 0, 0, 0, 0x41, 0x56, 0x49, 0x38 },
+        new byte[] { 0x52, 0x49, 0x46, 0x46, 0, 0, 0, 0, 0x41, 0x56, 0x49, 0x4F }
+    };
 
-    private static byte[] AVI => new byte[] { 0x52, 0x49, 0x46, 0x46 };
+    private static List<byte[]> MPEG => new ()
+    {
+        new byte[] { 0x00, 0x00, 0x01, 0xBA }
+    };
 
-    private static byte[] MPEG => new byte[] { 0x00, 0x00, 0x01, 0xBA };
+    private static List<byte[]> GIF => new ()
+    {
+        new byte[] { 0x47, 0x49, 0x46, 0x38 }
+    };
 
-    private static byte[] MPEGTS => new byte[] { 0x47 };
+    private static List<byte[]> VOB => new ()
+    {
+        new byte[] { 0x00, 0x00, 0x01, 0xBA }
+    };
 
-    private static byte[] SVCD => new byte[] { 0x00, 0x00, 0x01, 0xBA, 0x44, 0x00, 0x04, 0x80 };
+    private static List<byte[]> M2TS => new ()
+    {
+        new byte[] { 0x47, 0x40, 0x00, 0x10 }
+    };
 
-    private static byte[] GIF => new byte[] { 0x47, 0x49, 0x46, 0x38, 0x37, 0x61, 0x1 };
+    private static List<byte[]> MXF => new ()
+    {
+        new byte[] { 0x06, 0x0E, 0x2B, 0x34, 0x02, 0x05, 0x01, 0x01, 0x0D, 0x01, 0x02, 0x01, 0x01, 0x02 }
+    };
 
-    private static byte[] VOB => new byte[] { 0x00, 0x00, 0x01, 0xBA };
+    private static List<byte[]> WEBM => new ()
+    {
+        new byte[] { 0x1A, 0x45, 0xDF, 0xA3 }
+    };
 
-    private static byte[] M2TS => new byte[] { 0x47 };
+    private static List<byte[]> GXF => new ()
+    {
+        new byte[] { 0x47, 0x58, 0x46, 0x30 }
+    };
 
-    private static byte[] MXF => new byte[] { 0x06, 0x0E, 0x2B, 0x34, 0x02, 0x05, 0x01, 0x01, 0x0D, 0x01, 0x02, 0x01, 0x01, 0x02 };
+    private static List<byte[]> FLV => new ()
+    {
+        new byte[] { 0x46, 0x4C, 0x56, 0x01 }
+    };
 
-    private static byte[] WEBM => new byte[] { 0x1A, 0x45, 0xDF, 0xA3 };
+    private static List<byte[]> OGG => new ()
+    {
+        new byte[] { 0x4F, 0x67, 0x67, 0x53 }
+    };
 
-    private static byte[] GXF => new byte[] { 0x47, 0x58, 0x46 };
+    private static List<byte[]> WMV => new ()
+    {
+        new byte[] { 0x30, 0x26, 0xB2, 0x75, 0x8E, 0x66, 0xCF, 0x11, 0xA6, 0xD9, 0x00, 0xAA, 0x00, 0x62, 0xCE, 0x6C }
+    };
 
-    private static byte[] FLV => new byte[] { 0x46, 0x4C, 0x56, 0x01 };
+    private static List<byte[]> BMP => new ()
+    {
+        new byte[] { 0x42, 0x4D }
+    };
 
-    private static byte[] OGG => new byte[] { 0x4F, 0x67, 0x67, 0x53 };
+    private static List<byte[]> ASF => new ()
+    {
+        new byte[] { 0x30, 0x26, 0xB2, 0x75, 0x8E, 0x66, 0xCF, 0x11, 0xA6, 0xD9, 0x00, 0xAA, 0x00, 0x62, 0xCE, 0x6C }
+    };
 
-    private static byte[] WMV => new byte[] { 0x30, 0x26, 0xB2, 0x75, 0x8E, 0x66, 0xCF, 0x11, 0xA6, 0xD9, 0x00, 0xAA, 0x00, 0x62, 0xCE, 0x6C };
+    private static List<byte[]> MP3 => new ()
+    {
+        new byte[] { 0x49, 0x44, 0x33 }
+    };
 
-    private static byte[] BMP => new byte[] { 0x42, 0x4D };
+    private static List<byte[]> RM => new ()
+    {
+        new byte[] { 0x2E, 0x52, 0x4D, 0x46 }
+    };
 
-    private static byte[] ASF => new byte[] { 0x30, 0x26, 0xB2, 0x75, 0x8E, 0x66, 0xCF, 0x11, 0xA6, 0xD9, 0x00, 0xAA, 0x00, 0x62, 0xCE, 0x6C };
+    private static List<byte[]> PSD => new ()
+    {
+        new byte[] { 0x38, 0x42, 0x50, 0x53 }
+    };
 
-    private static byte[] IMAGE2PIPE => new byte[] { 0x69, 0x73, 0x74 };
+    private static List<byte[]> WEBP => new ()
+    {
+        new byte[] { 0x52, 0x49, 0x46, 0x46 }
+    };
 
-    private static byte[] IMAGE2 => new byte[] { 0x49, 0x49, 0x2A, 0x00 };
+    private static List<byte[]> WAV => new ()
+    {
+        new byte[] { 0x52, 0x49, 0x46, 0x46, 0, 0, 0, 0, 0x57, 0x41, 0x56, 0x45 },
+        new byte[] { 0x52, 0x49, 0x46, 0x46, 0, 0, 0, 0, 0x41, 0x56, 0x49, 0x20 },
+        new byte[] { 0x52, 0x49, 0x46, 0x46, 0, 0, 0, 0, 0x66, 0x6D, 0x74, 0x20 },
+        new byte[] { 0x52, 0x49, 0x46, 0x46, 0, 0, 0, 0, 0x4D, 0x41, 0x43, 0x20 }
+    };
 
-    private static byte[] RAWVIDEO => new byte[] { 0x52, 0x49, 0x46, 0x46 };
+    private static List<byte[]> FLAC => new ()
+    {
+        new byte[] { 0x66, 0x4C, 0x61, 0x43 },
+        new byte[] { 0x66, 0x4C, 0x61, 0x58 },
+        new byte[] { 0x66, 0x72, 0x65, 0x65 },
+        new byte[] { 0x66, 0x4C, 0x61, 0x54 }
+    };
 
-    private static byte[] MP3 => new byte[] { 0x49, 0x44, 0x33 };
+    private static List<byte[]> AAC => new ()
+    {
+        new byte[] { 0xFF, 0xF1 },
+        new byte[] { 0xFF, 0xF9 },
+        new byte[] { 0xFF, 0xFA },
+        new byte[] { 0xFF, 0xFB }
+    };
 
-    private static byte[] RM => new byte[] { 0x2E, 0x52, 0x4D, 0x46 };
-
-    private static byte[] PSD => new byte[] { 0x38, 0x42, 0x50, 0x53 };
-    private static byte[] WEBP => new byte[] { 0x52, 0x49, 0x46, 0x46, 0x00, 0x00, 0x0, 0x00, 0x57, 0x45, 0x42, 0x50 };
+    private static List<byte[]> WMA => new ()
+    {
+        new byte[] { 0x30, 0x26, 0xB2, 0x75, 0x8E, 0x66, 0xCF, 0x11, 0xA6, 0xD9, 0x00, 0xAA, 0x00, 0x62, 0xCE, 0x6C },
+        new byte[] { 0x02, 0x00, 0x00, 0x00 },
+        new byte[] { 0xFE, 0xFF }
+    };
 
     /// <summary>
     /// Get file signature in bytes by its format
@@ -70,7 +176,7 @@ public static class FilesSignatures
     /// <param name="outputFormatType">File format</param>
     /// <returns>Byte signature</returns>
     /// <exception cref="NotSupportedException">Exception if file format does not have a specific permanent signature or it is not supported</exception>
-    public static byte[] GetSignature(this FileFormatType outputFormatType)
+    public static List<byte[]> GetSignature(this FileFormatType outputFormatType)
     {
         return outputFormatType switch
         {
@@ -82,8 +188,6 @@ public static class FilesSignatures
             FileFormatType.MKV => MKV,
             FileFormatType.AVI => AVI,
             FileFormatType.MPEG => MPEG,
-            FileFormatType.MPEGTS => MPEGTS,
-            FileFormatType.SVCD => SVCD,
             FileFormatType.GIF => GIF,
             FileFormatType.VOB => VOB,
             FileFormatType.M2TS => M2TS,
@@ -95,15 +199,15 @@ public static class FilesSignatures
             FileFormatType.WMV => WMV,
             FileFormatType.BMP => BMP,
             FileFormatType.ASF => ASF,
-            FileFormatType.IMAGE2PIPE => IMAGE2PIPE,
-            FileFormatType.IMAGE2 => IMAGE2,
-            FileFormatType.RAWVIDEO => RAWVIDEO,
             FileFormatType.MP3 => MP3,
             FileFormatType.RM => RM,
             FileFormatType.ICO => ICO,
-            FileFormatType.BIN => BIN,
             FileFormatType.TIFF => TIFF,
             FileFormatType.WEBP => WEBP,
+            FileFormatType.WAV => WAV,
+            FileFormatType.FLAC => FLAC,
+            FileFormatType.AAC => AAC,
+            FileFormatType.WMA => WMA,
             FileFormatType.RAW or FileFormatType.SVG => throw new NotSupportedException("The signatures for \"RAW\" and \"SVG\" "
                                                                                       + "were not specified in the original question, "
                                                                                       + "so their byte arrays are left empty in the code."
