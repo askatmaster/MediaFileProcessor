@@ -212,14 +212,17 @@ public class VideoFileProcessor : IVideoFileProcessor
                                                     FileFormatType? outputFormat = null,
                                                     CancellationToken? cancellationToken = null)
     {
-        var settings = new VideoProcessingSettings().ReplaceIfExist().SetInputFiles(file).Seek(startTime).TimePosition(endTime).CopyAllCodec();
+        var settings = new VideoProcessingSettings().ReplaceIfExist().SetInputFiles(file).Seek(startTime).TimePosition(endTime).VideoCodec(VideoCodecType.LIBX264).Crf(30).SetOutputArguments(outputFile);
 
-        if(outputFile is null && outputFormat is null)
-            throw new Exception("If the outputFile is not specified then the outputFormat must be indicated necessarily");
+        switch(outputFile)
+        {
+            case null when outputFormat is null:
+                throw new Exception("If the outputFile is not specified then the outputFormat must be indicated necessarily");
+            case null:
+                settings.Format(FileFormatType.MPEG);
 
-        outputFormat ??= outputFile!.GetFileFormatType();
-
-        settings.Format(outputFile?.GetFileFormatType() ?? outputFormat.Value);
+                break;
+        }
 
         return await ExecuteAsync(settings, cancellationToken ?? new CancellationToken());
     }

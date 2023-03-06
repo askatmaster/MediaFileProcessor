@@ -121,6 +121,9 @@ public static class FileDataExtensions
     {
         var ext = Path.GetExtension(fileName);
 
+        if(char.IsDigit(ext[1]))
+            ext = "_" + ext;
+
         if (Enum.TryParse(ext.ToUpper().Replace(".", ""), out FileFormatType output))
             return output;
 

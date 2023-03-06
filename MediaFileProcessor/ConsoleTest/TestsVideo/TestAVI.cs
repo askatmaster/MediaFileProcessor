@@ -7,6 +7,36 @@ namespace ConsoleTest.TestsVideo;
 public static class TestAVI
 {
     private static readonly VideoFileProcessor _videoProcessor = new ();
+    private static readonly List<FileFormatType> moovStartRequiredFormats = new()
+    {
+        FileFormatType._3GP,
+        FileFormatType.ASF,
+        FileFormatType.FLV,
+        FileFormatType.M4V,
+        FileFormatType.MKV,
+        FileFormatType.MOV,
+        FileFormatType.WMV,
+        FileFormatType.MP4
+    };
+
+    private static readonly List<FileFormatType> supportedVideoFormats = new()
+    {
+        // FileFormatType.AVI,
+        // FileFormatType._3GP,
+        FileFormatType.ASF,
+        // FileFormatType.FLV,
+        // FileFormatType.M2TS,
+        // FileFormatType.M4V,
+        // FileFormatType.MKV,
+        // FileFormatType.MOV,
+        // FileFormatType.MP4,
+        // FileFormatType.MPEG,
+        // FileFormatType.MXF,
+        // FileFormatType.RM,
+        // FileFormatType.VOB,
+        // FileFormatType.WEBM,
+        // FileFormatType.WMV
+    };
 
     public static async Task Test()
     {
@@ -30,37 +60,6 @@ public static class TestAVI
 
     public static async Task TestExtractFrameFromVideo()
     {
-        var moovStartRequiredFormats = new List<FileFormatType>
-        {
-            FileFormatType._3GP,
-            FileFormatType.ASF,
-            FileFormatType.FLV,
-            FileFormatType.M4V,
-            FileFormatType.MKV,
-            FileFormatType.MOV,
-            FileFormatType.WMV,
-            FileFormatType.MP4
-        };
-
-        var supportedVideoFormats = new List<FileFormatType>
-        {
-            FileFormatType.AVI,
-            FileFormatType._3GP,
-            FileFormatType.ASF,
-            FileFormatType.FLV,
-            FileFormatType.M2TS,
-            FileFormatType.M4V,
-            FileFormatType.MKV,
-            FileFormatType.MOV,
-            FileFormatType.MP4,
-            FileFormatType.MPEG,
-            FileFormatType.MXF,
-            FileFormatType.RM,
-            FileFormatType.VOB,
-            FileFormatType.WEBM,
-            FileFormatType.WMV
-        };
-
         var supportedImageFormats = new Dictionary<FileFormatType, Dictionary<FileFormatType, int[]>>
         {
             {
@@ -222,30 +221,58 @@ public static class TestAVI
 
     public static async Task TestCutVideo()
     {
-        var sample = TestFile.GetPath(FileFormatType.AVI);
-        var resultPhysicalPath = TestFile.ResultFilePath + @"TestCutVideo/resultPath.avi";
-        var resultStreamPath = TestFile.ResultFilePath + @"TestCutVideo/resultStream.avi";
+        var supportedImageFormats = new Dictionary<FileFormatType, int[]>()
+        {
+            { FileFormatType.AVI, new [] { 271668, 263904 } },
+            { FileFormatType._3GP, new [] { 224077, 225280 } },
+            { FileFormatType.ASF, new [] { 359245, 370688 } },
+            { FileFormatType.FLV, new [] { 11152, 11498 } },
+            { FileFormatType.M2TS, new [] { 15482, 16354 } },
+            { FileFormatType.M4V, new [] { 26928, 26928 } },
+            { FileFormatType.MKV, new [] { 26928, 26928 } },
+            { FileFormatType.MP4, new [] { 26928, 26928 } },
+            { FileFormatType.MOV, new [] { 26928, 26928 } },
+            { FileFormatType.MPEG, new [] { 15604, 15604 } },
+            { FileFormatType.MXF, new [] { 16354, 16196 } },
+            { FileFormatType.RM, new [] { 16676, 16676 } },
+            { FileFormatType.VOB, new [] { 15482, 15452 } },
+            { FileFormatType.WEBM, new [] { 23402, 20340 } },
+            { FileFormatType.WMV, new [] { 16832, 17096 } }
+        };
 
-        // Test block with physical paths to input and output files
-        await _videoProcessor.CutVideoAsync(TimeSpan.FromMilliseconds(2000),
-                                            TimeSpan.FromMilliseconds(9000),
-                                            new MediaFile(sample),
-                                            resultPhysicalPath);
+        foreach (var videoFormat in supportedVideoFormats)
+        {
+            var sample = TestFile.GetPath(videoFormat);
+            var resultPhysicalPath = TestFile.ResultFilePath + @$"TestCutVideo/resultPath.{videoFormat.ToString().Replace("_", "").ToLower()}";
+            var resultStreamPath = TestFile.ResultFilePath + @$"TestCutVideo/resultStream.{videoFormat.ToString().Replace("_", "").ToLower()}";
 
-        //Block for testing file processing as streams without specifying physical paths
-        var resultStream = await _videoProcessor.CutVideoAsync(TimeSpan.FromMilliseconds(2000),
-                                                               TimeSpan.FromMilliseconds(9000),
-                                                               new MediaFile(sample),
-                                                               outputFormat: FileFormatType.AVI);
-        resultStream!.ToFile(resultStreamPath);
+            // Test block with physical paths to input and output files
+            await _videoProcessor.CutVideoAsync(TimeSpan.FromMilliseconds(2000),
+                                                TimeSpan.FromMilliseconds(9000),
+                                                new MediaFile(sample),
+                                                resultPhysicalPath);
 
-        TestFile.VerifyFileSize(resultPhysicalPath, 271668);
-        TestFile.VerifyFileSize(resultStreamPath, 263904);
+            //Block for testing file processing as streams without specifying physical paths
+            MemoryStream? ms = null;
+            if(moovStartRequiredFormats.Contains(videoFormat))
+                ms = _videoProcessor.SetStartMoovAsync(new MediaFile(sample.ToBytes()), videoFormat).GetAwaiter().GetResult()!;
+
+            var resultStream = await _videoProcessor.CutVideoAsync(TimeSpan.FromMilliseconds(2000),
+                                                                   TimeSpan.FromMilliseconds(9000),
+                                                                   new MediaFile(moovStartRequiredFormats.Contains(videoFormat) ? ms!.ToArray()
+                                                                                     : sample.ToBytes()),
+                                                                   outputFormat: videoFormat);
+            resultStream!.ToFile(resultStreamPath);
+
+            TestFile.VerifyFileSize(resultPhysicalPath, supportedImageFormats.First(x => x.Key == videoFormat).Value[0]);
+            TestFile.VerifyFileSize(resultStreamPath, supportedImageFormats.First(x => x.Key == videoFormat).Value[1]);
+        }
     }
 
     public static async Task ConvertVideoToImages()
     {
         var sample = TestFile.GetPath(FileFormatType.AVI);
+
         // var resultPhysicalPath = TestFile.ResultFilePath + @"ConvertVideoToImages/Path/result%03d.jpg";
 
         //Test block with physical paths to input and output files
