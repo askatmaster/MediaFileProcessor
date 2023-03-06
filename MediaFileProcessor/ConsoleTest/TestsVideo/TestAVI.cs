@@ -246,21 +246,21 @@ public static class TestAVI
     public static async Task ConvertVideoToImages()
     {
         var sample = TestFile.GetPath(FileFormatType.AVI);
-        var resultPhysicalPath = TestFile.ResultFilePath + @"ConvertVideoToImagesAsync/Path/result%03d.png";
+        // var resultPhysicalPath = TestFile.ResultFilePath + @"ConvertVideoToImages/Path/result%03d.jpg";
 
-        // //Test block with physical paths to input and output files
-        await _videoProcessor.ConvertVideoToImagesAsync(new MediaFile(sample),
-                                                        resultPhysicalPath);
+        //Test block with physical paths to input and output files
+        // await _videoProcessor.ConvertVideoToImagesAsync(new MediaFile(sample),
+        //                                                 resultPhysicalPath);
 
         //Block for testing file processing as streams without specifying physical paths
         await using var stream = new FileStream(sample, FileMode.Open);
-        var resultStream = await _videoProcessor.ConvertVideoToImagesAsync(new MediaFile(stream), outputFormat: FileFormatType.PNG);
+        var resultStream = await _videoProcessor.ConvertVideoToImagesAsync(new MediaFile(stream), outputFormat: FileFormatType.JPG);
         var count = 1;
         var data = resultStream!.ReadAsDataArray();
 
         foreach (var bytes in data)
         {
-            await using (var output = new FileStream(TestFile.ResultFilePath + @$"ConvertVideoToImagesAsync\Stream\result{count++}.png", FileMode.Create))
+            await using (var output = new FileStream(TestFile.ResultFilePath + @$"ConvertVideoToImages\Stream\result{count++:000}.jpg", FileMode.Create))
                 output.Write(bytes, 0, bytes.Length);
         }
     }

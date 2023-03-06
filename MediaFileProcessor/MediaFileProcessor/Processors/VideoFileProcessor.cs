@@ -337,7 +337,7 @@ public class VideoFileProcessor : IVideoFileProcessor
             case FileFormatType.JPG:
             case FileFormatType.IMAGE2PIPE:
             case FileFormatType.IMAGE2:
-                settings.Format(outputFormat.Value);
+                settings.Format(outputImagesPattern == null ? FileFormatType.IMAGE2PIPE : outputFormat.Value);
 
                 break;
             case FileFormatType.PNG:
@@ -381,7 +381,7 @@ public class VideoFileProcessor : IVideoFileProcessor
 
         var stream = await ExecuteAsync(settings, cancellationToken ?? new CancellationToken());
 
-        return stream?.GetMultiStreamBySignature(outputFormat.Value.GetSignature().First());
+        return stream?.GetMultiStreamBySignature(outputFormat.Value.GetSignature());
     }
 
     //======================================================================================================================================================================

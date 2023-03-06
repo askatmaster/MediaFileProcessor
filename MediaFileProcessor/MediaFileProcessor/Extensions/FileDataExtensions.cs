@@ -156,43 +156,52 @@ public static class FileDataExtensions
     /// Searches for the occurrence of a signature within a byte array.
     /// </summary>
     /// <param name="bytes">The array to search within.</param>
-    /// <param name="signature">The signature to search for.</param>
+    /// <param name="signatures">The signature to search for.</param>
     /// <returns>A tuple representing the start position of the signature within the array and a flag indicating whether the signature was found in its entirety.</returns>
-    private static (int?, bool) SearchFileSignature(this byte[] bytes, byte[] signature)
+    private static (int?, bool) SearchFileSignature(this byte[] bytes, List<byte[]> signatures)
     {
-        var signatureLength = signature.Length;
-
-        if (signatureLength == 0)
+        if (signatures.Count == 0)
             return (null, false);
 
-        var signatureStartPos = 0;
-        var startFlag = -1;
-
-        for (var i = 0; i < bytes.Length; i++)
+        foreach (var signature in signatures)
         {
-            if (bytes[i] == signature[signatureStartPos] && startFlag is -1)
+            var signatureLength = signature.Length;
+
+            if (signatureLength == 0)
+                continue;
+
+            var signatureStartPos = 0;
+            var startFlag = -1;
+
+            for (var i = 0; i < bytes.Length; i++)
             {
-                startFlag = i;
+                if ((bytes[i] == signature[signatureStartPos] || (0 == signature[signatureStartPos] && signatureStartPos is 4 or 5)) && startFlag is -1)
+                {
+                    startFlag = i;
+                    signatureStartPos++;
+
+                    continue;
+                }
+
+                if(bytes[i] != signature[signatureStartPos] && (signature[signatureStartPos] != 0 && signatureStartPos != 4 || signatureStartPos != 5))
+                {
+                    startFlag = -1;
+                    signatureStartPos = default;
+
+                    continue;
+                }
+
+                if(startFlag is not -1 && signatureStartPos == signatureLength - 1)
+                    return (startFlag, true);
+
                 signatureStartPos++;
-
-                continue;
             }
 
-            if(bytes[i] != signature[signatureStartPos])
-            {
-                startFlag = -1;
-                signatureStartPos = default;
-
-                continue;
-            }
-
-            if(startFlag is not -1 && signatureStartPos == signatureLength - 1)
-                return (startFlag, true);
-
-            signatureStartPos++;
+            if(startFlag is not -1)
+                return (startFlag, false);
         }
 
-        return startFlag is -1 ? (null, false) : (startFlag, false);
+        return (null, false);
     }
 
     /// <summary>
@@ -202,10 +211,10 @@ public static class FileDataExtensions
     /// <param name="signature">The byte array representing the signature to search for.</param>
     /// <returns>A tuple containing a list of byte arrays, a byte array and a byte array.
     /// The list of byte arrays represent the found signatures, the byte array represents the data without the found signatures and the byte array represents previous data (if any).</returns>
-    private static (List<byte[]>?, byte[], byte[]?) GetListOfSignature(this byte[] data, byte[] signature)
+    private static (List<byte[]>?, byte[], byte[]?) GetListOfSignature(this byte[] data, List<byte[]> signature)
     {
         // Check if the data is shorter than the signature, in which case there's no match
-        if (data.Length < signature.Length)
+        if (data.Length < signature.First().Length)
             return (null, data, null);
 
         var isFullEndSignature = false;
@@ -231,15 +240,15 @@ public static class FileDataExtensions
             if(isFullStartSignature)
             {
                 // Search for the end of the signature in the data
-                (var endFilePos, isFullEndSignature) = SearchFileSignature(data[(startFilePos!.Value + signature.Length)..], signature);
+                (var endFilePos, isFullEndSignature) = SearchFileSignature(data[(startFilePos!.Value + signature.First().Length)..], signature);
 
                 // If a full end signature is found
                 if(isFullEndSignature)
                 {
-                    var fileBytes = data[startFilePos.Value..(endFilePos!.Value + signature.Length)];
+                    var fileBytes = data[startFilePos.Value..(endFilePos!.Value + signature.First().Length)];
                     listFiles.Add(fileBytes);
 
-                    data = data[(endFilePos.Value + signature.Length)..];
+                    data = data[(endFilePos.Value + signature.First().Length)..];
                 }
             }
         } while (isFullEndSignature);
@@ -259,7 +268,7 @@ public static class FileDataExtensions
     /// <param name="fileSignature">The signature to identify the start of a new file in the input `Stream`.</param>
     /// <returns>A `MultiStream` containing multiple `Stream` objects extracted from the input `Stream`.
     /// Each `Stream` object represents a file extracted based on the given file signature.</returns>
-    public static MultiStream GetMultiStreamBySignature(this Stream stream, byte[] fileSignature)
+    public static MultiStream GetMultiStreamBySignature(this Stream stream, List<byte[]> fileSignature)
     {
         // buffer to store the read data from the input stream
         var buffer = new byte[16 * 1024];
@@ -279,6 +288,11 @@ public static class FileDataExtensions
         // loop to read data from the input stream
         while ((nread = stream.Read(buffer, 0, buffer.Length)) > 0)
         {
+            if(multiStream.Count == 364)
+            {
+                Console.WriteLine("test");
+            }
+
             // the data read from the input stream, concatenated with the new file start buffer if it exists
             var array = newFileStartBuffer != null
                 ? ConcatByteArrays(false, newFileStartBuffer, buffer[..nread])
@@ -288,9 +302,9 @@ public static class FileDataExtensions
             var listFiles = array.GetListOfSignature(fileSignature);
 
             // check if a new file has started in the current data
-            var newFileStarted = array.Length < fileSignature.Length
+            var newFileStarted = array.Length < fileSignature.First().Length
                 ? array.SearchFileSignature(fileSignature)
-                : array[..fileSignature.Length].SearchFileSignature(fileSignature);
+                : array[..fileSignature.First().Length].SearchFileSignature(fileSignature);
 
             // if a new file signature has been found, add the data stored in the memory stream to the `MultiStream`
             // and reset the memory stream
@@ -359,17 +373,17 @@ public static class FileDataExtensions
                 }
 
                 // Check for a new file start buffer
-                var checkNewFileStartBuffer = listFiles.Item2[fileSignature.Length..].SearchFileSignature(fileSignature);
+                var checkNewFileStartBuffer = listFiles.Item2[fileSignature.First().Length..].SearchFileSignature(fileSignature);
 
                 // If start position is 0 and a new file start buffer is found
                 if(startFilePos.Value == 0 && checkNewFileStartBuffer.Item1 != null)
                 {
                     // Write the data up to the new file signature to the memory stream.
-                    var data = listFiles.Item2[..(checkNewFileStartBuffer.Item1.Value + fileSignature.Length)];
+                    var data = listFiles.Item2[..(checkNewFileStartBuffer.Item1.Value + fileSignature.First().Length)];
                     ms.Write(data, 0, data.Length);
 
                     // Update newFileStartBuffer
-                    newFileStartBuffer = listFiles.Item2[(checkNewFileStartBuffer.Item1.Value + fileSignature.Length)..];
+                    newFileStartBuffer = listFiles.Item2[(checkNewFileStartBuffer.Item1.Value + fileSignature.First().Length)..];
 
                     continue;
                 }
@@ -413,7 +427,7 @@ public static class FileDataExtensions
     /// <param name="stream">The larger stream from which to extract smaller streams.</param>
     /// <param name="fileSignature">The byte array used to identify the start of a new stream in the larger stream.</param>
     /// <param name="action">The action to perform on each extracted stream represented as a byte array.</param>
-    public static void GetMultiStreamBySignature(this Stream stream, byte[] fileSignature, Action<byte[]> action)
+    public static void GetMultiStreamBySignature(this Stream stream, List<byte[]> fileSignature, Action<byte[]> action)
     {
         var buffer = new byte[16 * 1024];
         byte[]? newFileStartBuffer = null;
@@ -430,9 +444,9 @@ public static class FileDataExtensions
 
             var listFiles = array.GetListOfSignature(fileSignature);
 
-            var newFileStarted = array.Length < fileSignature.Length
+            var newFileStarted = array.Length < fileSignature.First().Length
                 ? array.SearchFileSignature(fileSignature)
-                : array[..fileSignature.Length].SearchFileSignature(fileSignature);
+                : array[..fileSignature.First().Length].SearchFileSignature(fileSignature);
 
             if(listFiles.Item3 == null && newFileStarted.Item2 && newFileStarted.Item1!.Value == 0 && ms.Length != 0)
             {
@@ -479,13 +493,13 @@ public static class FileDataExtensions
                     action(data);
                 }
 
-                var checkNewFileStartBuffer = listFiles.Item2[fileSignature.Length..].SearchFileSignature(fileSignature);
+                var checkNewFileStartBuffer = listFiles.Item2[fileSignature.First().Length..].SearchFileSignature(fileSignature);
 
                 if(startFilePos.Value == 0 && checkNewFileStartBuffer.Item1 != null)
                 {
-                    var test = listFiles.Item2[..(checkNewFileStartBuffer.Item1.Value + fileSignature.Length)];
+                    var test = listFiles.Item2[..(checkNewFileStartBuffer.Item1.Value + fileSignature.First().Length)];
                     ms.Write(test, 0, test.Length);
-                    newFileStartBuffer = listFiles.Item2[(checkNewFileStartBuffer.Item1.Value + fileSignature.Length)..];
+                    newFileStartBuffer = listFiles.Item2[(checkNewFileStartBuffer.Item1.Value + fileSignature.First().Length)..];
 
                     continue;
                 }

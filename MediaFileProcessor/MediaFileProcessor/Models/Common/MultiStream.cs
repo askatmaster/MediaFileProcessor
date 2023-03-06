@@ -41,6 +41,8 @@ public sealed class MultiStream : Stream
     /// </returns>
     public override bool CanWrite => false;
 
+    public int Count => streamList.Count;
+
     /// <summary>
     /// Gets the length of the virtual stream, which is the sum of the lengths of all streams in the `streamList`.
     /// </summary>
