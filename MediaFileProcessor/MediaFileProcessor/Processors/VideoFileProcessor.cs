@@ -166,9 +166,7 @@ public class VideoFileProcessor : IVideoFileProcessor
             if(fileFormatType is FileFormatType.MP4 or FileFormatType.M4V or FileFormatType.MKV or FileFormatType.MOV or FileFormatType._3GP)
                 settings.AudioCodec(AudioCodecType.COPY).VideoCodec(VideoCodecType.COPY);
             else
-            {
                 settings.VideoCodec(VideoCodecType.LIBX264).VideoCodecPreset(VideoCodecPresetType.ULTRAFAST).Crf(23).AudioCodec(AudioCodecType.COPY);
-            }
 
             if(outputFile is null)
             {
@@ -219,7 +217,15 @@ public class VideoFileProcessor : IVideoFileProcessor
             case null when outputFormat is null:
                 throw new Exception("If the outputFile is not specified then the outputFormat must be indicated necessarily");
             case null:
-                settings.Format(FileFormatType.MPEG);
+                if (outputFormat is FileFormatType._3GP or FileFormatType.ASF)
+                    settings.Format(FileFormatType.MPEG);
+                else if (outputFormat is FileFormatType.M2TS)
+                {
+                    settings.Format(FileFormatType.MPEGTS);
+                }
+                else
+                    settings.Format(outputFormat.Value);
+
 
                 break;
         }

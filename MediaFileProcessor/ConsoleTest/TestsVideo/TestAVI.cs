@@ -23,11 +23,11 @@ public static class TestAVI
     {
         // FileFormatType.AVI,
         // FileFormatType._3GP,
-        FileFormatType.ASF,
+        // FileFormatType.ASF,
         // FileFormatType.FLV,
         // FileFormatType.M2TS,
         // FileFormatType.M4V,
-        // FileFormatType.MKV,
+        FileFormatType.MKV,
         // FileFormatType.MOV,
         // FileFormatType.MP4,
         // FileFormatType.MPEG,
@@ -221,14 +221,14 @@ public static class TestAVI
 
     public static async Task TestCutVideo()
     {
-        var supportedImageFormats = new Dictionary<FileFormatType, int[]>()
+        var supportedImageFormats = new Dictionary<FileFormatType, int[]>
         {
             { FileFormatType.AVI, new [] { 271668, 263904 } },
             { FileFormatType._3GP, new [] { 224077, 225280 } },
             { FileFormatType.ASF, new [] { 359245, 370688 } },
-            { FileFormatType.FLV, new [] { 11152, 11498 } },
-            { FileFormatType.M2TS, new [] { 15482, 16354 } },
-            { FileFormatType.M4V, new [] { 26928, 26928 } },
+            { FileFormatType.FLV, new [] { 172335, 141344 } },
+            { FileFormatType.M2TS, new [] { 356352, 345544 } },
+            { FileFormatType.M4V, new [] { 224203, 220885 } },
             { FileFormatType.MKV, new [] { 26928, 26928 } },
             { FileFormatType.MP4, new [] { 26928, 26928 } },
             { FileFormatType.MOV, new [] { 26928, 26928 } },
