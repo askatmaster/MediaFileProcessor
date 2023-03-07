@@ -163,10 +163,21 @@ public class VideoFileProcessor : IVideoFileProcessor
 
             settings.MovFralgs("faststart").SetOutputArguments(resultFileName ?? outputFile);
 
-            if(fileFormatType is FileFormatType.MP4 or FileFormatType.M4V or FileFormatType.MKV or FileFormatType.MOV or FileFormatType._3GP)
-                settings.AudioCodec(AudioCodecType.COPY).VideoCodec(VideoCodecType.COPY);
-            else
-                settings.VideoCodec(VideoCodecType.LIBX264).VideoCodecPreset(VideoCodecPresetType.ULTRAFAST).Crf(23).AudioCodec(AudioCodecType.COPY);
+            switch(fileFormatType)
+            {
+                case FileFormatType.MP4 or FileFormatType.M4V or FileFormatType.MKV or FileFormatType.MOV or FileFormatType._3GP:
+                    settings.AudioCodec(AudioCodecType.COPY).VideoCodec(VideoCodecType.COPY);
+
+                    break;
+                case FileFormatType.WMV:
+                    settings.VideoCodec(VideoCodecType.LIBX264).AudioCodec(AudioCodecType.AAC).Strict("experimental").AudioBitRate(192);
+
+                    break;
+                default:
+                    settings.VideoCodec(VideoCodecType.LIBX264).VideoCodecPreset(VideoCodecPresetType.ULTRAFAST).Crf(23).AudioCodec(AudioCodecType.COPY);
+
+                    break;
+            }
 
             if(outputFile is null)
             {
@@ -210,25 +221,50 @@ public class VideoFileProcessor : IVideoFileProcessor
                                                     FileFormatType? outputFormat = null,
                                                     CancellationToken? cancellationToken = null)
     {
-        var settings = new VideoProcessingSettings().ReplaceIfExist().SetInputFiles(file).Seek(startTime).TimePosition(endTime).VideoCodec(VideoCodecType.LIBX264).Crf(30).SetOutputArguments(outputFile);
+        var settings = new VideoProcessingSettings().ReplaceIfExist().SetInputFiles(file).Seek(startTime).TimePosition(endTime).SetOutputArguments(outputFile);
 
-        switch(outputFile)
-        {
-            case null when outputFormat is null:
-                throw new Exception("If the outputFile is not specified then the outputFormat must be indicated necessarily");
-            case null:
-                if (outputFormat is FileFormatType._3GP or FileFormatType.ASF)
+        if(outputFile is null && outputFormat is null)
+            throw new Exception("If the outputFile is not specified then the outputFormat must be indicated necessarily");
+
+        outputFormat = outputFile?.GetFileFormatType() ?? outputFormat;
+
+        if(outputFormat is FileFormatType.RM)
+            settings.VideoCodec(VideoCodecType.RV10).Crf(30);
+        else if(outputFormat is FileFormatType.WMV)
+            settings.VideoCodec(VideoCodecType.WMV1).Crf(30);
+        else if(outputFormat is FileFormatType.WEBM or FileFormatType.AVI)
+            settings.CopyAllCodec();
+        else
+            settings.VideoCodec(VideoCodecType.LIBX264).Crf(30);
+
+        if(outputFile is null)
+            switch(outputFormat)
+            {
+                case FileFormatType._3GP or FileFormatType.ASF or FileFormatType.MOV or FileFormatType.MP4:
                     settings.Format(FileFormatType.MPEG);
-                else if (outputFormat is FileFormatType.M2TS)
-                {
+
+                    break;
+                case FileFormatType.M2TS:
                     settings.Format(FileFormatType.MPEGTS);
-                }
-                else
+
+                    break;
+                case FileFormatType.MKV:
+                    settings.Format("matroska");
+
+                    break;
+                case FileFormatType.RM:
                     settings.Format(outputFormat.Value);
 
+                    break;
+                case FileFormatType.WMV:
+                    settings.Format(FileFormatType.ASF);
 
-                break;
-        }
+                    break;
+                default:
+                    settings.Format(outputFormat!.Value);
+
+                    break;
+            }
 
         return await ExecuteAsync(settings, cancellationToken ?? new CancellationToken());
     }

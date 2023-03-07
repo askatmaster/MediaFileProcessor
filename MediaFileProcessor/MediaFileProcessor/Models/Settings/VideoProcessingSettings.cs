@@ -559,6 +559,16 @@ public class VideoProcessingSettings : ProcessingSettings
     }
 
     /// <summary>
+    /// enables experimental AAC audio encoding, which is required for some older versions of ffmpeg.
+    /// </summary>
+    public VideoProcessingSettings Strict(string value)
+    {
+        _stringBuilder.Append($" -strict {value} ");
+
+        return this;
+    }
+
+    /// <summary>
     /// Video Speed Up / Down using setpts filter
     /// </summary>
     public VideoProcessingSettings VideoTimeScale(double scale)
