@@ -43,8 +43,8 @@ Console.ResetColor();
 // }
 
 // await TestAVI.TestExtractFrameFromVideo();
-// await TestAVI.ConvertVideoToImages();
-await TestAVI.TestCutVideo();
+await TestAVI.ConvertVideoToImages();
+// await TestAVI.TestCutVideo();
 
 // var sample = TestFile.GetPath(FileFormatType.ICO);
 // var header = sample.ToBytes()[..50];

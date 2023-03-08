@@ -291,11 +291,6 @@ public static class FileDataExtensions
         // loop to read data from the input stream
         while ((nread = stream.Read(buffer, 0, buffer.Length)) > 0)
         {
-            if(multiStream.Count == 364)
-            {
-                Console.WriteLine("test");
-            }
-
             // the data read from the input stream, concatenated with the new file start buffer if it exists
             var array = newFileStartBuffer != null
                 ? ConcatByteArrays(false, newFileStartBuffer, buffer[..nread])

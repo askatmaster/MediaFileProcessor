@@ -76,8 +76,11 @@ public class VideoFileProcessor : IVideoFileProcessor
 
                 break;
             case FileFormatType.PNG:
-                settings.VideoCodec(VideoCodecType.PNG);
-                settings.Format(FileFormatType.RAWVIDEO);
+                if(outputFile == null)
+                {
+                    settings.VideoCodec(VideoCodecType.PNG);
+                    settings.Format(FileFormatType.RAWVIDEO);
+                }
 
                 break;
             case FileFormatType.TIFF:
@@ -228,14 +231,25 @@ public class VideoFileProcessor : IVideoFileProcessor
 
         outputFormat = outputFile?.GetFileFormatType() ?? outputFormat;
 
-        if(outputFormat is FileFormatType.RM)
-            settings.VideoCodec(VideoCodecType.RV10).Crf(30);
-        else if(outputFormat is FileFormatType.WMV)
-            settings.VideoCodec(VideoCodecType.WMV1).Crf(30);
-        else if(outputFormat is FileFormatType.WEBM or FileFormatType.AVI)
-            settings.CopyAllCodec();
-        else
-            settings.VideoCodec(VideoCodecType.LIBX264).Crf(30);
+        switch(outputFormat)
+        {
+            case FileFormatType.RM:
+                settings.VideoCodec(VideoCodecType.RV10).Crf(30);
+
+                break;
+            case FileFormatType.WMV:
+                settings.VideoCodec(VideoCodecType.WMV1).Crf(30);
+
+                break;
+            case FileFormatType.WEBM or FileFormatType.AVI:
+                settings.CopyAllCodec();
+
+                break;
+            default:
+                settings.VideoCodec(VideoCodecType.LIBX264).Crf(30);
+
+                break;
+        }
 
         if(outputFile is null)
             switch(outputFormat)
@@ -379,15 +393,27 @@ public class VideoFileProcessor : IVideoFileProcessor
         switch(outputFormat)
         {
             case FileFormatType.WEBP:
+                settings.VideoCodec(VideoCodecType.LIBWEBP);
+
+                if(outputImagesPattern == null)
+                    settings.Format(FileFormatType.IMAGE2PIPE);
+
+                break;
             case FileFormatType.JPG:
             case FileFormatType.IMAGE2PIPE:
             case FileFormatType.IMAGE2:
-                settings.Format(outputImagesPattern == null ? FileFormatType.IMAGE2PIPE : outputFormat.Value);
+                if(outputImagesPattern == null)
+                {
+                    settings.Format(FileFormatType.IMAGE2PIPE);
+                }
 
                 break;
             case FileFormatType.PNG:
-                settings.VideoCodec(VideoCodecType.PNG);
-                settings.Format(FileFormatType.RAWVIDEO);
+                if(outputImagesPattern == null)
+                {
+                    settings.VideoCodec(VideoCodecType.PNG);
+                    settings.Format(FileFormatType.RAWVIDEO);
+                }
 
                 break;
             case FileFormatType.TIFF:
@@ -402,16 +428,6 @@ public class VideoFileProcessor : IVideoFileProcessor
                 break;
             case FileFormatType.BMP:
                 settings.PixelFormat("bgr8");
-
-                if(outputImagesPattern == null)
-                {
-                    settings.VideoCodec(VideoCodecType.BMP);
-                    settings.Format(FileFormatType.RAWVIDEO);
-                }
-
-                break;
-            case FileFormatType.ICO:
-                settings.VideoSize(VideoSizeType.CUSTOM, 64, 64);
 
                 if(outputImagesPattern == null)
                 {
