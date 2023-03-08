@@ -402,10 +402,7 @@ public class VideoFileProcessor : IVideoFileProcessor
             case FileFormatType.JPG:
             case FileFormatType.IMAGE2PIPE:
             case FileFormatType.IMAGE2:
-                if(outputImagesPattern == null)
-                {
-                    settings.Format(FileFormatType.IMAGE2PIPE);
-                }
+                settings.Format(outputImagesPattern == null ? FileFormatType.IMAGE2PIPE : outputFormat.Value);
 
                 break;
             case FileFormatType.PNG:
@@ -442,7 +439,7 @@ public class VideoFileProcessor : IVideoFileProcessor
 
         var stream = await ExecuteAsync(settings, cancellationToken ?? new CancellationToken());
 
-        return stream?.GetMultiStreamBySignature(outputFormat.Value.GetSignature());
+        return stream?.GetMultiStreamBySignature(outputFormat.Value.GetSignature().Values.ToList());
     }
 
     //======================================================================================================================================================================

@@ -22,7 +22,7 @@ public static class TestAVI
     private static readonly List<FileFormatType> supportedVideoFormats = new()
     {
         // FileFormatType.AVI,
-        FileFormatType._3GP,
+        FileFormatType._3GP
         // FileFormatType.ASF,
         // FileFormatType.FLV,
         // FileFormatType.M2TS,
@@ -297,7 +297,7 @@ public static class TestAVI
                     { FileFormatType.WEBM, new [] { 38244, 41444 } },
                     { FileFormatType.WMV, new [] { 5502, 5871 } }
                 }
-            },
+            }
             // {
             //     FileFormatType.PNG, new Dictionary<FileFormatType, int[]>
             //     {
@@ -393,8 +393,14 @@ public static class TestAVI
                                                                 resultPhysicalPath);
 
                 //Block for testing file processing as streams without specifying physical paths
+                MemoryStream? ms = null;
+                if(moovStartRequiredFormats.Contains(videoFormat))
+                    ms = _videoProcessor.SetStartMoovAsync(new MediaFile(sample.ToBytes()), videoFormat).GetAwaiter().GetResult()!;
+
                 await using var stream = new FileStream(sample, FileMode.Open);
-                var resultStream = await _videoProcessor.ConvertVideoToImagesAsync(new MediaFile(stream), outputFormat: imageFormat);
+                var resultStream = await _videoProcessor.ConvertVideoToImagesAsync(new MediaFile(moovStartRequiredFormats.Contains(videoFormat) ? ms!.ToArray()
+                                                                                                     : sample.ToBytes()),
+                                                                                   outputFormat: imageFormat);
                 var count = 1;
                 var data = resultStream!.ReadAsDataArray();
 
