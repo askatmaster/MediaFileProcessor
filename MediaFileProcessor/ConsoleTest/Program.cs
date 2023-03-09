@@ -43,11 +43,11 @@ Console.ResetColor();
 // }
 
 // await TestAVI.TestExtractFrameFromVideo();
-await TestAVI.ConvertVideoToImages();
+// await TestAVI.ConvertVideoToImages();
 // await TestAVI.TestCutVideo();
 
-// var sample = TestFile.GetPath(FileFormatType.ICO);
-// var header = sample.ToBytes()[..50];
+var sample = TestFile.GetPath(FileFormatType.AVI);
+var header = sample.ToBytes()[..20];
 
 // byte[] aspectRatio = Encoding.Unicode.GetBytes("AspectRatio");
 // byte[] windowsMediaVideo = Encoding.Unicode.GetBytes("WindowsMediaVideo");

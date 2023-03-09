@@ -54,10 +54,9 @@ public static class FilesSignatures
 
     private static Dictionary<int[]?, byte[]> AVI => new ()
     {
-        { new [] { 4, 5, 6, 7 } , new byte[] { 0x52, 0x49, 0x46, 0x46, 0, 0, 0, 0, 0x41, 0x56, 0x49, 0x20 } },
-        { new [] { 4, 5, 6, 7 } , new byte[] { 0x52, 0x49, 0x46, 0x46, 0, 0, 0, 0, 0x41, 0x56, 0x49, 0x2D } },
-        { new [] { 4, 5, 6, 7 } , new byte[] { 0x52, 0x49, 0x46, 0x46, 0, 0, 0, 0, 0x41, 0x56, 0x49, 0x38 } },
-        { new [] { 4, 5, 6, 7 } , new byte[] { 0x52, 0x49, 0x46, 0x46, 0, 0, 0, 0, 0x41, 0x56, 0x49, 0x4F } }
+        { new [] { 4, 5, 6, 7 } , new byte[] { 0x52, 0x49, 0x46, 0x46, 0, 0, 0, 0, 0x41, 0x56, 0x49, 0x20, 0x4C, 0x49, 0x53, 0x54 } },
+        { new [] { 4, 5, 6, 7 } , new byte[] { 0x52, 0x49, 0x46, 0x46, 0, 0, 0, 0, 0x41, 0x56, 0x49, 0x2D, 0x6D, 0x6D, 0x76, 0x69 } },
+        { new [] { 4, 5, 6, 7 } , new byte[] { 0x52, 0x49, 0x46, 0x46, 0, 0, 0, 0, 0x41, 0x56, 0x49, 0x38, 0x69, 0x64, 0x78, 0x31 } }
     };
 
     private static Dictionary<int[]?, byte[]> MPEG => new ()
@@ -137,7 +136,8 @@ public static class FilesSignatures
 
     private static Dictionary<int[]?, byte[]> WEBP => new ()
     {
-        { null , new byte[] { 0x52, 0x49, 0x46, 0x46 } }
+        { new [] { 4, 5, 6, 7 } , new byte[] { 0x52, 0x49, 0x46, 0x46, 0, 0, 0, 0, 0x57, 0x45, 0x42, 0x50 } },
+        { new [] { 4, 5, 6, 7 } , new byte[] { 0x52, 0x49, 0x46, 0x46, 0, 0, 0, 0, 0x56, 0x50, 0x38, 0x58 } }
     };
 
     private static Dictionary<int[]?, byte[]> WAV => new ()
@@ -218,5 +218,165 @@ public static class FilesSignatures
             FileFormatType.PSD => PSD,
             _ => throw new NotSupportedException("This format does not have a signature")
         };
+    }
+
+    public static FileFormatType GetFormat(this byte[] signature)
+    {
+        if(signature.Length >= 3 && IsJPEG(signature[..3]))
+            return FileFormatType.JPG;
+
+        if(signature.Length >= 8 && IsPNG(signature[..8]))
+            return FileFormatType.PNG;
+
+        if(signature.Length >= 6 && IsICO(signature[..6]))
+            return FileFormatType.ICO;
+
+        if(signature.Length >= 4 && IsTIFF(signature[..4]))
+            return FileFormatType.TIFF;
+
+        if(signature.Length >= 11 && Is3GP(signature[..11]))
+            return FileFormatType._3GP;
+
+        if(signature.Length >= 8 && IsMP4(signature[..8]))
+            return FileFormatType.MP4;
+
+        if(signature.Length >= 16 && IsMOV(signature[..16]))
+            return FileFormatType.MOV;
+
+        if(signature.Length >= 4 && IsMKV(signature[..4]))
+            return FileFormatType.MKV;
+
+        throw new Exception("Unable to determine the format");
+    }
+
+    public static bool IsJPEG(byte[] bytes)
+    {
+        if(bytes.Length < 3)
+            throw new ArgumentException("Еhe signature that you are verifying must be at least 3 bytes long");
+
+        for (var i = 0; i < bytes.Length; i++)
+        {
+            if(bytes[i] != JPG.Values.First()[i])
+                return false;
+        }
+
+        return true;
+    }
+
+    public static bool IsPNG(byte[] bytes)
+    {
+        if(bytes.Length < 8)
+            throw new ArgumentException("Еhe signature that you are verifying must be at least 8 bytes long");
+
+        for (var i = 0; i < bytes.Length; i++)
+        {
+            if(bytes[i] != PNG.Values.First()[i])
+                return false;
+        }
+
+        return true;
+    }
+
+    public static bool IsICO(byte[] bytes)
+    {
+        if(bytes.Length < 6)
+            throw new ArgumentException("Еhe signature that you are verifying must be at least 6 bytes long");
+
+        for (var i = 0; i < bytes.Length; i++)
+        {
+            if(bytes[i] != ICO.Values.First()[i])
+                return false;
+        }
+
+        return true;
+    }
+
+    public static bool IsTIFF(byte[] bytes)
+    {
+        if(bytes.Length < 4)
+            throw new ArgumentException("Еhe signature that you are verifying must be at least 4 bytes long");
+
+        var signatures = TIFF.Values.ToArray();
+
+        for (var i = 0; i < bytes.Length; i++)
+        {
+            if (bytes[i] == signatures[0][i])
+                continue;
+
+            for (var y = 0; y < bytes.Length; y++)
+            {
+                if(bytes[y] != signatures[1][y])
+                    return false;
+            }
+
+            return true;
+        }
+
+        return true;
+    }
+
+    public static bool Is3GP(byte[] bytes)
+    {
+        if(bytes.Length < 11)
+            throw new ArgumentException("Еhe signature that you are verifying must be at least 11 bytes long");
+
+        for (var i = 0; i < bytes.Length; i++)
+        {
+            if(i is 0 or 1 or 2 or 3)
+                continue;
+
+            if(bytes[i] != _3GP.Values.First()[i])
+                return false;
+        }
+
+        return true;
+    }
+
+    public static bool IsMP4(byte[] bytes)
+    {
+        if(bytes.Length < 8)
+            throw new ArgumentException("Еhe signature that you are verifying must be at least 8 bytes long");
+
+        for (var i = 0; i < bytes.Length; i++)
+        {
+            if(i is 0 or 1 or 2 or 3)
+                continue;
+
+            if(bytes[i] != MP4.Values.First()[i])
+                return false;
+        }
+
+        return true;
+    }
+
+    public static bool IsMOV(byte[] bytes)
+    {
+        if(bytes.Length < 16)
+            throw new ArgumentException("Еhe signature that you are verifying must be at least 16 bytes long");
+
+        for (var i = 0; i < bytes.Length; i++)
+        {
+            if(i is 0 or 1 or 2 or 3)
+                continue;
+
+            if(bytes[i] != MOV.Values.First()[i])
+                return false;
+        }
+
+        return true;
+    }
+
+    public static bool IsMKV(byte[] bytes)
+    {
+        if(bytes.Length < 4)
+            throw new ArgumentException("Еhe signature that you are verifying must be at least 4 bytes long");
+
+        for (var i = 0; i < bytes.Length; i++)
+        {
+            if(bytes[i] != MKV.Values.First()[i])
+                return false;
+        }
+
+        return true;
     }
 }
