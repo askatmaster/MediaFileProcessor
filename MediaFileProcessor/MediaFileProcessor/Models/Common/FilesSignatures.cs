@@ -32,7 +32,7 @@ public static class FilesSignatures
         { new [] { 0, 1, 2, 3 } , new byte[] { 0, 0, 0, 0, 0x66, 0x74, 0x79, 0x70, 0x33, 0x67, 0x70 } }
     };
 
-    private static Dictionary<int[], byte[]> MP4 => new ()
+    private static Dictionary<int[]?, byte[]> MP4 => new ()
     {
         { new [] { 0, 1, 2, 3 } , new byte[] { 0, 0, 0, 0, 0x66, 0x74, 0x79, 0x70 } },
         { new [] { 0, 1, 2, 3 } , new byte[] { 0, 0, 0, 0, 0x66, 0x74, 0x79, 0x70 } },
