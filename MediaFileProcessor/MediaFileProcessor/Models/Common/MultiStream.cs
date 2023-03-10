@@ -190,13 +190,11 @@ public sealed class MultiStream : Stream
 
     /// <summary>
     /// Sets the length of the multiple streams.
+    /// WARNING!!! This method cannot be implemented in this class
     /// </summary>
     /// <param name="value">The length to set</param>
     /// <exception cref="NotImplementedException">This method is not implemented in this class</exception>
-    public override void SetLength(long value)
-    {
-        throw new NotImplementedException("This method cannot be implemented in this class");
-    }
+    public override void SetLength(long value) { }
 
     /// <summary>
     /// Clears all buffers for the multiple streams and causes any buffered data to be written to the underlying devices.
@@ -209,9 +207,7 @@ public sealed class MultiStream : Stream
 
     /// <summary>
     /// Writes a specified number of bytes to the multiple streams from a buffer, starting at a specified index.
+    /// WARNING!!! This method cannot be implemented in this class
     /// </summary>
-    public override void Write(byte[] buffer, int offset, int count)
-    {
-        throw new NotImplementedException("This method cannot be implemented in this class");
-    }
+    public override void Write(byte[] buffer, int offset, int count) { }
 }
