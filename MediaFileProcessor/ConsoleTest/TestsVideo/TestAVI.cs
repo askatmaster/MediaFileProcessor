@@ -21,8 +21,8 @@ public static class TestAVI
 
     private static readonly List<FileFormatType> supportedVideoFormats = new()
     {
-        // FileFormatType.AVI,
-        FileFormatType._3GP
+        FileFormatType.AVI,
+        // FileFormatType._3GP
         // FileFormatType.ASF,
         // FileFormatType.FLV,
         // FileFormatType.M2TS,
@@ -386,18 +386,17 @@ public static class TestAVI
             {
                 var sample = TestFile.GetPath(videoFormat);
 
-                var resultPhysicalPath = TestFile.ResultFilePath + $@"ConvertVideoToImages/Path/result%03d.{imageFormat.ToString().Replace("_", "").ToLower()}";
-
-                // Test block with physical paths to input and output files
-                await _videoProcessor.ConvertVideoToImagesAsync(new MediaFile(sample),
-                                                                resultPhysicalPath);
+                // var resultPhysicalPath = TestFile.ResultFilePath + $@"ConvertVideoToImages/Path/result%03d.{imageFormat.ToString().Replace("_", "").ToLower()}";
+                //
+                // // Test block with physical paths to input and output files
+                // await _videoProcessor.ConvertVideoToImagesAsync(new MediaFile(sample),
+                //                                                 resultPhysicalPath);
 
                 //Block for testing file processing as streams without specifying physical paths
                 MemoryStream? ms = null;
                 if(moovStartRequiredFormats.Contains(videoFormat))
                     ms = _videoProcessor.SetStartMoovAsync(new MediaFile(sample.ToBytes()), videoFormat).GetAwaiter().GetResult()!;
 
-                await using var stream = new FileStream(sample, FileMode.Open);
                 var resultStream = await _videoProcessor.ConvertVideoToImagesAsync(new MediaFile(moovStartRequiredFormats.Contains(videoFormat) ? ms!.ToArray()
                                                                                                      : sample.ToBytes()),
                                                                                    outputFormat: imageFormat);

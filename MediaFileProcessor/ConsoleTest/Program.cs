@@ -2,6 +2,7 @@
 using ConsoleTest;
 using ConsoleTest.TestsVideo;
 using MediaFileProcessor.Extensions;
+using MediaFileProcessor.Models.Common;
 using MediaFileProcessor.Models.Enums;
 
 Console.ForegroundColor = ConsoleColor.Green;
@@ -48,54 +49,12 @@ Console.ResetColor();
 
 //=================================================================================================================
 
-var sample = TestFile.GetPath(FileFormatType.WMV);
+var sample = TestFile.GetPath(FileFormatType.AVI);
 var header = sample.ToBytes()[..1024];
+Console.WriteLine(header.IsAVI());
 
 //=================================================================================================================
 
-var aspectRatio = Encoding.Unicode.GetBytes("AspectRatio");
-var windowsMediaVideo = Encoding.Unicode.GetBytes("WindowsMediaVideo");
-var wmv3 = Encoding.ASCII.GetBytes("WMV3");
-var deviceConformanceTemplate = Encoding.Unicode.GetBytes("DeviceConformanceTemplate MP @ML");
-
-        var aspectRatioIndex = IndexOf(header, aspectRatio);
-        var windowsMediaVideoIndex = IndexOf(header, windowsMediaVideo);
-        var wmv3Index = IndexOf(header, wmv3);
-        var deviceConformanceTemplateIndex = IndexOf(header, deviceConformanceTemplate);
-
-        if (aspectRatioIndex != -1)
-            Console.WriteLine("AspectRatio found at index {0}", aspectRatioIndex);
-
-        if (windowsMediaVideoIndex != -1)
-            Console.WriteLine("WindowsMediaVideo found at index {0}", windowsMediaVideoIndex);
-
-        if (wmv3Index != -1)
-            Console.WriteLine("WMV3 found at index {0}", wmv3Index);
-
-        if (deviceConformanceTemplateIndex != -1)
-            Console.WriteLine("DeviceConformanceTemplate MP @ML found at index {0}", deviceConformanceTemplateIndex);
-
-int IndexOf(byte[] source, byte[] pattern)
-{
-    for (var i = 0; i <= source.Length - pattern.Length; i++)
-    {
-        var match = true;
-
-        for (var j = 0; j < pattern.Length; j++)
-        {
-            if (source[i + j] != pattern[j])
-            {
-                match = false;
-                break;
-            }
-        }
-
-        if (match)
-            return i;
-    }
-
-    return -1;
-}
 
 Console.ForegroundColor = ConsoleColor.Green;
 Console.WriteLine("Done");
