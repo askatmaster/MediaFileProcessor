@@ -3,6 +3,7 @@ using System.IO.Pipes;
 using System.Runtime.InteropServices;
 using MediaFileProcessor.Models.Settings;
 namespace MediaFileProcessor;
+//TODO replace indexes in all files to avoid unnecessary memory allocation
 
 /// <summary>
 /// Represents a media file processing class

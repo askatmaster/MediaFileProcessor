@@ -228,7 +228,7 @@ public static class FilesSignatures
 
     public static FileFormatType GetFormat(this byte[] signature)
     {
-        if(signature.Length >= 3 && IsJPEG(signature[..3]))
+        if(signature.Length >= 3 && IsJPEG(signature))
             return FileFormatType.JPG;
 
         if(signature.Length >= 8 && IsPNG(signature[..8]))
@@ -266,12 +266,15 @@ public static class FilesSignatures
         if(buffer.Length < 3)
             throw new ArgumentException("The signature that you are verifying must be at least 3 bytes long");
 
-        var bytes = buffer[..3];
-
-        for (var i = 0; i < bytes.Length; i++)
+        for (var i = 0; i < 3; i++)
         {
-            if(bytes[i] != JPG.Values.First()[i])
-                return false;
+            switch(i)
+            {
+                case 0 when buffer[i] != 0xFF:
+                case 1 when buffer[i] != 0xD8:
+                case 2 when buffer[i] != 0xFF:
+                    return false;
+            }
         }
 
         return true;
@@ -341,7 +344,16 @@ public static class FilesSignatures
 
         var bytes = buffer[..11];
 
-        return !bytes.Where((t, i) => i is not (0 or 1 or 2 or 3) && t != _3GP.Values.First()[i]).Any();
+        for (var i = 0; i < bytes.Length; i++)
+        {
+            if(i is 0 or 1 or 2 or 3)
+                continue;
+
+            if(bytes[i] != _3GP.Values.First()[i])
+                return false;
+        }
+
+        return true;
     }
 
     public static bool IsMP4(this byte[] buffer)
@@ -351,7 +363,16 @@ public static class FilesSignatures
 
         var bytes = buffer[..8];
 
-        return !bytes.Where((t, i) => i is not (0 or 1 or 2 or 3) && t != MP4.Values.First()[i]).Any();
+        for (var i = 0; i < bytes.Length; i++)
+        {
+            if(i is 0 or 1 or 2 or 3)
+                continue;
+
+            if(bytes[i] != MP4.Values.First()[i])
+                return false;
+        }
+
+        return true;
     }
 
     public static bool IsMOV(this byte[] buffer)
@@ -361,7 +382,16 @@ public static class FilesSignatures
 
         var bytes = buffer[..16];
 
-        return !bytes.Where((t, i) => i is not (0 or 1 or 2 or 3) && t != MOV.Values.First()[i]).Any();
+        for (var i = 0; i < bytes.Length; i++)
+        {
+            if(i is 0 or 1 or 2 or 3)
+                continue;
+
+            if(bytes[i] != MOV.Values.First()[i])
+                return false;
+        }
+
+        return true;
     }
 
     public static bool IsMKV(this byte[] buffer)
@@ -371,7 +401,13 @@ public static class FilesSignatures
 
         var bytes = buffer[..4];
 
-        return !bytes.Where((t, i) => t != MKV.Values.First()[i]).Any();
+        for (var i = 0; i < bytes.Length; i++)
+        {
+            if(bytes[i] != MKV.Values.First()[i])
+                return false;
+        }
+
+        return true;
     }
 
     public static bool IsAVI(this byte[] buffer)
@@ -383,13 +419,38 @@ public static class FilesSignatures
 
         var signatures = AVI.Values.ToArray();
 
-        if (!bytes.Where((t2, i) => i is not (4 or 5 or 6 or 7) && t2 != signatures[0][i]).Any())
+        for (var i = 0; i < bytes.Length; i++)
+        {
+            if(i is 4 or 5 or 6 or 7)
+                continue;
+
+            if (bytes[i] == signatures[0][i])
+                continue;
+
+            for (var y = 0; y < bytes.Length; y++)
+            {
+                if(y is 4 or 5 or 6 or 7)
+                    continue;
+
+                if(bytes[y] == signatures[1][y])
+                    continue;
+
+                for (var k = 0; k < bytes.Length; k++)
+                {
+                    if(k is 4 or 5 or 6 or 7)
+                        continue;
+
+                    if(bytes[k] != signatures[2][k])
+                        return false;
+                }
+
+                return true;
+            }
+
             return true;
-        if (bytes.Where((t1, y) => y is not (4 or 5 or 6 or 7) && t1 != signatures[1][y]).Any())
-            return !bytes.Where((t, k) => k is not (4 or 5 or 6 or 7) && t != signatures[2][k]).Any();
+        }
 
         return true;
-
     }
 
     public static bool IsMPEG(this byte[] buffer)
@@ -399,7 +460,13 @@ public static class FilesSignatures
 
         var bytes = buffer[..4];
 
-        return !bytes.Where((t, i) => t != MPEG.Values.First()[i]).Any();
+        for (var i = 0; i < bytes.Length; i++)
+        {
+            if(bytes[i] != MPEG.Values.First()[i])
+                return false;
+        }
+
+        return true;
     }
 
     public static bool IsGIF(this byte[] buffer)
@@ -410,8 +477,19 @@ public static class FilesSignatures
         var signatures = GIF.Values.ToArray();
         var bytes = buffer[..6];
 
-        if (bytes.Where((t1, i) => t1 != signatures[0][i]).Any())
-            return !bytes.Where((t, y) => t != signatures[1][y]).Any();
+        for (var i = 0; i < bytes.Length; i++)
+        {
+            if (bytes[i] == signatures[0][i])
+                continue;
+
+            for (var y = 0; y < bytes.Length; y++)
+            {
+                if(bytes[y] != signatures[1][y])
+                    return false;
+            }
+
+            return true;
+        }
 
         return true;
     }
@@ -423,7 +501,13 @@ public static class FilesSignatures
 
         var bytes = buffer[..6];
 
-        return !bytes.Where((t, i) => t != VOB.Values.First()[i]).Any();
+        for (var i = 0; i < bytes.Length; i++)
+        {
+            if(bytes[i] != VOB.Values.First()[i])
+                return false;
+        }
+
+        return true;
     }
 
     public static bool IsM2TS(this byte[] buffer)
@@ -433,7 +517,13 @@ public static class FilesSignatures
 
         var bytes = buffer[..4];
 
-        return !bytes.Where((t, i) => t != M2TS.Values.First()[i]).Any();
+        for (var i = 0; i < bytes.Length; i++)
+        {
+            if(bytes[i] != M2TS.Values.First()[i])
+                return false;
+        }
+
+        return true;
     }
 
     public static bool IsMXF(this byte[] buffer)
@@ -443,7 +533,13 @@ public static class FilesSignatures
 
         var bytes = buffer[..14];
 
-        return !bytes.Where((t, i) => t != MXF.Values.First()[i]).Any();
+        for (var i = 0; i < bytes.Length; i++)
+        {
+            if(bytes[i] != MXF.Values.First()[i])
+                return false;
+        }
+
+        return true;
     }
 
     public static bool IsWEBM(this byte[] buffer)
@@ -453,7 +549,13 @@ public static class FilesSignatures
 
         var bytes = buffer[..4];
 
-        return !bytes.Where((t, i) => t != WEBM.Values.First()[i]).Any();
+        for (var i = 0; i < bytes.Length; i++)
+        {
+            if(bytes[i] != WEBM.Values.First()[i])
+                return false;
+        }
+
+        return true;
     }
 
     public static bool IsGXF(this byte[] buffer)
@@ -463,7 +565,13 @@ public static class FilesSignatures
 
         var bytes = buffer[..4];
 
-        return !bytes.Where((t, i) => t != GXF.Values.First()[i]).Any();
+        for (var i = 0; i < bytes.Length; i++)
+        {
+            if(bytes[i] != GXF.Values.First()[i])
+                return false;
+        }
+
+        return true;
     }
 
     public static bool IsFLV(this byte[] buffer)
@@ -473,7 +581,13 @@ public static class FilesSignatures
 
         var bytes = buffer[..4];
 
-        return !bytes.Where((t, i) => t != FLV.Values.First()[i]).Any();
+        for (var i = 0; i < bytes.Length; i++)
+        {
+            if(bytes[i] != FLV.Values.First()[i])
+                return false;
+        }
+
+        return true;
     }
 
     public static bool IsOGG(this byte[] buffer)
@@ -483,7 +597,13 @@ public static class FilesSignatures
 
         var bytes = buffer[..4];
 
-        return !bytes.Where((t, i) => t != OGG.Values.First()[i]).Any();
+        for (var i = 0; i < bytes.Length; i++)
+        {
+            if(bytes[i] != OGG.Values.First()[i])
+                return false;
+        }
+
+        return true;
     }
 
     public static bool IsWMV(this byte[] buffer)
@@ -493,8 +613,11 @@ public static class FilesSignatures
 
         var bytes = buffer[..16];
 
-        if (bytes.Where((t, i) => t != WMV.Values.First()[i]).Any())
-            return false;
+        for (var i = 0; i < bytes.Length; i++)
+        {
+            if(bytes[i] != WMV.Values.First()[i])
+                return false;
+        }
 
         if(buffer.Length < 1024)
             return true;
@@ -520,10 +643,14 @@ public static class FilesSignatures
     {
         if(buffer.Length < 2)
             throw new ArgumentException("The signature that you are verifying must be at least 2 bytes long");
-
         var bytes = buffer[..2];
+        for (var i = 0; i < bytes.Length; i++)
+        {
+            if(bytes[i] != BMP.Values.First()[i])
+                return false;
+        }
 
-        return !bytes.Where((t, i) => t != BMP.Values.First()[i]).Any();
+        return true;
     }
 
     private static int IndexOf(this byte[] source, byte[] pattern)
@@ -543,52 +670,84 @@ public static class FilesSignatures
     {
         if(buffer.Length < 16)
             throw new ArgumentException("The signature that you are verifying must be at least 16 bytes long");
-
         var bytes = buffer[..16];
+        for (var i = 0; i < bytes.Length; i++)
+        {
+            if(bytes[i] != ASF.Values.First()[i])
+                return false;
+        }
 
-        return !bytes.Where((t, i) => t != ASF.Values.First()[i]).Any();
+        return true;
     }
 
     public static bool IsMP3(this byte[] buffer)
     {
         if(buffer.Length < 3)
             throw new ArgumentException("The signature that you are verifying must be at least 3 bytes long");
-
         var bytes = buffer[..3];
+        for (var i = 0; i < bytes.Length; i++)
+        {
+            if(bytes[i] != MP3.Values.First()[i])
+                return false;
+        }
 
-        return !bytes.Where((t, i) => t != MP3.Values.First()[i]).Any();
+        return true;
     }
 
     public static bool IsRM(this byte[] buffer)
     {
         if(buffer.Length < 4)
             throw new ArgumentException("The signature that you are verifying must be at least 4 bytes long");
-
         var bytes = buffer[..4];
+        for (var i = 0; i < bytes.Length; i++)
+        {
+            if(bytes[i] != RM.Values.First()[i])
+                return false;
+        }
 
-        return !bytes.Where((t, i) => t != RM.Values.First()[i]).Any();
+        return true;
     }
 
     public static bool IsPSD(this byte[] buffer)
     {
         if(buffer.Length < 4)
             throw new ArgumentException("The signature that you are verifying must be at least 4 bytes long");
-
         var bytes = buffer[..4];
+        for (var i = 0; i < bytes.Length; i++)
+        {
+            if(bytes[i] != PSD.Values.First()[i])
+                return false;
+        }
 
-        return !bytes.Where((t, i) => t != PSD.Values.First()[i]).Any();
+        return true;
     }
 
     public static bool IsWEBP(this byte[] buffer)
     {
         if(buffer.Length < 12)
             throw new ArgumentException("The signature that you are verifying must be at least 12 bytes long");
-
         var bytes = buffer[..12];
         var signatures = WEBP.Values.ToArray();
 
-        if (bytes.Where((t1, i) => i is not (4 or 5 or 6 or 7) && t1 != signatures[0][i]).Any())
-            return !bytes.Where((t, y) => y is not (4 or 5 or 6 or 7) && t != signatures[1][y]).Any();
+        for (var i = 0; i < bytes.Length; i++)
+        {
+            if(i is 4 or 5 or 6 or 7)
+                continue;
+
+            if (bytes[i] == signatures[0][i])
+                continue;
+
+            for (var y = 0; y < bytes.Length; y++)
+            {
+                if(y is 4 or 5 or 6 or 7)
+                    continue;
+
+                if(bytes[y] != signatures[1][y])
+                    return false;
+            }
+
+            return true;
+        }
 
         return true;
     }
@@ -597,85 +756,169 @@ public static class FilesSignatures
     {
         if(buffer.Length < 12)
             throw new ArgumentException("The signature that you are verifying must be at least 12 bytes long");
-
         var bytes = buffer[..12];
         var signatures = WAV.Values.ToArray();
 
-        if (!bytes.Where((t3, i) => i is not (4 or 5 or 6 or 7) && t3 != signatures[0][i]).Any())
-            return true;
-        if (!bytes.Where((t2, y) => y is not (4 or 5 or 6 or 7) && t2 != signatures[1][y]).Any())
-            return true;
+        for (var i = 0; i < bytes.Length; i++)
+        {
+            if(i is 4 or 5 or 6 or 7)
+                continue;
 
-        if (bytes.Where((t1, k) => k is not (4 or 5 or 6 or 7) && t1 != signatures[2][k]).Any())
-            return !bytes.Where((t, l) => l is not (4 or 5 or 6 or 7) && t != signatures[3][l]).Any();
+            if (bytes[i] == signatures[0][i])
+                continue;
+
+            for (var y = 0; y < bytes.Length; y++)
+            {
+                if(y is 4 or 5 or 6 or 7)
+                    continue;
+
+                if(bytes[y] == signatures[1][y])
+                    continue;
+
+                for (var k = 0; k < bytes.Length; k++)
+                {
+                    if(k is 4 or 5 or 6 or 7)
+                        continue;
+
+                    if(bytes[k] == signatures[2][k])
+                        continue;
+
+                    for (var l = 0; l < bytes.Length; l++)
+                    {
+                        if(l is 4 or 5 or 6 or 7)
+                            continue;
+
+                        if(bytes[l] != signatures[3][l])
+                            return false;
+                    }
+
+                    return true;
+                }
+
+                return true;
+            }
+
+            return true;
+        }
 
         return true;
-
     }
 
     public static bool IsFLAC(this byte[] buffer)
     {
         if(buffer.Length < 4)
             throw new ArgumentException("The signature that you are verifying must be at least 4 bytes long");
-
         var bytes = buffer[..4];
         var signatures = FLAC.Values.ToArray();
 
-        if (!bytes.Where((t3, i) => t3 != signatures[0][i]).Any())
-            return true;
-        if (!bytes.Where((t2, y) => t2 != signatures[1][y]).Any())
-            return true;
+        for (var i = 0; i < bytes.Length; i++)
+        {
+            if (bytes[i] == signatures[0][i])
+                continue;
 
-        if (bytes.Where((t1, k) => t1 != signatures[2][k]).Any())
-            return !bytes.Where((t, l) => t != signatures[3][l]).Any();
+            for (var y = 0; y < bytes.Length; y++)
+            {
+                if(bytes[y] == signatures[1][y])
+                    continue;
+
+                for (var k = 0; k < bytes.Length; k++)
+                {
+                    if(bytes[k] == signatures[2][k])
+                        continue;
+
+                    for (var l = 0; l < bytes.Length; l++)
+                    {
+                        if(bytes[l] != signatures[3][l])
+                            return false;
+                    }
+
+                    return true;
+                }
+
+                return true;
+            }
+
+            return true;
+        }
 
         return true;
-
     }
 
     public static bool IsAAC(this byte[] buffer)
     {
         if(buffer.Length < 2)
             throw new ArgumentException("The signature that you are verifying must be at least 2 bytes long");
-
         var bytes = buffer[..2];
         var signatures = AAC.Values.ToArray();
 
-        if (!bytes.Where((t3, i) => t3 != signatures[0][i]).Any())
-            return true;
-        if (!bytes.Where((t2, y) => t2 != signatures[1][y]).Any())
-            return true;
-        if (bytes.Where((t1, k) => t1 != signatures[2][k]).Any())
-            return !bytes.Where((t, l) => t != signatures[3][l]).Any();
-
-        return true;
-
-    }
-
-    public static bool IsWMA(this byte[] buffer)
-    {
-        if(buffer.Length < 16)
-            throw new ArgumentException("The signature that you are verifying must be at least 16 bytes long");
-
-        var signatures = WMA.Values.ToArray();
-        var bytes = buffer[..16];
-
-        if (!bytes.Where((t1, i) => t1 != signatures[0][i]).Any())
-            return true;
-
-        for (var y = 0; y < bytes.Length; y++)
+        for (var i = 0; i < bytes.Length; i++)
         {
-            if(y is 4 or 5 or 6 or 7 or 8 or 9 or 10 or 11 or 12 or 13 or 14 or 15)
+            if (bytes[i] == signatures[0][i])
                 continue;
 
-            if(bytes[y] == signatures[1][y])
-                continue;
+            for (var y = 0; y < bytes.Length; y++)
+            {
+                if(bytes[y] == signatures[1][y])
+                    continue;
 
-            return !bytes.Where((t, k) => y is not (2 or 3 or 4 or 5 or 6 or 7 or 8 or 9 or 10 or 11 or 12 or 13 or 14 or 15)
-                                 && t != signatures[2][k]).Any();
+                for (var k = 0; k < bytes.Length; k++)
+                {
+                    if(bytes[k] == signatures[2][k])
+                        continue;
+
+                    for (var l = 0; l < bytes.Length; l++)
+                    {
+                        if(bytes[l] != signatures[3][l])
+                            return false;
+                    }
+
+                    return true;
+                }
+
+                return true;
+            }
+
+            return true;
         }
 
         return true;
+    }
 
+    public static bool IsWMA(byte[] bytes)
+    {
+        if(bytes.Length < 16)
+            throw new ArgumentException("The signature that you are verifying must be at least 16 bytes long");
+
+        var signatures = WMA.Values.ToArray();
+
+        for (var i = 0; i < bytes.Length; i++)
+        {
+            if (bytes[i] == signatures[0][i])
+                continue;
+
+            for (var y = 0; y < bytes.Length; y++)
+            {
+                if(y is 4 or 5 or 6 or 7 or 8 or 9 or 10 or 11 or 12 or 13 or 14 or 15)
+                    continue;
+
+                if(bytes[y] == signatures[1][y])
+                    continue;
+
+                for (var k = 0; k < bytes.Length; k++)
+                {
+                    if(y is 2 or 3 or 4 or 5 or 6 or 7 or 8 or 9 or 10 or 11 or 12 or 13 or 14 or 15)
+                        continue;
+
+                    if(bytes[k] != signatures[2][k])
+                        return false;
+                }
+
+                return true;
+            }
+
+            return true;
+        }
+
+        return true;
     }
 }

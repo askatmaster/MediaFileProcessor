@@ -178,7 +178,7 @@ public static class FileDataExtensions
 
             for (var i = 0; i < bytes.Length; i++)
             {
-                if ((bytes[i] == signature[signatureStartPos] || (0 == signature[signatureStartPos] && signatureStartPos is 4 or 5)) && startFlag is -1)
+                if ((bytes[i] == signature[signatureStartPos] || SignaturePositionIgnore(signature, signatureStartPos)) && startFlag is -1)
                 {
                     startFlag = i;
                     signatureStartPos++;
@@ -186,7 +186,7 @@ public static class FileDataExtensions
                     continue;
                 }
 
-                if(bytes[i] != signature[signatureStartPos] && (signature[signatureStartPos] != 0 && signatureStartPos != 4 || signatureStartPos != 5))
+                if(bytes[i] != signature[signatureStartPos] && !SignaturePositionIgnore(signature, signatureStartPos))
                 {
                     startFlag = -1;
                     signatureStartPos = default;
@@ -205,6 +205,16 @@ public static class FileDataExtensions
         }
 
         return (null, false);
+    }
+
+    private static bool SignaturePositionIgnore(byte[] signature, int signatureStartPos)
+    {
+        var format = signature.GetFormat();
+
+        if(format is FileFormatType.JPG)
+            return 0 == signature[signatureStartPos] && signatureStartPos is 4 or 5;
+        else
+            return 0 == signature[signatureStartPos] && signatureStartPos is 4 or 5;
     }
 
     /// <summary>
