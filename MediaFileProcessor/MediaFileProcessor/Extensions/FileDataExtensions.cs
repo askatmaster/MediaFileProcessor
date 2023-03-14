@@ -211,24 +211,48 @@ public static class FileDataExtensions
     {
         var format = signature.GetFormat();
 
-        if(format is FileFormatType.JPG)
-            return 0 == signature[signatureStartPos] && signatureStartPos is 4 or 5;
-
-        if(format is FileFormatType._3GP or FileFormatType.MP4 or FileFormatType.MOV)
-            return 0 == signature[signatureStartPos] && signatureStartPos is 0 or 1 or 2 or 3;
-
-        if(format is FileFormatType.AVI or FileFormatType.WEBP or FileFormatType.WAV)
-            return 0 == signature[signatureStartPos] && signatureStartPos is 4 or 5 or 6 or 7;
-
-        if(format is FileFormatType.PNG or FileFormatType.ICO or FileFormatType.TIFF or FileFormatType.MKV or FileFormatType.MPEG or FileFormatType.GIF
-                     or FileFormatType.FLAC or FileFormatType.VOB or FileFormatType.M2TS or FileFormatType.MXF or FileFormatType.WEBM or FileFormatType.GXF
-                     or FileFormatType.FLV or FileFormatType.AAC or FileFormatType.OGG or FileFormatType.WMV or FileFormatType.BMP or FileFormatType.ASF
-                     or FileFormatType.MP3 or FileFormatType.RM or FileFormatType.PSD)
-            return false;
-        
-        if(format == FileFormatType.WMA)
-
-        return false;
+        switch(format)
+        {
+            case FileFormatType.JPG:
+                return 0 == signature[signatureStartPos] && signatureStartPos is 4 or 5;
+            case FileFormatType._3GP or FileFormatType.MP4 or FileFormatType.MOV:
+                return 0 == signature[signatureStartPos] && signatureStartPos is 0 or 1 or 2 or 3;
+            case FileFormatType.AVI or FileFormatType.WEBP or FileFormatType.WAV:
+                return 0 == signature[signatureStartPos] && signatureStartPos is 4 or 5 or 6 or 7;
+            case FileFormatType.PNG or FileFormatType.ICO or FileFormatType.TIFF or FileFormatType.MKV or FileFormatType.MPEG or FileFormatType.GIF
+                 or FileFormatType.FLAC or FileFormatType.VOB or FileFormatType.M2TS or FileFormatType.MXF or FileFormatType.WEBM or FileFormatType.GXF
+                 or FileFormatType.FLV or FileFormatType.AAC or FileFormatType.OGG or FileFormatType.WMV or FileFormatType.BMP or FileFormatType.ASF
+                 or FileFormatType.MP3 or FileFormatType.RM or FileFormatType.PSD:
+            case FileFormatType.WMA when signature[0] == 0x30
+             && signature[1] == 0x26
+             && signature[2] == 0xB2
+             && signature[3] == 0x75
+             && signature[4] == 0x8E
+             && signature[5] == 0x66
+             && signature[6] == 0xCF
+             && signature[7] == 0x11
+             && signature[8] == 0xA6
+             && signature[9] == 0xD9
+             && signature[10] == 0x00
+             && signature[11] == 0xAA
+             && signature[12] == 0x00
+             && signature[13] == 0x62
+             && signature[14] == 0xCE
+             && signature[15] == 0x6C:
+                return false;
+            case FileFormatType.WMA when signature[0] == 0x02
+             && signature[1] == 0x00
+             && signature[2] == 0x00
+             && signature[3] == 0x00:
+                return 0 == signature[signatureStartPos] && signatureStartPos > 3;
+            case FileFormatType.WMA when signature[0] == 0xFE
+             && signature[1] == 0xFF:
+                return 0 == signature[signatureStartPos] && signatureStartPos > 1;
+            case FileFormatType.WMA:
+                return false;
+            default:
+                return false;
+        }
     }
 
     /// <summary>
