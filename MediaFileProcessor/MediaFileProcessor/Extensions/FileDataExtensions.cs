@@ -97,7 +97,7 @@ public static class FileDataExtensions
             return pipeName;
 
         // Throw an exception if the operating system cannot be recognized
-        throw new Exception("Operating System not recognized");
+        throw new Exception("Operating System not supported");
     }
 
     /// <summary>
@@ -213,8 +213,22 @@ public static class FileDataExtensions
 
         if(format is FileFormatType.JPG)
             return 0 == signature[signatureStartPos] && signatureStartPos is 4 or 5;
-        else
-            return 0 == signature[signatureStartPos] && signatureStartPos is 4 or 5;
+
+        if(format is FileFormatType._3GP or FileFormatType.MP4 or FileFormatType.MOV)
+            return 0 == signature[signatureStartPos] && signatureStartPos is 0 or 1 or 2 or 3;
+
+        if(format is FileFormatType.AVI or FileFormatType.WEBP or FileFormatType.WAV)
+            return 0 == signature[signatureStartPos] && signatureStartPos is 4 or 5 or 6 or 7;
+
+        if(format is FileFormatType.PNG or FileFormatType.ICO or FileFormatType.TIFF or FileFormatType.MKV or FileFormatType.MPEG or FileFormatType.GIF
+                     or FileFormatType.FLAC or FileFormatType.VOB or FileFormatType.M2TS or FileFormatType.MXF or FileFormatType.WEBM or FileFormatType.GXF
+                     or FileFormatType.FLV or FileFormatType.AAC or FileFormatType.OGG or FileFormatType.WMV or FileFormatType.BMP or FileFormatType.ASF
+                     or FileFormatType.MP3 or FileFormatType.RM or FileFormatType.PSD)
+            return false;
+        
+        if(format == FileFormatType.WMA)
+
+        return false;
     }
 
     /// <summary>
