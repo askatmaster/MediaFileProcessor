@@ -262,6 +262,17 @@ public class VideoProcessingSettings : ProcessingSettings
     }
 
     /// <summary>
+    /// Sets the keyframe interval to 30 frames.
+    /// This means that every 30th frame will be a keyframe, which allows for better seeking and compression efficiency
+    /// </summary>
+    public VideoProcessingSettings KeyFrame(int frameNum)
+    {
+        _stringBuilder.Append($" -g {frameNum}");
+
+        return this;
+    }
+
+    /// <summary>
     /// Create the filtergraph specified by filtergraph and use it to filter the stream.
     /// This is an alias for -filter:a
     /// </summary>
@@ -482,10 +493,13 @@ public class VideoProcessingSettings : ProcessingSettings
     /// <summary>
     /// Video sizes
     /// </summary>
-    public VideoProcessingSettings VideoSize(VideoSizeType videoSize, int witdh, int height)
+    public VideoProcessingSettings VideoSize(VideoSizeType videoSize, int? witdh = null, int? height = null)
     {
         if(videoSize is VideoSizeType.CUSTOM)
         {
+            if(witdh is null || height is null)
+                throw new Exception("When choosing a custom value, you need to specify dimensions");
+
             _stringBuilder.Append($" -vf \"scale={witdh}:{height}\" ");
         }
         else

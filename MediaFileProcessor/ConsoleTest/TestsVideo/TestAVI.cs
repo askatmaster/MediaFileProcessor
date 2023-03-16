@@ -21,12 +21,12 @@ public static class TestAVI
 
     private static readonly List<FileFormatType> supportedVideoFormats = new()
     {
-        FileFormatType.AVI,
+        // FileFormatType.AVI,
         // FileFormatType._3GP,
         // FileFormatType.ASF,
         // FileFormatType.FLV,
         // FileFormatType.M2TS,
-        // FileFormatType.M4V,
+        FileFormatType.M4V,
         // FileFormatType.MKV,
         // FileFormatType.MOV,
         // FileFormatType.MP4,
@@ -414,6 +414,151 @@ public static class TestAVI
 
             foreach (var filePath in Directory.GetFiles(TestFile.ResultFilePath + @"ConvertVideoToImages\Stream"))
                 File.Delete(filePath);
+        }
+    }
+
+
+    public static async Task ConvertImagesToVideo()
+    {
+        var supportedImageFormats = new Dictionary<FileFormatType, Dictionary<FileFormatType, int[]>>
+        {
+            {
+                FileFormatType.JPG, new Dictionary<FileFormatType, int[]>
+                {
+                    { FileFormatType.AVI, new [] { 41148, 41148 } },
+                    { FileFormatType._3GP, new [] { 39364, 43032 } },
+                    { FileFormatType.ASF, new [] { 20524, 21378 } },
+                    { FileFormatType.FLV, new [] { 14634, 15431 } },
+                    { FileFormatType.M2TS, new [] { 12194, 18640 } },
+                    { FileFormatType.M4V, new [] { 43032, 43032 } },
+                    { FileFormatType.MKV, new [] { 43032, 43032 } },
+                    { FileFormatType.MOV, new [] { 43032, 43032 } },
+                    { FileFormatType.MP4, new [] { 43032, 43032 } },
+                    { FileFormatType.MPEG, new [] { 12402, 12402 } },
+                    { FileFormatType.MXF, new [] { 18640, 18757 } },
+                    { FileFormatType.RM, new [] { 25178, 25178 } },
+                    { FileFormatType.VOB, new [] { 12194, 12200 } },
+                    { FileFormatType.WEBM, new [] { 38244, 41444 } },
+                    { FileFormatType.WMV, new [] { 5502, 5871 } }
+                }
+            }
+            // {
+            //     FileFormatType.PNG, new Dictionary<FileFormatType, int[]>
+            //     {
+            //         { FileFormatType.AVI, new [] { 388742, 388742 } },
+            //         { FileFormatType._3GP, new [] { 577232, 577232 } },
+            //         { FileFormatType.ASF, new [] { 156677, 334231 } },
+            //         { FileFormatType.FLV, new [] { 143256, 212379 } },
+            //         { FileFormatType.M2TS, new [] { 152899, 163568 } },
+            //         { FileFormatType.M4V, new [] { 577232, 577232 } },
+            //         { FileFormatType.MKV, new [] { 577232, 577232 } },
+            //         { FileFormatType.MP4, new [] { 577232, 577232 } },
+            //         { FileFormatType.MOV, new [] { 577232, 577232 } },
+            //         { FileFormatType.MPEG, new [] { 150161, 150161 } },
+            //         { FileFormatType.MXF, new [] { 163568, 162582 } },
+            //         { FileFormatType.RM, new [] { 158984, 158984 } },
+            //         { FileFormatType.VOB, new [] { 152899, 151980 } },
+            //         { FileFormatType.WEBM, new [] { 411386, 362748 } },
+            //         { FileFormatType.WMV, new [] { 52543, 60562 } }
+            //     }
+            // },
+            // {
+            //     FileFormatType.TIFF, new Dictionary<FileFormatType, int[]>
+            //     {
+            //         { FileFormatType.AVI, new [] { 2092581, 2092581 } },
+            //         { FileFormatType._3GP, new [] { 2092445, 2092445 } },
+            //         { FileFormatType.ASF, new [] { 2092724, 2092714 } },
+            //         { FileFormatType.FLV, new [] { 930290, 930272 } },
+            //         { FileFormatType.M2TS, new [] { 2092583, 2092603 } },
+            //         { FileFormatType.M4V, new [] { 2092445, 2092445 } },
+            //         { FileFormatType.MKV, new [] { 2092445, 2092445 } },
+            //         { FileFormatType.MP4, new [] { 2092445, 2092445 } },
+            //         { FileFormatType.MOV, new [] { 2092445, 2092445 } },
+            //         { FileFormatType.MPEG, new [] { 2092585, 2092585 } },
+            //         { FileFormatType.MXF, new [] { 2092603, 2092572 } },
+            //         { FileFormatType.RM, new [] { 1550072, 1550072 } },
+            //         { FileFormatType.VOB, new [] { 2092583, 2092636 } },
+            //         { FileFormatType.WEBM, new [] { 2092501, 2092717 } },
+            //         { FileFormatType.WMV, new [] { 520484, 520476 } }
+            //     }
+            // },
+            // {
+            //     FileFormatType.BMP, new Dictionary<FileFormatType, int[]>
+            //     {
+            //         { FileFormatType.AVI, new [] { 519478, 519478 } },
+            //         { FileFormatType._3GP, new [] { 519478, 519478 } },
+            //         { FileFormatType.ASF, new [] { 519478, 519478 } },
+            //         { FileFormatType.FLV, new [] { 231478, 231478 } },
+            //         { FileFormatType.M2TS, new [] { 519478, 519478 } },
+            //         { FileFormatType.M4V, new [] { 519478, 519478 } },
+            //         { FileFormatType.MKV, new [] { 519478, 519478 } },
+            //         { FileFormatType.MP4, new [] { 519478, 519478 } },
+            //         { FileFormatType.MOV, new [] { 519478, 519478 } },
+            //         { FileFormatType.MPEG, new [] { 519478, 519478 } },
+            //         { FileFormatType.MXF, new [] { 519478, 519478 } },
+            //         { FileFormatType.RM, new [] { 385078, 385078 } },
+            //         { FileFormatType.VOB, new [] { 519478, 519478 } },
+            //         { FileFormatType.WEBM, new [] { 519478, 519478 } },
+            //         { FileFormatType.WMV, new [] { 130678, 130678 } }
+            //     }
+            // },
+            // {
+            //     FileFormatType.WEBP, new Dictionary<FileFormatType, int[]>
+            //     {
+            //         { FileFormatType.AVI, new [] { 27014, 27014 } },
+            //         { FileFormatType._3GP, new [] { 26928, 26928 } },
+            //         { FileFormatType.ASF, new [] { 16832, 17096 } },
+            //         { FileFormatType.FLV, new [] { 11152, 11498 } },
+            //         { FileFormatType.M2TS, new [] { 15482, 16354 } },
+            //         { FileFormatType.M4V, new [] { 26928, 26928 } },
+            //         { FileFormatType.MKV, new [] { 26928, 26928 } },
+            //         { FileFormatType.MP4, new [] { 26928, 26928 } },
+            //         { FileFormatType.MOV, new [] { 26928, 26928 } },
+            //         { FileFormatType.MPEG, new [] { 15604, 15604 } },
+            //         { FileFormatType.MXF, new [] { 16354, 16196 } },
+            //         { FileFormatType.RM, new [] { 16676, 16676 } },
+            //         { FileFormatType.VOB, new [] { 15482, 15452 } },
+            //         { FileFormatType.WEBM, new [] { 23402, 20340 } },
+            //         { FileFormatType.WMV, new [] { 2708, 2762 } }
+            //     }
+            // }
+        };
+
+        foreach (var videoFormat in supportedVideoFormats)
+        {
+            foreach ((var imageFormat, var value) in supportedImageFormats)
+            {
+                var stream = new MultiStream();
+                var files = new List<string>();
+                for (var i = 1; i <= 400; i++)
+                    files.Add(TestFile.ResultFilePath + $@"ConvertVideoToImages\Stream2\result{i:000}.{imageFormat.ToString().Replace("_", "").ToLower()}");
+
+                var resultPhysicalPath = TestFile.ResultFilePath + @$"ConvertImagesToVideo\resultPath.{videoFormat.ToString().Replace("_", "").ToLower()}";
+                var resultStreamPath = TestFile.ResultFilePath + @$"ConvertImagesToVideo\resultStream.{videoFormat.ToString().Replace("_", "").ToLower()}";
+
+                foreach (var file in files)
+                    stream.AddStream(new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read));
+
+                //Test block with physical paths to input and output files
+                _videoProcessor.ConvertImagesToVideoAsync(new MediaFile(stream),
+                                                         24,
+                                                         outputFile: resultPhysicalPath)
+                              .GetAwaiter()
+                              .GetResult();
+
+
+                var stream1 = new MultiStream();
+                var files1 = new List<string>();
+                for (var i = 1; i <= 400; i++)
+                    files1.Add(TestFile.ResultFilePath + $@"ConvertVideoToImages\Stream2\result{i:000}.{imageFormat.ToString().Replace("_", "").ToLower()}");
+
+                foreach (var file in files1)
+                    stream1.AddStream(new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read));
+
+                var resultStream = await _videoProcessor.ConvertImagesToVideoAsync(new MediaFile(stream1), 24, outputFormat: videoFormat);
+                await using (var output = new FileStream(resultStreamPath, FileMode.Create))
+                    resultStream!.WriteTo(output);
+            }
         }
     }
 }

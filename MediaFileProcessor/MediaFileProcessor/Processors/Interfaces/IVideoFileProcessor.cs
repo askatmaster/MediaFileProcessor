@@ -19,50 +19,12 @@ public interface IVideoFileProcessor
     /// <param name="file">The file that contains the list of images to be converted to video.</param>
     /// <param name="frameRate">The number of frames per second for the resulting video.</param>
     /// <param name="outputFile">The path to the output video file. The file will be overwritten if it already exists.</param>
-    /// <param name="pixelFormat">The pixel format for the output video.</param>
-    /// <param name="outputFileFormatType">The format type for the output video file.</param>
+    /// <param name="outputFormat">The format type for the output video file.</param>
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> used to cancel the asynchronous operation.</param>
-    /// <param name="videoCodecType">The codec to use for encoding the video. Default is VideoCodecType.LIBX264.</param>
-    Task ConvertImagesToVideoAsync(MediaFile file,
-                                   int frameRate,
-                                   string outputFile,
-                                   string pixelFormat,
-                                   FileFormatType outputFileFormatType,
-                                   CancellationToken? cancellationToken = null,
-                                   VideoCodecType videoCodecType = VideoCodecType.LIBX264);
-
-    /// <summary>
-    /// Converts a set of images into a video.
-    /// </summary>
-    /// <param name="file">The set of images to be converted into a video.</param>
-    /// <param name="frameRate">The frame rate of the output video.</param>
-    /// <param name="pixelFormat">The pixel format of the output video.</param>
-    /// <param name="outputFileFormatType">The format of the output video.</param>
-    /// <param name="videoCodecType">The codec to be used for encoding the video. The default value is VideoCodecType.LIBX264.</param>
-    /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
-    /// <returns>A memory stream that contains the data of the converted video.</returns>
-    Task<MemoryStream> ConvertImagesToVideoAsStreamAsync(MediaFile file,
-                                                         int frameRate,
-                                                         string pixelFormat,
-                                                         FileFormatType outputFileFormatType,
-                                                         VideoCodecType videoCodecType = VideoCodecType.LIBX264,
-                                                         CancellationToken? cancellationToken = null);
-
-    /// <summary>
-    /// Converts a set of images to a video as a byte array.
-    /// </summary>
-    /// <param name="file">The input image file.</param>
-    /// <param name="frameRate">The number of frames per second in the output video.</param>
-    /// <param name="pixelFormat">The desired pixel format for the output video.</param>
-    /// <param name="outputFileFormatType">The desired format type of the output video.</param>
-    /// <param name="videoCodecType">The desired codec type for the output video (default is VideoCodecType.LIBX264).</param>
-    /// <param name="cancellationToken">A cancellation token to stop the task (optional).</param>
-    /// <returns>The output video as a byte array.</returns>
-    Task<byte[]> ConvertImagesToVideoAsBytesAsync(MediaFile file,
+    Task<MemoryStream?> ConvertImagesToVideoAsync(MediaFile file,
                                                   int frameRate,
-                                                  string pixelFormat,
-                                                  FileFormatType? outputFileFormatType,
-                                                  VideoCodecType videoCodecType = VideoCodecType.LIBX264,
+                                                  string? outputFile = null,
+                                                  FileFormatType? outputFormat = null,
                                                   CancellationToken? cancellationToken = null);
 
     /// <summary>

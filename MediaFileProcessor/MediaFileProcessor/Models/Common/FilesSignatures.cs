@@ -33,6 +33,12 @@ public static class FilesSignatures
         new byte[] { 0, 0, 0, 0, 0x66, 0x74, 0x79, 0x70, 0x33, 0x67, 0x70 }
     };
 
+    private static  List<byte[]> M4V => new ()
+    {
+        new byte[] { 0, 0, 0, 0, 0x66, 0x74, 0x79, 0x70, 0x4D, 0x34, 0x56, 0x20 }
+
+    };
+
     private static  List<byte[]> MP4 => new ()
     {
         new byte[] { 0, 0, 0, 0, 0x66, 0x74, 0x79, 0x70 },
@@ -205,6 +211,7 @@ public static class FilesSignatures
             FileFormatType.OGG => OGG,
             FileFormatType.WMV => WMV,
             FileFormatType.BMP => BMP,
+            FileFormatType.M4V => M4V,
             FileFormatType.ASF => ASF,
             FileFormatType.MP3 => MP3,
             FileFormatType.RM => RM,
@@ -235,6 +242,7 @@ public static class FilesSignatures
             >= 6 when IsICO(signature) => FileFormatType.ICO,
             >= 4 when IsTIFF(signature) => FileFormatType.TIFF,
             >= 11 when Is3GP(signature) => FileFormatType._3GP,
+            >= 12 when IsM4V(signature) => FileFormatType.M4V,
             >= 8 when IsMP4(signature) => FileFormatType.MP4,
             >= 16 when IsMOV(signature) => FileFormatType.MOV,
             >= 4 when IsMKV(signature) => FileFormatType.MKV,
@@ -309,6 +317,15 @@ public static class FilesSignatures
             throw new ArgumentException("The signature that you are verifying must be at least 11 bytes long");
 
         return buffer[4] == 0x66 && buffer[5] == 0x74 && buffer[6] == 0x79 && buffer[7] == 0x70 && buffer[8] == 0x33 && buffer[9] == 0x67 && buffer[10] == 0x70;
+    }
+
+    public static bool IsM4V(this byte[] buffer)
+    {
+        if(buffer.Length < 12)
+            throw new ArgumentException("The signature that you are verifying must be at least 12 bytes long");
+
+        return buffer[4] == 0x66 && buffer[5] == 0x74 && buffer[6] == 0x79 && buffer[7] == 0x70
+         && buffer[8] == 0x4D && buffer[9] == 0x34 && buffer[10] == 0x56 && buffer[11] == 0x20;
     }
 
     public static bool IsMP4(this byte[] buffer)

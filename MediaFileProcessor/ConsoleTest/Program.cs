@@ -39,7 +39,8 @@ Console.ResetColor();
 // }
 
 // await TestAVI.TestExtractFrameFromVideo();
-await TestAVI.ConvertVideoToImages();
+// await TestAVI.ConvertVideoToImages();
+await TestAVI.ConvertImagesToVideo();
 // await TestAVI.TestCutVideo();
 
 //=================================================================================================================

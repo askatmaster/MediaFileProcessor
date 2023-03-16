@@ -290,82 +290,80 @@ public class VideoFileProcessor : IVideoFileProcessor
     /// </summary>
     /// <param name="file">The file containing the images to be converted into a video.</param>
     /// <param name="frameRate">The number of frames per second in the output video.</param>
-    /// <param name="videoCodecType">The type of codec to use for encoding the video.</param>
-    /// <param name="outputFormat">The format of the output video file.</param>
-    /// <param name="outputFile">The file name and path of the output video.</param>
-    /// <param name="pixelFormat">The pixel format of the output video.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
+    /// <param name="outputFile">The file name and path of the output video.</param>
+    /// <param name="outputFormat">The format of the output video file.</param>
     /// <returns>A MemoryStream containing the content of the output video, or null if the operation was cancelled.</returns>
-    private  async Task<MemoryStream?> ExecuteConvertImagesToVideoAsync(MediaFile file,
-                                                                        int frameRate,
-                                                                        VideoCodecType videoCodecType,
-                                                                        FileFormatType? outputFormat,
-                                                                        string? outputFile,
-                                                                        string pixelFormat,
-                                                                        CancellationToken cancellationToken)
+    public async Task<MemoryStream?> ConvertImagesToVideoAsync(MediaFile file,
+                                                                 int frameRate,
+                                                                 string? outputFile = null,
+                                                                 FileFormatType? outputFormat = null,
+                                                                 CancellationToken? cancellationToken = null)
     {
+        outputFormat ??= outputFile!.GetFileFormatType();
+
         var settings = new VideoProcessingSettings().ReplaceIfExist()
                                                     .FrameRate(frameRate)
                                                     .SetInputFiles(file)
-                                                    .VideoCodec(videoCodecType)
-                                                    .PixelFormat(pixelFormat)
                                                     .SetOutputArguments(outputFile);
-        if(outputFormat is not null)
-            settings.Format(outputFormat.Value);
+        outputFormat = outputFile?.GetFileFormatType() ?? outputFormat;
 
-        return await ExecuteAsync(settings, cancellationToken);
-    }
+        switch(outputFormat)
+        {
+            case FileFormatType.RM:
+                settings.VideoSize(VideoSizeType.HD720);
+                settings.VideoCodec(VideoCodecType.RV10);
+                break;
+            case FileFormatType.WMV:
+                settings.VideoCodec(VideoCodecType.WMV1);
 
-    /// <inheritdoc />
-    public async Task ConvertImagesToVideoAsync(MediaFile file,
-                                                int frameRate,
-                                                string outputFile,
-                                                string pixelFormat,
-                                                FileFormatType outputFormat,
-                                                CancellationToken? cancellationToken = null,
-                                                VideoCodecType videoCodecType = VideoCodecType.LIBX264)
-    {
-        await ExecuteConvertImagesToVideoAsync(file,
-                                               frameRate,
-                                               videoCodecType,
-                                               outputFormat,
-                                               outputFile,
-                                               pixelFormat,
-                                               cancellationToken ?? new CancellationToken());
-    }
+                break;
+            case FileFormatType.WEBM:
+                settings.VideoCodec(VideoCodecType.LIBVPX);
 
-    /// <inheritdoc />
-    public async Task<MemoryStream> ConvertImagesToVideoAsStreamAsync(MediaFile file,
-                                                                      int frameRate,
-                                                                      string pixelFormat,
-                                                                      FileFormatType outputFormat,
-                                                                      VideoCodecType videoCodecType = VideoCodecType.LIBX264,
-                                                                      CancellationToken? cancellationToken = null)
-    {
-        return (await ExecuteConvertImagesToVideoAsync(file,
-                                                       frameRate,
-                                                       videoCodecType,
-                                                       outputFormat,
-                                                       null,
-                                                       pixelFormat,
-                                                       cancellationToken ?? new CancellationToken()))!;
-    }
+                break;
+            default:
+                settings.VideoSize(VideoSizeType.CIF);
+                settings.VideoCodec(VideoCodecType.MPEG4);
 
-    /// <inheritdoc />
-    public async Task<byte[]> ConvertImagesToVideoAsBytesAsync(MediaFile file,
-                                                               int frameRate,
-                                                               string pixelFormat,
-                                                               FileFormatType? outputFormat,
-                                                               VideoCodecType videoCodecType = VideoCodecType.LIBX264,
-                                                               CancellationToken? cancellationToken = null)
-    {
-        return (await ExecuteConvertImagesToVideoAsync(file,
-                                                       frameRate,
-                                                       videoCodecType,
-                                                       outputFormat,
-                                                       null,
-                                                       pixelFormat,
-                                                       cancellationToken ?? new CancellationToken()))!.ToArray();
+                break;
+        }
+
+        if(outputFile is null)
+            switch(outputFormat)
+            {
+                case FileFormatType._3GP or FileFormatType.ASF or FileFormatType.MOV or FileFormatType.MP4:
+                    settings.Format(FileFormatType.MPEG);
+
+                    break;
+                case FileFormatType.M2TS:
+                    settings.Format(FileFormatType.MPEGTS);
+
+                    break;
+                case FileFormatType.MKV:
+                    settings.Format("matroska");
+
+                    break;
+                case FileFormatType.RM:
+                    settings.Format(outputFormat.Value);
+
+                    break;
+                case FileFormatType.WMV:
+                    settings.Format(FileFormatType.ASF);
+
+                    break;
+                case FileFormatType.M4V:
+                    settings.KeyFrame(30);
+                    settings.Format(FileFormatType.M4V);
+
+                    break;
+                default:
+                    settings.Format(outputFormat!.Value);
+
+                    break;
+            }
+
+        return await ExecuteAsync(settings, cancellationToken ?? new CancellationToken());
     }
 
     //======================================================================================================================================================================

@@ -78,39 +78,39 @@ public class VideoProcessorTests
 
     public static async Task ConvertImagesToVideoTest(VideoFileProcessor videoProcessor)
     {
-        var stream = new MultiStream();
-        var files = new List<string>();
-        for (var i = 1; i <= 4390; i++)
-            files.Add($@"C:\mfptest\results2\result{i:000}.jpg");
-
-        foreach (var file in files)
-            stream.AddStream(new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read));
-
-        //Test block with physical paths to input and output files
-        videoProcessor.ConvertImagesToVideoAsync(new MediaFile(stream),
-                                                 24,
-                                                 @"C:\mfptest\results\ConvertImagesToVideoTest\resultPath.avi",
-                                                 "yuv420p",
-                                                 FileFormatType.AVI)
-                      .GetAwaiter()
-                      .GetResult();
-
-        //Block for testing file processing as bytes without specifying physical paths
-        var files1 = new List<byte[]>();
-        for (var i = 1; i <= 4390; i++)
-            files1.Add(await File.ReadAllBytesAsync($@"C:\mfptest\results2\result{i:000}.jpg"));
-        var resultBytes = await videoProcessor.ConvertImagesToVideoAsBytesAsync(new MediaFile(FileDataExtensions.ConcatByteArrays(false, files1.ToArray())),
-                                                                                24,
-                                                                                "yuv420p",
-                                                                                FileFormatType.AVI);
-        await using (var output = new FileStream(@"C:\mfptest\results\ConvertImagesToVideoTest\resultBytes.avi", FileMode.Create))
-            output.Write(resultBytes, 0, resultBytes.Length);
-
-        //Block for testing file processing as streams without specifying physical paths
-        stream.Seek(0, SeekOrigin.Begin);
-        var resultStream = await videoProcessor.ConvertImagesToVideoAsStreamAsync(new MediaFile(stream), 24, "yuv420p", FileFormatType.AVI);
-        await using (var output = new FileStream(@"C:\mfptest\results\ConvertImagesToVideoTest\resultStream.avi", FileMode.Create))
-            resultStream.WriteTo(output);
+        // var stream = new MultiStream();
+        // var files = new List<string>();
+        // for (var i = 1; i <= 4390; i++)
+        //     files.Add($@"C:\mfptest\results2\result{i:000}.jpg");
+        //
+        // foreach (var file in files)
+        //     stream.AddStream(new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read));
+        //
+        // //Test block with physical paths to input and output files
+        // videoProcessor.ConvertImagesToVideoAsync(new MediaFile(stream),
+        //                                          24,
+        //                                          @"C:\mfptest\results\ConvertImagesToVideoTest\resultPath.avi",
+        //                                          "yuv420p",
+        //                                          FileFormatType.AVI)
+        //               .GetAwaiter()
+        //               .GetResult();
+        //
+        // //Block for testing file processing as bytes without specifying physical paths
+        // var files1 = new List<byte[]>();
+        // for (var i = 1; i <= 4390; i++)
+        //     files1.Add(await File.ReadAllBytesAsync($@"C:\mfptest\results2\result{i:000}.jpg"));
+        // var resultBytes = await videoProcessor.ConvertImagesToVideoAsBytesAsync(new MediaFile(FileDataExtensions.ConcatByteArrays(false, files1.ToArray())),
+        //                                                                         24,
+        //                                                                         "yuv420p",
+        //                                                                         FileFormatType.AVI);
+        // await using (var output = new FileStream(@"C:\mfptest\results\ConvertImagesToVideoTest\resultBytes.avi", FileMode.Create))
+        //     output.Write(resultBytes, 0, resultBytes.Length);
+        //
+        // //Block for testing file processing as streams without specifying physical paths
+        // stream.Seek(0, SeekOrigin.Begin);
+        // var resultStream = await videoProcessor.ConvertImagesToVideoAsStreamAsync(new MediaFile(stream), 24, "yuv420p", FileFormatType.AVI);
+        // await using (var output = new FileStream(@"C:\mfptest\results\ConvertImagesToVideoTest\resultStream.avi", FileMode.Create))
+        //     resultStream.WriteTo(output);
     }
 
     public static async Task GetAudioFromVideoTest(VideoFileProcessor videoProcessor)
