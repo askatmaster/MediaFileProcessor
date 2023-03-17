@@ -31,75 +31,26 @@ public interface IVideoFileProcessor
     /// Extracts audio from a video file and saves it to a specified file path.
     /// </summary>
     /// <param name="file">The video file to extract audio from.</param>
-    /// <param name="outputFileFormatType">The format of the output audio file.</param>
-    /// <param name="output">The file path where the extracted audio will be saved.</param>
-    /// <param name="audioChannel">The number of audio channels to include in the output audio. Default is 2.</param>
+    /// <param name="outputFormat">The format of the output audio file.</param>
+    /// <param name="outputFile">The file path where the extracted audio will be saved.</param>
     /// <param name="cancellationToken">A <see cref="CancellationToken"/> used to cancel the operation.</param>
-    /// <param name="audioSampleRateType">The sample rate of the output audio. Default is 44100 Hz.</param>
-    Task GetAudioFromVideoAsync(MediaFile file,
-                                FileFormatType outputFileFormatType,
-                                string output,
-                                int audioChannel = 2,
-                                CancellationToken? cancellationToken = null,
-                                AudioSampleRateType audioSampleRateType = AudioSampleRateType.Hz44100);
-
-    /// <summary>
-    /// Extracts audio from a video file and returns it as a <see cref="MemoryStream"/>.
-    /// </summary>
-    /// <param name="file">The video file to extract audio from.</param>
-    /// <param name="outputFileFormatType">The format of the output audio file.</param>
-    /// <param name="audioChannel">The number of audio channels to include in the output audio. Default is 2.</param>
-    /// <param name="cancellationToken">A <see cref="CancellationToken"/> used to cancel the operation.</param>
-    /// <param name="audioSampleRateType">The sample rate of the output audio. Default is 44100 Hz.</param>
-    /// <returns>A <see cref="MemoryStream"/> containing the extracted audio data.</returns>
-    Task<MemoryStream> GetAudioFromVideoAsStreamAsync(MediaFile file,
-                                                      FileFormatType outputFileFormatType,
-                                                      int audioChannel = 2,
-                                                      CancellationToken? cancellationToken = null,
-                                                      AudioSampleRateType audioSampleRateType = AudioSampleRateType.Hz44100);
-
-    /// <summary>
-    /// Extracts audio from a video file and returns it as a byte array.
-    /// </summary>
-    /// <param name="file">The video file to extract audio from.</param>
-    /// <param name="outputFileFormatType">The format of the output audio file.</param>
-    /// <param name="audioChannel">The number of audio channels to include in the output audio file. Default is 2.</param>
-    /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation. Default is null.</param>
-    /// <param name="audioSampleRateType">The audio sample rate of the output audio file. Default is 44100 Hz.</param>
-    /// <returns>The extracted audio as a byte array.</returns>
-    Task<byte[]> GetAudioFromVideoAsBytesAsync(MediaFile file,
-                                               FileFormatType outputFileFormatType,
-                                               int audioChannel = 2,
-                                               CancellationToken? cancellationToken = null,
-                                               AudioSampleRateType audioSampleRateType = AudioSampleRateType.Hz44100);
+    Task<MemoryStream?> ExtractAudioFromVideoAsync(MediaFile file,
+                                                   string? outputFile = null,
+                                                   FileFormatType? outputFormat = null,
+                                                   CancellationToken? cancellationToken = null);
 
     /// <summary>
     /// Converts the given `MediaFile` to the specified `FileFormatType` and saves it to the file at the specified `output` path.
     /// </summary>
     /// <param name="file">The `MediaFile` to be converted.</param>
-    /// <param name="output">The path where the converted file will be saved.</param>
-    /// <param name="outputFileFormatType">The desired `FileFormatType` of the converted file.</param>
+    /// <param name="outputFile">The path where the converted file will be saved.</param>
+    /// <param name="outputFormat">The desired `FileFormatType` of the converted file.</param>
     /// <param name="cancellationToken">An optional `CancellationToken` that can be used to cancel the operation.</param>
     /// <returns>A `Task` representing the asynchronous operation.</returns>
-    Task ConvertVideoAsync(MediaFile file, string output, FileFormatType outputFileFormatType, CancellationToken? cancellationToken = null);
-
-    /// <summary>
-    /// Converts the given `MediaFile` to the specified `FileFormatType` and returns the result as a `MemoryStream`.
-    /// </summary>
-    /// <param name="file">The `MediaFile` to be converted.</param>
-    /// <param name="outputFileFormatType">The desired `FileFormatType` of the converted file.</param>
-    /// <param name="cancellationToken">An optional `CancellationToken` that can be used to cancel the operation.</param>
-    /// <returns>A `Task` representing the asynchronous operation that returns the result as a `MemoryStream`.</returns>
-    Task<MemoryStream> ConvertVideoAsStreamAsync(MediaFile file, FileFormatType outputFileFormatType, CancellationToken? cancellationToken = null);
-
-    /// <summary>
-    /// Converts the given `MediaFile` to the specified `FileFormatType` and returns the result as a byte array.
-    /// </summary>
-    /// <param name="file">The `MediaFile` to be converted.</param>
-    /// <param name="outputFileFormatType">The desired `FileFormatType` of the converted file.</param>
-    /// <param name="cancellationToken">An optional `CancellationToken` that can be used to cancel the operation.</param>
-    /// <returns>A `Task` representing the asynchronous operation that returns the result as a byte array.</returns>
-    Task<byte[]> ConvertVideoAsBytesAsync(MediaFile file, FileFormatType outputFileFormatType, CancellationToken? cancellationToken = null);
+    Task<MemoryStream?> ConvertVideoAsync(MediaFile file,
+                                          string? outputFile = null,
+                                          FileFormatType? outputFormat = null,
+                                          CancellationToken? cancellationToken = null);
 
     /// <summary>
     /// Adds a watermark to the given video file and saves the result to the specified output path.
@@ -107,91 +58,27 @@ public interface IVideoFileProcessor
     /// <param name="videoFile">The video file to add the watermark to.</param>
     /// <param name="watermarkFile">The watermark file to add to the video.</param>
     /// <param name="position">The position of the watermark in the video.</param>
-    /// <param name="output">The path to the output file. If null, the output will not be saved to disk.</param>
-    /// <param name="outputFileFormatType">The format of the output file.</param>
+    /// <param name="outputFile">The path to the output file. If null, the output will not be saved to disk.</param>
+    /// <param name="outputFormat">The format of the output file.</param>
     /// <param name="cancellationToken">A CancellationToken to observe while waiting for the task to complete.</param>
-    Task AddWaterMarkToVideoAsync(MediaFile videoFile,
-                                  MediaFile watermarkFile,
-                                  PositionType position,
-                                  string output,
-                                  FileFormatType outputFileFormatType,
-                                  CancellationToken? cancellationToken = null);
-
-    /// <summary>
-    /// Adds a watermark to the given video file and returns the result as a MemoryStream.
-    /// </summary>
-    /// <param name="videoFile">The video file to add the watermark to.</param>
-    /// <param name="watermarkFile">The watermark file to add to the video.</param>
-    /// <param name="position">The position of the watermark in the video.</param>
-    /// <param name="outputFileFormatType">The format of the output file.</param>
-    /// <param name="cancellationToken">A CancellationToken to observe while waiting for the task to complete.</param>
-    /// <returns>The result of adding the watermark to the video as a MemoryStream.</returns>
-    Task<MemoryStream> AddWaterMarkToVideoAsStreamAsync(MediaFile videoFile,
-                                                        MediaFile watermarkFile,
-                                                        PositionType position,
-                                                        FileFormatType outputFileFormatType,
-                                                        CancellationToken? cancellationToken = null);
-
-    /// <summary>
-    /// Adds a watermark to a video and returns the result as a byte array.
-    /// </summary>
-    /// <param name="videoFile">The video file to add the watermark to.</param>
-    /// <param name="watermarkFile">The watermark file to add to the video.</param>
-    /// <param name="position">The position of the watermark on the video.</param>
-    /// <param name="outputFileFormatType">The format of the output video file.</param>
-    /// <param name="cancellationToken">A token that can be used to cancel the operation.</param>
-    /// <returns>A byte array containing the result of the operation.</returns>
-    Task<byte[]> AddWaterMarkToVideoAsBytesAsync(MediaFile videoFile,
+    Task<MemoryStream?> AddWaterMarkToVideoAsync(MediaFile videoFile,
                                                  MediaFile watermarkFile,
                                                  PositionType position,
-                                                 FileFormatType outputFileFormatType,
+                                                 string? outputFile = null,
+                                                 FileFormatType? outputFormat = null,
                                                  CancellationToken? cancellationToken = null);
 
     /// <summary>
     /// Extracts the video from a media file asynchronously.
     /// </summary>
     /// <param name="file">The media file from which to extract the video.</param>
-    /// <param name="output">The output file path for the extracted video.</param>
-    /// <param name="outputFileFormatType">The format of the output file.</param>
-    /// <param name="videoCodecType">The video codec type to use for the extracted video. Default is VideoCodecType.COPY.</param>
-    /// <param name="pixelFormat">The pixel format to use for the extracted video. Default is "yuv420p".</param>
+    /// <param name="outputFile">The output file path for the extracted video.</param>
+    /// <param name="outputFormat">The format of the output file.</param>
     /// <param name="cancellationToken">A cancellation token to cancel the operation. Default is null.</param>
     /// <returns>A task representing the asynchronous operation.</returns>
-    Task ExtractVideoFromFileAsync(MediaFile file,
-                                   string output,
-                                   FileFormatType outputFileFormatType,
-                                   VideoCodecType videoCodecType = VideoCodecType.COPY,
-                                   string pixelFormat = "yuv420p",
-                                   CancellationToken? cancellationToken = null);
-
-    /// <summary>
-    /// Extracts the video from a media file as a memory stream asynchronously.
-    /// </summary>
-    /// <param name="file">The media file from which to extract the video.</param>
-    /// <param name="outputFileFormatType">The format of the output file.</param>
-    /// <param name="videoCodecType">The video codec type to use for the extracted video. Default is VideoCodecType.COPY.</param>
-    /// <param name="pixelFormat">The pixel format to use for the extracted video. Default is "yuv420p".</param>
-    /// <param name="cancellationToken">A cancellation token to cancel the operation. Default is null.</param>
-    /// <returns>A task representing the asynchronous operation, containing the extracted video as a memory stream.</returns>
-    Task<MemoryStream> ExtractVideoFromFileAsStreamAsync(MediaFile file,
-                                                         FileFormatType outputFileFormatType,
-                                                         VideoCodecType videoCodecType = VideoCodecType.COPY,
-                                                         string pixelFormat = "yuv420p",
-                                                         CancellationToken? cancellationToken = null);
-
-    /// <summary>
-    /// Extracts video from a media file as bytes.
-    /// </summary>
-    /// <param name="file">The media file to extract video from.</param>
-    /// <param name="outputFileFormatType">The output file format type of the extracted video.</param>
-    /// <param name="videoCodecType">The video codec type to use during the extraction process. Default is VideoCodecType.COPY.</param>
-    /// <param name="pixelFormat">The pixel format to use during the extraction process. Default is "yuv420p".</param>
-    /// <param name="cancellationToken">A cancellation token to cancel the asynchronous operation. Default is null.</param>
-    /// <returns>A byte array that represents the extracted video.</returns>
-    Task<byte[]> ExtractVideoFromFileAsBytesAsync(MediaFile file,
-                                                  FileFormatType outputFileFormatType,
-                                                  VideoCodecType videoCodecType = VideoCodecType.COPY,
-                                                  string pixelFormat = "yuv420p",
+    Task<MemoryStream?> ExtractVideoFromFileAsync(MediaFile file,
+                                                  string? outputFile = null,
+                                                  FileFormatType? outputFormat = null,
                                                   CancellationToken? cancellationToken = null);
 
     /// <summary>
