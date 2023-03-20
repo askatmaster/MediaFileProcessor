@@ -481,6 +481,16 @@ public class VideoProcessingSettings : ProcessingSettings
     }
 
     /// <summary>
+    /// This specifies the H.264 level to use. In this case, we're using level 3.0, which is also widely supported by mobile devices
+    /// </summary>
+    public VideoProcessingSettings Level(double level)
+    {
+        _stringBuilder.Append($" -level {level} ");
+
+        return this;
+    }
+
+    /// <summary>
     /// Pixel format. Available formats can be gathered via `ffmpeg -pix_fmts`.
     /// </summary>
     public VideoProcessingSettings PixelFormat(string format)

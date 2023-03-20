@@ -86,7 +86,8 @@ public static class FilesSignatures
 
     private static List<byte[]> M2TS => new ()
     {
-        new byte[] { 0x47, 0x40, 0x00, 0x10 }
+        new byte[] { 0x47, 0x40, 0x00, 0x10 },
+        new byte[] { 0, 0, 0, 0, 0x47, 0x40, 0x11, 0x10 }
     };
 
     private static List<byte[]> MXF => new ()
@@ -235,6 +236,7 @@ public static class FilesSignatures
 
     public static FileFormatType GetFormat(this byte[] signature)
     {
+        var dasd = signature[..100];
         return signature.Length switch
         {
             >= 3 when IsJPEG(signature) => FileFormatType.JPG,
@@ -250,7 +252,7 @@ public static class FilesSignatures
             >= 4 when IsMPEG(signature) => FileFormatType.MPEG,
             >= 16 when IsAVI(signature) => FileFormatType.AVI,
             >= 6 when IsGIF(signature) => FileFormatType.GIF,
-            >= 4 when IsM2TS(signature) => FileFormatType.M2TS,
+            >= 8 when IsM2TS(signature) => FileFormatType.M2TS,
             >= 14 when IsMXF(signature) => FileFormatType.MXF,
             >= 4 when IsWEBM(signature) => FileFormatType.WEBM,
             >= 4 when IsGXF(signature) => FileFormatType.GXF,
@@ -435,10 +437,11 @@ public static class FilesSignatures
 
     public static bool IsM2TS(this byte[] buffer)
     {
-        if(buffer.Length < 4)
+        if(buffer.Length < 8)
             throw new ArgumentException("The signature that you are verifying must be at least 4 bytes long");
 
-        return buffer[0] == 0x47 && buffer[1] == 0x40 && buffer[2] == 0x00 && buffer[3] == 0x10;
+        return (buffer[0] == 0x47 && buffer[1] == 0x40 && buffer[2] == 0x00 && buffer[3] == 0x10)
+         || (buffer[4] == 0x47 && buffer[5] == 0x40 && buffer[6] == 0x11 && buffer[7] == 0x10);
     }
 
     public static bool IsMXF(this byte[] buffer)

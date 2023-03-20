@@ -1,4 +1,8 @@
-﻿using ConsoleTest.TestsVideo;
+﻿using ConsoleTest;
+using ConsoleTest.TestsVideo;
+using MediaFileProcessor.Extensions;
+using MediaFileProcessor.Models.Common;
+using MediaFileProcessor.Models.Enums;
 
 Console.ForegroundColor = ConsoleColor.Green;
 Console.WriteLine("StartStream");
@@ -40,14 +44,16 @@ Console.ResetColor();
 
 // await TestAVI.TestExtractFrameFromVideo();
 // await TestAVI.ConvertVideoToImages();
-await TestAVI.ConvertImagesToVideo();
+// await TestAVI.ConvertImagesToVideo();
+// await TestAVI.ExtractAudioFromVideo();
+await TestAVI.ConvertVideo();
 // await TestAVI.TestCutVideo();
 
 //=================================================================================================================
 
-// var sample = TestFile.GetPath(FileFormatType.AVI);
+// var sample = TestFile.GetPath(FileFormatType.M2TS);
 // var header = sample.ToBytes()[..1024];
-// Console.WriteLine(header.IsAVI());
+// Console.WriteLine(header.IsM2TS());
 
 //=================================================================================================================
 

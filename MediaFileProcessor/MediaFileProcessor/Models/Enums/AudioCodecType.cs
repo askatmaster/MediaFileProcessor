@@ -66,5 +66,14 @@ public enum AudioCodecType
     /// ALAC is a lossless audio format developed by Apple,
     /// and it is commonly used for storing high-quality audio recordings on Apple devices.
     /// </remarks>
-    ALAC = 6
+    ALAC = 6,
+
+    /// <summary>
+    /// The audio codec type for WMA encoding.
+    /// </summary>
+    /// <remarks>
+    /// WMA is a proprietary audio format developed by Microsoft,
+    /// and it offers both lossless and lossy compression options.
+    /// </remarks>
+    WMAV2 = 7
 }

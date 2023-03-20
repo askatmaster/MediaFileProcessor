@@ -21,12 +21,12 @@ public static class TestAVI
 
     private static readonly List<FileFormatType> supportedVideoFormats = new()
     {
-        // FileFormatType.AVI,
+        FileFormatType.AVI,
         // FileFormatType._3GP,
         // FileFormatType.ASF,
         // FileFormatType.FLV,
         // FileFormatType.M2TS,
-        FileFormatType.M4V,
+        // FileFormatType.M4V,
         // FileFormatType.MKV,
         // FileFormatType.MOV,
         // FileFormatType.MP4,
@@ -36,6 +36,17 @@ public static class TestAVI
         // FileFormatType.VOB,
         // FileFormatType.WEBM,
         // FileFormatType.WMV
+    };
+
+    private static readonly List<FileFormatType> supportedAudioFormats = new()
+    {
+        FileFormatType.AAC,
+        // FileFormatType.FLAC,
+        // FileFormatType.MP3,
+        // FileFormatType.OGG,
+        // FileFormatType.WAV,
+        // FileFormatType.WMA,
+        // FileFormatType.M4A
     };
 
     // public static async Task Test()
@@ -559,6 +570,56 @@ public static class TestAVI
                 await using (var output = new FileStream(resultStreamPath, FileMode.Create))
                     resultStream!.WriteTo(output);
             }
+        }
+    }
+
+    public static async Task ExtractAudioFromVideo()
+    {
+        foreach (var videoFormat in supportedVideoFormats)
+        {
+            foreach (var audioFormat in supportedAudioFormats)
+            {
+                var sample = TestFile.GetPath(videoFormat);
+                var resultPhysicalPath = TestFile.ResultFilePath + $@"ExtractAudioFromVideo/resultPath.{audioFormat.ToString().ToLower()}";
+                var resultStreamPath = TestFile.ResultFilePath + $@"ExtractAudioFromVideo/resultStream.{audioFormat.ToString().ToLower()}";
+
+                // Test block with physical paths to input and output files
+                await _videoProcessor.ExtractAudioFromVideoAsync(new MediaFile(sample),
+                                                                 resultPhysicalPath);
+
+                // Block for testing file processing as streams without specifying physical paths
+                MemoryStream? ms = null;
+                if(moovStartRequiredFormats.Contains(videoFormat))
+                    ms = _videoProcessor.SetStartMoovAsync(new MediaFile(sample.ToBytes()), videoFormat).GetAwaiter().GetResult()!;
+
+                var resultStream = await _videoProcessor.ExtractAudioFromVideoAsync(new MediaFile(moovStartRequiredFormats.Contains(videoFormat) ? ms!.ToArray()
+                                                                                                      : sample.ToBytes()),
+                                                                                    outputFormat: audioFormat);
+                resultStream!.ToFile(resultStreamPath);
+            }
+        }
+    }
+
+    public static async Task ConvertVideo()
+    {
+        foreach (var videoFormat in supportedVideoFormats)
+        {
+            var outputFormat = FileFormatType.FLV;
+            var sample = TestFile.GetPath(videoFormat);
+            var resultPhysicalPath = TestFile.ResultFilePath + $@"ConvertVideo/resultPath.{outputFormat.ToString().Replace("_", "").ToLower()}";
+            var resultStreamPath = TestFile.ResultFilePath + $@"ConvertVideo/resultStream.{outputFormat.ToString().Replace("_", "").ToLower()}";
+
+            // Test block with physical paths to input and output files
+            await _videoProcessor.ConvertVideoAsync(new MediaFile(sample), resultPhysicalPath);
+
+            // Block for testing file processing as streams without specifying physical paths
+            MemoryStream? ms = null;
+            if(moovStartRequiredFormats.Contains(videoFormat))
+                ms = _videoProcessor.SetStartMoovAsync(new MediaFile(sample.ToBytes()), videoFormat).GetAwaiter().GetResult()!;
+
+            var resultStream = await _videoProcessor.ConvertVideoAsync(new MediaFile(moovStartRequiredFormats.Contains(videoFormat) ? ms!.ToArray() : sample.ToBytes()),
+                                                                       outputFormat: outputFormat);
+            resultStream!.ToFile(resultStreamPath);
         }
     }
 }

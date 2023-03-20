@@ -258,5 +258,10 @@ public enum FileFormatType
     /// it is considered the best format for downloading and storing albums in Hi-Res audio.
     /// Its main drawback is the lack of support for Apple devices (and, therefore, incompatibility with iTunes).
     /// </summary>
-    FLAC = 37
+    FLAC = 37,
+
+    /// <summary>
+    /// Apple audio format
+    /// </summary>
+    M4A = 38
 }
