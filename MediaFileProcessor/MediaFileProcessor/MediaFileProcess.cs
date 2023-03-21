@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using MediaFileProcessor.Models.Settings;
 namespace MediaFileProcessor;
 //TODO replace indexes in all files to avoid unnecessary memory allocation
+//TODO change cancelationToken to default
 
 /// <summary>
 /// Represents a media file processing class
@@ -265,6 +266,11 @@ public class MediaFileProcess : IDisposable
             tasks[i] = inputStream.CopyToAsync(pipe)
                                   .ContinueWith(_ =>
                                   {
+                                      //TODO fix tiff format
+                                      //TODO fix 3gp format add audio
+                                      //TODO fix m2ts format add audio
+                                      //TODO fix mpeg, mxf format add audio
+                                      //TODO fix m4v, mkv, mov, mp4 format add audio
                                       // Wait for the data to be transmitted completely
                                       pipe.WaitForPipeDrain();
 

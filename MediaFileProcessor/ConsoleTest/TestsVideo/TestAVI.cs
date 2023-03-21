@@ -602,23 +602,213 @@ public static class TestAVI
 
     public static async Task ConvertVideo()
     {
+        List<FileFormatType> results = new()
+        {
+            FileFormatType.AVI,
+            FileFormatType._3GP,
+            FileFormatType.ASF,
+            FileFormatType.FLV,
+            FileFormatType.M2TS,
+            FileFormatType.M4V,
+            FileFormatType.MKV,
+            FileFormatType.MOV,
+            FileFormatType.MP4,
+            FileFormatType.MPEG,
+            FileFormatType.MXF,
+            FileFormatType.RM,
+            FileFormatType.VOB,
+            FileFormatType.WEBM,
+            FileFormatType.WMV
+        };
+
         foreach (var videoFormat in supportedVideoFormats)
         {
-            var outputFormat = FileFormatType.FLV;
+            foreach (var outputFormat in results)
+            {
+                var sample = TestFile.GetPath(videoFormat);
+                var resultPhysicalPath = TestFile.ResultFilePath + $@"ConvertVideo/resultPath.{outputFormat.ToString().Replace("_", "").ToLower()}";
+                var resultStreamPath = TestFile.ResultFilePath + $@"ConvertVideo/resultStream.{outputFormat.ToString().Replace("_", "").ToLower()}";
+
+                // Test block with physical paths to input and output files
+                await _videoProcessor.ConvertVideoAsync(new MediaFile(sample), resultPhysicalPath);
+
+                // Block for testing file processing as streams without specifying physical paths
+                MemoryStream? ms = null;
+                if(moovStartRequiredFormats.Contains(videoFormat))
+                    ms = _videoProcessor.SetStartMoovAsync(new MediaFile(sample.ToBytes()), videoFormat).GetAwaiter().GetResult()!;
+
+                var resultStream = await _videoProcessor.ConvertVideoAsync(new MediaFile(moovStartRequiredFormats.Contains(videoFormat) ? ms!.ToArray() : sample.ToBytes()),
+                                                                           outputFormat: outputFormat);
+                resultStream!.ToFile(resultStreamPath);
+            }
+        }
+    }
+
+    public static async Task AddWaterMarkToVideoAsync()
+    {
+        foreach (var videoFormat in supportedVideoFormats)
+        {
             var sample = TestFile.GetPath(videoFormat);
-            var resultPhysicalPath = TestFile.ResultFilePath + $@"ConvertVideo/resultPath.{outputFormat.ToString().Replace("_", "").ToLower()}";
-            var resultStreamPath = TestFile.ResultFilePath + $@"ConvertVideo/resultStream.{outputFormat.ToString().Replace("_", "").ToLower()}";
+            var png = TestFile.GetPath(FileFormatType.TIFF);
+            var resultPhysicalPath = TestFile.ResultFilePath + $@"AddWaterMarkToVideoAsync/resultPath.{videoFormat.ToString().Replace("_", "").ToLower()}";
+            var resultStreamPath = TestFile.ResultFilePath + $@"AddWaterMarkToVideoAsync/resultStream.{videoFormat.ToString().Replace("_", "").ToLower()}";
 
             // Test block with physical paths to input and output files
-            await _videoProcessor.ConvertVideoAsync(new MediaFile(sample), resultPhysicalPath);
+            await _videoProcessor.AddWaterMarkToVideoAsync(new MediaFile(sample), new MediaFile(png), PositionType.Up, resultPhysicalPath);
 
             // Block for testing file processing as streams without specifying physical paths
             MemoryStream? ms = null;
             if(moovStartRequiredFormats.Contains(videoFormat))
                 ms = _videoProcessor.SetStartMoovAsync(new MediaFile(sample.ToBytes()), videoFormat).GetAwaiter().GetResult()!;
 
-            var resultStream = await _videoProcessor.ConvertVideoAsync(new MediaFile(moovStartRequiredFormats.Contains(videoFormat) ? ms!.ToArray() : sample.ToBytes()),
-                                                                       outputFormat: outputFormat);
+            var resultStream = await _videoProcessor.AddWaterMarkToVideoAsync(new MediaFile(moovStartRequiredFormats.Contains(videoFormat) ? ms!.ToArray() : sample.ToBytes()),
+                                                                              new MediaFile(png.ToBytes()),
+                                                                              PositionType.Up,
+                                                                              outputFormat: videoFormat);
+            resultStream!.ToFile(resultStreamPath);
+        }
+    }
+
+    public static async Task ExtractVideoFromFileAsync()
+    {
+        foreach (var videoFormat in supportedVideoFormats)
+        {
+            var sample = TestFile.GetPath(videoFormat);
+            var resultPhysicalPath = TestFile.ResultFilePath + $@"ExtractVideoFromFileAsync/resultPath.{videoFormat.ToString().Replace("_", "").ToLower()}";
+            var resultStreamPath = TestFile.ResultFilePath + $@"ExtractVideoFromFileAsync/resultStream.{videoFormat.ToString().Replace("_", "").ToLower()}";
+
+            // Test block with physical paths to input and output files
+            await _videoProcessor.ExtractVideoFromFileAsync(new MediaFile(sample), resultPhysicalPath);
+
+            // Block for testing file processing as streams without specifying physical paths
+            MemoryStream? ms = null;
+            if(moovStartRequiredFormats.Contains(videoFormat))
+                ms = _videoProcessor.SetStartMoovAsync(new MediaFile(sample.ToBytes()), videoFormat).GetAwaiter().GetResult()!;
+
+            var resultStream = await _videoProcessor.ExtractVideoFromFileAsync(new MediaFile(moovStartRequiredFormats.Contains(videoFormat) ? ms!.ToArray() : sample.ToBytes()),
+                                                                               outputFormat: videoFormat);
+            resultStream!.ToFile(resultStreamPath);
+        }
+    }
+
+    public static async Task AddAudioToVideoAsync()
+    {
+        foreach (var videoFormat in supportedVideoFormats)
+        {
+            var sample = TestFile.GetPath(videoFormat);
+            var audio = TestFile.GetPath(FileFormatType.AAC);
+            var resultPhysicalPath = TestFile.ResultFilePath + $@"AddAudioToVideoAsync/resultPath.{videoFormat.ToString().Replace("_", "").ToLower()}";
+            var resultStreamPath = TestFile.ResultFilePath + $@"AddAudioToVideoAsync/resultStream.{videoFormat.ToString().Replace("_", "").ToLower()}";
+
+            // Test block with physical paths to input and output files
+            await _videoProcessor.AddAudioToVideoAsync(new MediaFile(audio), new MediaFile(sample), resultPhysicalPath);
+
+            // Block for testing file processing as streams without specifying physical paths
+            MemoryStream? ms = null;
+            if(moovStartRequiredFormats.Contains(videoFormat))
+                ms = _videoProcessor.SetStartMoovAsync(new MediaFile(sample.ToBytes()), videoFormat).GetAwaiter().GetResult()!;
+
+            var resultStream = await _videoProcessor.AddAudioToVideoAsync(new MediaFile(audio.ToFileStream()),
+                                                                          new MediaFile(moovStartRequiredFormats.Contains(videoFormat) ? ms!.ToArray() : sample.ToBytes()),
+                                                                          outputFormat: videoFormat);
+            resultStream!.ToFile(resultStreamPath);
+        }
+    }
+
+    public static async Task ConvertVideoToGifAsync()
+    {
+        foreach (var videoFormat in supportedVideoFormats)
+        {
+            var sample = TestFile.GetPath(videoFormat);
+            var audio = TestFile.GetPath(FileFormatType.AAC);
+            var resultPhysicalPath = TestFile.ResultFilePath + $@"ConvertVideoToGifAsync/resultPath.{FileFormatType.GIF.ToString().Replace("_", "").ToLower()}";
+            var resultStreamPath = TestFile.ResultFilePath + $@"ConvertVideoToGifAsync/resultStream.{FileFormatType.GIF.ToString().Replace("_", "").ToLower()}";
+
+            // Test block with physical paths to input and output files
+            await _videoProcessor.ConvertVideoToGifAsync(new MediaFile(sample), 5, 320, 0, resultPhysicalPath);
+
+            // Block for testing file processing as streams without specifying physical paths
+            MemoryStream? ms = null;
+            if(moovStartRequiredFormats.Contains(videoFormat))
+                ms = _videoProcessor.SetStartMoovAsync(new MediaFile(sample.ToBytes()), videoFormat).GetAwaiter().GetResult()!;
+
+            var resultStream = await _videoProcessor.ConvertVideoToGifAsync(new MediaFile(moovStartRequiredFormats.Contains(videoFormat) ? ms!.ToArray() : sample.ToBytes()),
+                                                                            5,
+                                                                            320,
+                                                                            0);
+            resultStream!.ToFile(resultStreamPath);
+        }
+    }
+
+    public static async Task CompressVideoAsync()
+    {
+        foreach (var videoFormat in supportedVideoFormats)
+        {
+            var sample = TestFile.GetPath(videoFormat);
+            var resultPhysicalPath = TestFile.ResultFilePath + $@"CompressVideoAsync/resultPath.{videoFormat.ToString().Replace("_", "").ToLower()}";
+            var resultStreamPath = TestFile.ResultFilePath + $@"CompressVideoAsync/resultStream.{videoFormat.ToString().Replace("_", "").ToLower()}";
+
+            // Test block with physical paths to input and output files
+            await _videoProcessor.CompressVideoAsync(new MediaFile(sample), 50, resultPhysicalPath);
+
+            // Block for testing file processing as streams without specifying physical paths
+            MemoryStream? ms = null;
+            if(moovStartRequiredFormats.Contains(videoFormat))
+                ms = _videoProcessor.SetStartMoovAsync(new MediaFile(sample.ToBytes()), videoFormat).GetAwaiter().GetResult()!;
+
+            var resultStream = await _videoProcessor.CompressVideoAsync(new MediaFile(moovStartRequiredFormats.Contains(videoFormat) ? ms!.ToArray() : sample.ToBytes()),
+                                                                        50);
+            resultStream!.ToFile(resultStreamPath);
+        }
+    }
+
+    public static async Task ConcatVideosAsync()
+    {
+        List<FileFormatType> results = new()
+        {
+            FileFormatType.AVI,
+            FileFormatType._3GP,
+            FileFormatType.ASF,
+            FileFormatType.FLV,
+            FileFormatType.M2TS,
+            FileFormatType.M4V,
+            FileFormatType.MKV,
+            FileFormatType.MOV,
+            FileFormatType.MP4,
+            FileFormatType.MPEG,
+            FileFormatType.MXF,
+            FileFormatType.RM,
+            FileFormatType.VOB,
+            FileFormatType.WEBM,
+            FileFormatType.WMV
+        };
+
+        foreach (var videoFormat in supportedVideoFormats)
+        {
+            var sample = TestFile.GetPath(videoFormat);
+            var resultPhysicalPath = TestFile.ResultFilePath + $@"ConcatVideosAsync/resultPath.{videoFormat.ToString().Replace("_", "").ToLower()}";
+            var resultStreamPath = TestFile.ResultFilePath + $@"ConcatVideosAsync/resultStream.{videoFormat.ToString().Replace("_", "").ToLower()}";
+
+            var files = new List<MediaFile>();
+
+            // foreach (var i in results)
+            //     files.Add(new MediaFile(TestFile.GetPath(i)));
+
+            // Test block with physical paths to input and output files
+            // await _videoProcessor.ConcatVideosAsync(files.ToArray(), resultPhysicalPath);
+
+            // Block for testing file processing as streams without specifying physical paths
+
+            foreach (var i in results)
+            {
+                MemoryStream? ms = null;
+                if(moovStartRequiredFormats.Contains(i))
+                    ms = _videoProcessor.SetStartMoovAsync(new MediaFile(TestFile.GetPath(i).ToBytes()), i).GetAwaiter().GetResult()!;
+
+                files.Add(new MediaFile(moovStartRequiredFormats.Contains(i) ? ms!.ToArray() : TestFile.GetPath(i).ToBytes()));
+            }
+
+            var resultStream = await _videoProcessor.ConcatVideosAsync(files.ToArray(), outputFormat: videoFormat);
             resultStream!.ToFile(resultStreamPath);
         }
     }

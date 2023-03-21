@@ -46,7 +46,8 @@ Console.ResetColor();
 // await TestAVI.ConvertVideoToImages();
 // await TestAVI.ConvertImagesToVideo();
 // await TestAVI.ExtractAudioFromVideo();
-await TestAVI.ConvertVideo();
+// await TestAVI.AddWaterMarkToVideoAsync();
+await TestAVI.ConcatVideosAsync();
 // await TestAVI.TestCutVideo();
 
 //=================================================================================================================

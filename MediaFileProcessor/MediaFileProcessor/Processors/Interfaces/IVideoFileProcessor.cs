@@ -119,20 +119,6 @@ public interface IVideoFileProcessor
                                            CancellationToken? cancellationToken = null);
 
     /// <summary>
-    /// Compresses an image file.
-    /// </summary>
-    /// <param name="file">The image file to be compressed.</param>
-    /// <param name="level">The level of compression to apply to the image. The higher the level, the smaller the size of the output file will be.</param>
-    /// <param name="outputFile">The path to the output file, including the file name and extension.</param>
-    /// <param name="outputFormat">The format of the output file. Can be either JPEG, PNG, or GIF.</param>
-    /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
-    Task<MemoryStream?> CompressImageAsync(MediaFile file,
-                                           int level,
-                                           string? outputFile = null,
-                                           FileFormatType? outputFormat = null,
-                                           CancellationToken? cancellationToken = null);
-
-    /// <summary>
     /// Concatenates multiple videos into one video.
     /// </summary>
     /// <param name="files">Array of input videos to concatenate</param>

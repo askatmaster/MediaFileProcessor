@@ -566,7 +566,6 @@ public class VideoFileProcessor : IVideoFileProcessor
 
                 break;
             case FileFormatType.M4V:
-                settings.VideoSize(VideoSizeType.CIF);
                 settings.VideoCodec(VideoCodecType.MPEG4);
 
                 break;
@@ -602,7 +601,7 @@ public class VideoFileProcessor : IVideoFileProcessor
 
                     break;
                 case FileFormatType.M4V:
-                    settings.KeyFrame(30);
+                    settings.KeyFrame(22);
                     settings.Format(FileFormatType.M4V);
 
                     break;
@@ -658,8 +657,67 @@ public class VideoFileProcessor : IVideoFileProcessor
         var settings = new VideoProcessingSettings().ReplaceIfExist()
                                                     .SetInputFiles(videoFile, watermarkFile)
                                                     .FilterComplexArgument(positionArgumant)
-                                                    .Format(outputFormat.Value)
                                                     .SetOutputArguments(outputFile);
+
+        switch(outputFormat)
+        {
+            case FileFormatType.RM:
+                settings.VideoSize(VideoSizeType.HD720);
+                settings.VideoCodec(VideoCodecType.RV10);
+                break;
+            case FileFormatType.WMV:
+                settings.VideoCodec(VideoCodecType.WMV1);
+
+                break;
+            case FileFormatType.WEBM:
+                settings.VideoCodec(VideoCodecType.LIBVPX);
+
+                break;
+            case FileFormatType.M4V:
+                settings.VideoCodec(VideoCodecType.MPEG4);
+
+                break;
+            case FileFormatType._3GP:
+                settings.VideoCodec(VideoCodecType.LIBX264);
+                if(outputFile is not null)
+                    settings.Format(FileFormatType.MPEG);
+
+                break;
+        }
+
+        if(outputFile is null)
+            switch(outputFormat)
+            {
+                case FileFormatType._3GP or FileFormatType.ASF or FileFormatType.MOV or FileFormatType.MP4:
+                    settings.Format(FileFormatType.MPEG);
+
+                    break;
+                case FileFormatType.M2TS:
+                    settings.Format(FileFormatType.MPEGTS);
+
+                    break;
+                case FileFormatType.MKV:
+                    settings.Format("matroska");
+
+                    break;
+                case FileFormatType.RM:
+                    settings.Format(outputFormat.Value);
+
+                    break;
+                case FileFormatType.WMV:
+                    settings.Format(FileFormatType.ASF);
+
+                    break;
+                case FileFormatType.M4V:
+                    settings.KeyFrame(22);
+                    settings.Format(FileFormatType.M4V);
+
+                    break;
+                default:
+                    settings.Format(outputFormat.Value);
+
+                    break;
+            }
 
         return await ExecuteAsync(settings, cancellationToken ?? new CancellationToken());
     }
@@ -688,16 +746,78 @@ public class VideoFileProcessor : IVideoFileProcessor
                                                     .SetInputFiles(file)
                                                     .MapMetadata()
                                                     .MapArgument("0:v:0")
-                                                    .VideoCodec(VideoCodecType.COPY)
                                                     .PixelFormat("yuv420p")
-                                                    .Format(outputFormat.Value)
                                                     .SetOutputArguments(outputFile);
+
+        switch(outputFormat)
+        {
+            case FileFormatType.RM:
+                settings.VideoSize(VideoSizeType.HD720);
+                settings.VideoCodec(VideoCodecType.RV10);
+                break;
+            case FileFormatType.WMV:
+                settings.VideoCodec(VideoCodecType.WMV1);
+
+                break;
+            case FileFormatType.WEBM:
+                settings.VideoCodec(VideoCodecType.LIBVPX);
+
+                break;
+            case FileFormatType.M4V:
+                settings.VideoCodec(VideoCodecType.MPEG4);
+
+                break;
+            case FileFormatType._3GP:
+                settings.VideoCodec(VideoCodecType.LIBX264);
+                if(outputFile is not null)
+                    settings.Format(FileFormatType.MPEG);
+
+                break;
+            default:
+                settings.VideoCodec(VideoCodecType.COPY);
+                break;
+        }
+
+        if(outputFile is null)
+            switch(outputFormat)
+            {
+                case FileFormatType._3GP or FileFormatType.ASF or FileFormatType.MOV or FileFormatType.MP4:
+                    settings.Format(FileFormatType.MPEG);
+
+                    break;
+                case FileFormatType.M2TS:
+                    settings.Format(FileFormatType.MPEGTS);
+
+                    break;
+                case FileFormatType.MKV:
+                    settings.Format("matroska");
+
+                    break;
+                case FileFormatType.RM:
+                    settings.Format(outputFormat.Value);
+
+                    break;
+                case FileFormatType.WMV:
+                    settings.Format(FileFormatType.ASF);
+
+                    break;
+                case FileFormatType.M4V:
+                    settings.KeyFrame(22);
+                    settings.Format(FileFormatType.M4V);
+
+                    break;
+                default:
+                    settings.Format(outputFormat.Value);
+
+                    break;
+            }
 
         return await ExecuteAsync(settings, cancellationToken ?? new CancellationToken());
     }
 
     //======================================================================================================================================================================
 
+    //TODO fix this method
     /// <summary>
     /// Adds audio to a video file.
     /// </summary>
@@ -720,10 +840,71 @@ public class VideoFileProcessor : IVideoFileProcessor
 
         var settings = new VideoProcessingSettings().ReplaceIfExist()
                                                     .SetInputFiles(audioFile, videoFile)
-                                                    .VideoCodec(VideoCodecType.COPY)
                                                     .AudioCodec(AudioCodecType.COPY)
-                                                    .Format(outputFormat.Value)
                                                     .SetOutputArguments(outputFile);
+
+        switch(outputFormat)
+        {
+            case FileFormatType.RM:
+                settings.VideoSize(VideoSizeType.HD720);
+                settings.VideoCodec(VideoCodecType.RV10);
+                break;
+            case FileFormatType.WMV:
+                settings.VideoCodec(VideoCodecType.WMV1);
+
+                break;
+            case FileFormatType.WEBM:
+                settings.VideoCodec(VideoCodecType.LIBVPX);
+
+                break;
+            case FileFormatType.M4V:
+                settings.VideoCodec(VideoCodecType.MPEG4);
+
+                break;
+            case FileFormatType._3GP:
+                settings.VideoCodec(VideoCodecType.LIBX264);
+                if(outputFile is not null)
+                    settings.Format(FileFormatType.MPEG);
+
+                break;
+            default:
+                settings.VideoCodec(VideoCodecType.COPY);
+                break;
+        }
+
+        if(outputFile is null)
+            switch(outputFormat)
+            {
+                case FileFormatType._3GP or FileFormatType.ASF or FileFormatType.MOV or FileFormatType.MP4:
+                    settings.Format(FileFormatType.MPEG);
+
+                    break;
+                case FileFormatType.M2TS:
+                    settings.Format(FileFormatType.MPEGTS);
+
+                    break;
+                case FileFormatType.MKV:
+                    settings.Format("matroska");
+
+                    break;
+                case FileFormatType.RM:
+                    settings.Format(outputFormat.Value);
+
+                    break;
+                case FileFormatType.WMV:
+                    settings.Format(FileFormatType.ASF);
+
+                    break;
+                case FileFormatType.M4V:
+                    settings.KeyFrame(22);
+                    settings.Format(FileFormatType.M4V);
+
+                    break;
+                default:
+                    settings.Format(outputFormat.Value);
+
+                    break;
+            }
 
         return await ExecuteAsync(settings, cancellationToken ?? new CancellationToken());
     }
@@ -759,60 +940,91 @@ public class VideoFileProcessor : IVideoFileProcessor
     /// </summary>
     /// <param name="file">The input media file to be compressed.</param>
     /// <param name="compressionRatio">The constant rate factor used for compression.</param>
-    /// <param name="output">The desired name of the output file, including the file extension.
+    /// <param name="outputFile">The desired name of the output file, including the file extension.
     ///                     If `null`, the original file name will be used.</param>
     /// <param name="cancellationToken">A cancellation token to stop the compression process.</param>
     /// <returns>A memory stream of the compressed video, or `null` if the compression failed.</returns>
     public async Task<MemoryStream?> CompressVideoAsync(MediaFile file,
                                                           int compressionRatio,
-                                                          string? output = null,
+                                                          string? outputFile = null,
                                                           CancellationToken? cancellationToken = null)
     {
-        var setting = new VideoProcessingSettings().ReplaceIfExist()
-                                                   .SetInputFiles(file)
-                                                   .VideoCodec(VideoCodecType.H264)
-                                                   .Crf(compressionRatio)
-                                                   .VideoCodecPreset(VideoCodecPresetType.SLOW)
-                                                   .VideoBitRate(500)
-                                                   .MaxRate(500)
-                                                   .BufSize(1000)
-                                                   .VideoSize(VideoSizeType.CUSTOM, -2, 720)
-                                                   .Format("outputFormat") //TODO get format from input
-                                                   .SetOutputArguments(output);
+        var settings = new VideoProcessingSettings().ReplaceIfExist()
+                                                    .SetInputFiles(file)
+                                                    .Crf(compressionRatio)
+                                                    .VideoCodecPreset(VideoCodecPresetType.SLOW)
+                                                    .VideoBitRate(128)
+                                                    .MaxRate(500)
+                                                    .BufSize(1000)
+                                                    .VideoSize(VideoSizeType.CUSTOM, -2, 720)
+                                                    .SetOutputArguments(outputFile);
 
-        return await ExecuteAsync(setting, cancellationToken ?? new CancellationToken());
-    }
+        var outputFormat = file.FormatType;
 
-    //======================================================================================================================================================================
+        switch(outputFormat)
+        {
+            case FileFormatType.RM:
+                settings.VideoSize(VideoSizeType.HD720);
+                settings.VideoCodec(VideoCodecType.RV10);
+                break;
+            case FileFormatType.WMV:
+                settings.VideoCodec(VideoCodecType.WMV1);
 
-    /// <summary>
-    /// Executes the compression of an image file.
-    /// </summary>
-    /// <param name="file">The image file to be compressed.</param>
-    /// <param name="level">The compression level to be applied to the image file.</param>
-    /// <param name="outputFile">The output file path, if specified. If null, the output will be returned as a memory stream.</param>
-    /// <param name="outputFormat">The file format type for the output file.</param>
-    /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
-    /// <returns>A memory stream containing the compressed image data, or null if the output file path is specified.</returns>
-    public async Task<MemoryStream?> CompressImageAsync(MediaFile file,
-                                                        int level,
-                                                        string? outputFile = null,
-                                                        FileFormatType? outputFormat = null,
-                                                        CancellationToken? cancellationToken = null)
-    {
-        if(outputFile is null && outputFormat is null)
-            throw new Exception("If the outputFile is not specified then the outputFormat must be indicated necessarily");
+                break;
+            case FileFormatType.WEBM:
+                settings.VideoCodec(VideoCodecType.LIBVPX);
 
-        outputFormat ??= outputFile!.GetFileFormatType();
+                break;
+            case FileFormatType.M4V:
+                settings.VideoCodec(VideoCodecType.MPEG4);
 
-        var setting = new VideoProcessingSettings().ReplaceIfExist()
-                                                   .HideBanner()
-                                                   .SetInputFiles(file)
-                                                   .CompressionLevel(level)
-                                                   .Format(outputFormat.Value)
-                                                   .SetOutputArguments(outputFile);
+                break;
+            case FileFormatType._3GP:
+                settings.VideoCodec(VideoCodecType.LIBX264);
+                if(outputFile is not null)
+                    settings.Format(FileFormatType.MPEG);
 
-        return await ExecuteAsync(setting, cancellationToken ?? new CancellationToken());
+                break;
+            default:
+                settings.VideoCodec(VideoCodecType.H264);
+                break;
+        }
+
+        if(outputFile is null)
+            switch(outputFormat)
+            {
+                case FileFormatType._3GP or FileFormatType.ASF or FileFormatType.MOV or FileFormatType.MP4:
+                    settings.Format(FileFormatType.MPEG);
+
+                    break;
+                case FileFormatType.M2TS:
+                    settings.Format(FileFormatType.MPEGTS);
+
+                    break;
+                case FileFormatType.MKV:
+                    settings.Format("matroska");
+
+                    break;
+                case FileFormatType.RM:
+                    settings.Format(outputFormat.Value);
+
+                    break;
+                case FileFormatType.WMV:
+                    settings.Format(FileFormatType.ASF);
+
+                    break;
+                case FileFormatType.M4V:
+                    settings.KeyFrame(22);
+                    settings.Format(FileFormatType.M4V);
+
+                    break;
+                default:
+                    settings.Format(outputFormat!.Value);
+
+                    break;
+            }
+
+        return await ExecuteAsync(settings, cancellationToken ?? new CancellationToken());
     }
 
     //======================================================================================================================================================================
@@ -886,15 +1098,46 @@ public class VideoFileProcessor : IVideoFileProcessor
         strCmd = strCmd.Remove(strCmd.Length - 1) + "\" ";
 
         // Set the output format and execute the FFmpeg command
-        var setting = new VideoProcessingSettings().ReplaceIfExist()
-                                                   .CustomArguments(strCmd)
-                                                   .CopyAllCodec()
-                                                   .AudioBSF("aac_adtstoasc")
-                                                   .MovFralgs("+faststart")
-                                                   .Format(outputFormat.Value)
-                                                   .SetOutputArguments(outputFile);
+        var settings = new VideoProcessingSettings().ReplaceIfExist().CustomArguments(strCmd).SetOutputArguments(outputFile);
 
-        var result = await ExecuteAsync(setting, cancellationToken ?? default);
+        if(outputFormat is FileFormatType.RM)
+            settings.VideoSize(VideoSizeType.HD720).VideoCodec(VideoCodecType.RV10).Format(FileFormatType.RM);
+        else if (outputFormat is FileFormatType.WEBM)
+            settings.VideoCodec(VideoCodecType.LIBVPX).AudioBSF("aac_adtstoasc").MovFralgs("+faststart");
+        else
+            settings.CopyAllCodec().AudioBSF("aac_adtstoasc").MovFralgs("+faststart");
+
+        if(outputFile is null)
+            switch(outputFormat)
+            {
+                case FileFormatType._3GP or FileFormatType.ASF or FileFormatType.MOV or FileFormatType.MP4:
+                    settings.Format(FileFormatType.MPEG);
+
+                    break;
+                case FileFormatType.M2TS:
+                    settings.Format(FileFormatType.MPEGTS);
+
+                    break;
+                case FileFormatType.MKV:
+                    settings.Format("matroska");
+
+                    break;
+                case FileFormatType.WMV:
+                    settings.Format(FileFormatType.ASF);
+
+                    break;
+                case FileFormatType.M4V:
+                    settings.KeyFrame(22);
+                    settings.Format(FileFormatType.M4V);
+
+                    break;
+                default:
+                    settings.Format(outputFormat!.Value);
+
+                    break;
+            }
+
+        var result = await ExecuteAsync(settings, cancellationToken ?? default);
 
         // Delete the intermediate files
         foreach (var file in intermediateFiles)
