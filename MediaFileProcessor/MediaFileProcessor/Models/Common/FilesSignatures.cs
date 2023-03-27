@@ -236,7 +236,6 @@ public static class FilesSignatures
 
     public static FileFormatType GetFormat(this byte[] signature)
     {
-        var dasd = signature[..100];
         return signature.Length switch
         {
             >= 3 when IsJPEG(signature) => FileFormatType.JPG,

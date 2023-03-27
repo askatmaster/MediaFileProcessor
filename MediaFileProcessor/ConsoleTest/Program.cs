@@ -47,7 +47,7 @@ Console.ResetColor();
 // await TestAVI.ConvertImagesToVideo();
 // await TestAVI.ExtractAudioFromVideo();
 // await TestAVI.AddWaterMarkToVideoAsync();
-await TestAVI.ConcatVideosAsync();
+// await TestAVI.ConcatVideosAsync();
 // await TestAVI.TestCutVideo();
 
 //=================================================================================================================
@@ -58,6 +58,16 @@ await TestAVI.ConcatVideosAsync();
 
 //=================================================================================================================
 
+
+byte[] data = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+ArraySegment<byte> segment = new ArraySegment<byte>(data, 2, 5);
+
+Console.WriteLine(segment.Array.Length);
+
+// for (int i = 0; i < segment.Count; i++)
+// {
+//     Console.WriteLine(segment.Array[i]);
+// }
 
 Console.ForegroundColor = ConsoleColor.Green;
 Console.WriteLine("Done");

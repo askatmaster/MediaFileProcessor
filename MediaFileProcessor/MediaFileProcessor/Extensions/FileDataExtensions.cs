@@ -138,21 +138,27 @@ public static class FileDataExtensions
     /// <returns>A single array of bytes that is the result of concatenating the input arrays.</returns>
     public static byte[] ConcatByteArrays(bool onlyNotDefaultArrays, params byte[][] arrays)
     {
-        if(onlyNotDefaultArrays)
-            arrays = arrays.Where(x => x.Any(y => y != 0))
-                           .ToArray();
-
-        var z = new byte[arrays.Sum(x => x.Length)];
-
-        var lengthSum = 0;
-
-        foreach (var array in arrays)
+        // Вычисляем общий размер результирующего массива.
+        var totalSize = 0;
+        for (var i = 0; i < arrays.Length; i++)
         {
-            Buffer.BlockCopy(array, 0, z, lengthSum, array.Length * sizeof(byte));
-            lengthSum += array.Length * sizeof(byte);
+            if (!onlyNotDefaultArrays || arrays[i].Length != 0)
+                totalSize += arrays[i].Length;
         }
 
-        return z;
+        // Создаем результирующий массив и объединяем данные в него.
+        var result = new byte[totalSize];
+        var offset = 0;
+        for (var i = 0; i < arrays.Length; i++)
+        {
+            if (onlyNotDefaultArrays && arrays[i].Length == 0)
+                continue;
+
+            Buffer.BlockCopy(arrays[i], 0, result, offset, arrays[i].Length);
+            offset += arrays[i].Length;
+        }
+
+        return result;
     }
 
     /// <summary>
@@ -161,14 +167,14 @@ public static class FileDataExtensions
     /// <param name="bytes">The array to search within.</param>
     /// <param name="signatures">The signature to search for.</param>
     /// <returns>A tuple representing the start position of the signature within the array and a flag indicating whether the signature was found in its entirety.</returns>
-    private static (int?, bool) SearchFileSignature(this byte[] bytes, List<byte[]> signatures)
+    private static (int?, bool) SearchFileSignature(this ArraySegment<byte> bytes, ArraySegment<byte>[] signatures)
     {
-        if (signatures.Count == 0)
+        if (signatures.Length == 0)
             return (null, false);
 
         foreach (var signature in signatures)
         {
-            var signatureLength = signature.Length;
+            var signatureLength = signature.Count;
 
             if (signatureLength == 0)
                 continue;
@@ -176,9 +182,9 @@ public static class FileDataExtensions
             var signatureStartPos = 0;
             var startFlag = -1;
 
-            for (var i = 0; i < bytes.Length; i++)
+            for (var i = bytes.Offset; i < bytes.Count + bytes.Offset; i++)
             {
-                if ((bytes[i] == signature[signatureStartPos] || SignaturePositionIgnore(signature, signatureStartPos)) && startFlag is -1)
+                if ((bytes.Array![i] == signature.Array![signatureStartPos + signature.Offset] || SignaturePositionIgnore(signature, signatureStartPos)) && startFlag is -1)
                 {
                     startFlag = i;
                     signatureStartPos++;
@@ -186,7 +192,7 @@ public static class FileDataExtensions
                     continue;
                 }
 
-                if(bytes[i] != signature[signatureStartPos] && !SignaturePositionIgnore(signature, signatureStartPos))
+                if(bytes.Array![i] != signature.Array[signatureStartPos + signature.Offset] && !SignaturePositionIgnore(signature, signatureStartPos))
                 {
                     startFlag = -1;
                     signatureStartPos = default;
@@ -207,47 +213,50 @@ public static class FileDataExtensions
         return (null, false);
     }
 
-    private static bool SignaturePositionIgnore(byte[] signature, int signatureStartPos)
+    private static bool SignaturePositionIgnore(ArraySegment<byte> signature, int signatureStartPos)
     {
-        var format = signature.GetFormat();
+        if(signature.Array == null)
+            return false;
+
+        var format = signature.Array.GetFormat();
 
         switch(format)
         {
             case FileFormatType.JPG:
-                return 0 == signature[signatureStartPos] && signatureStartPos is 4 or 5;
+                return 0 == signature.Array[signatureStartPos + signature.Offset] && signatureStartPos is 4 or 5;
             case FileFormatType._3GP or FileFormatType.MP4 or FileFormatType.MOV:
-                return 0 == signature[signatureStartPos] && signatureStartPos is 0 or 1 or 2 or 3;
+                return 0 == signature.Array[signatureStartPos + signature.Offset] && signatureStartPos is 0 or 1 or 2 or 3;
             case FileFormatType.AVI or FileFormatType.WEBP or FileFormatType.WAV:
-                return 0 == signature[signatureStartPos] && signatureStartPos is 4 or 5 or 6 or 7;
+                return 0 == signature.Array[signatureStartPos + signature.Offset] && signatureStartPos is 4 or 5 or 6 or 7;
             case FileFormatType.PNG or FileFormatType.ICO or FileFormatType.TIFF or FileFormatType.MKV or FileFormatType.MPEG or FileFormatType.GIF
                  or FileFormatType.FLAC or FileFormatType.VOB or FileFormatType.M2TS or FileFormatType.MXF or FileFormatType.WEBM or FileFormatType.GXF
                  or FileFormatType.FLV or FileFormatType.AAC or FileFormatType.OGG or FileFormatType.WMV or FileFormatType.BMP or FileFormatType.ASF
                  or FileFormatType.MP3 or FileFormatType.RM or FileFormatType.PSD:
-            case FileFormatType.WMA when signature[0] == 0x30
-             && signature[1] == 0x26
-             && signature[2] == 0xB2
-             && signature[3] == 0x75
-             && signature[4] == 0x8E
-             && signature[5] == 0x66
-             && signature[6] == 0xCF
-             && signature[7] == 0x11
-             && signature[8] == 0xA6
-             && signature[9] == 0xD9
-             && signature[10] == 0x00
-             && signature[11] == 0xAA
-             && signature[12] == 0x00
-             && signature[13] == 0x62
-             && signature[14] == 0xCE
-             && signature[15] == 0x6C:
+            case FileFormatType.WMA when signature.Array[signature.Offset + 0] == 0x30
+             && signature.Array[signature.Offset + 1] == 0x26
+             && signature.Array[signature.Offset + 2] == 0xB2
+             && signature.Array[signature.Offset + 3] == 0x75
+             && signature.Array[signature.Offset + 4] == 0x8E
+             && signature.Array[signature.Offset + 5] == 0x66
+             && signature.Array[signature.Offset + 6] == 0xCF
+             && signature.Array[signature.Offset + 7] == 0x11
+             && signature.Array[signature.Offset + 8] == 0xA6
+             && signature.Array[signature.Offset + 9] == 0xD9
+             && signature.Array[signature.Offset + 10] == 0x00
+             && signature.Array[signature.Offset + 11] == 0xAA
+             && signature.Array[signature.Offset + 12] == 0x00
+             && signature.Array[signature.Offset + 13] == 0x62
+             && signature.Array[signature.Offset + 14] == 0xCE
+             && signature.Array[signature.Offset + 15] == 0x6C:
                 return false;
-            case FileFormatType.WMA when signature[0] == 0x02
-             && signature[1] == 0x00
-             && signature[2] == 0x00
-             && signature[3] == 0x00:
-                return 0 == signature[signatureStartPos] && signatureStartPos > 3;
-            case FileFormatType.WMA when signature[0] == 0xFE
-             && signature[1] == 0xFF:
-                return 0 == signature[signatureStartPos] && signatureStartPos > 1;
+            case FileFormatType.WMA when signature.Array[signature.Offset + 0] == 0x02
+             && signature.Array[signature.Offset + 1] == 0x00
+             && signature.Array[signature.Offset + 2] == 0x00
+             && signature.Array[signature.Offset + 3] == 0x00:
+                return 0 == signature.Array[signature.Offset + signatureStartPos] && signatureStartPos > 3;
+            case FileFormatType.WMA when signature.Array[signature.Offset + 0] == 0xFE
+             && signature.Array[signature.Offset + 1] == 0xFF:
+                return 0 == signature.Array[signature.Offset + signatureStartPos] && signatureStartPos > 1;
             case FileFormatType.WMA:
                 return false;
             default:
