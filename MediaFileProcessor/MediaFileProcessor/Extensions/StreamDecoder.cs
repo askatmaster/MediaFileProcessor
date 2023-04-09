@@ -270,7 +270,7 @@ public class StreamDecoder
         return listFiles.Count == 0 ? null : listFiles;
     }
 
-    public MultiStream GetMultiStreamBySignatureTest1(Stream stream, List<byte[]> fileSignature)
+    public MultiStream GetMultiStreamBySignature(Stream stream, List<byte[]> fileSignature)
     {
         signatureLength = fileSignature.First().Length;
         signatures = fileSignature.Select(b => new ReadOnlyMemory<byte>(b)).ToList();
