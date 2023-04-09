@@ -7,6 +7,28 @@ namespace MediaFileProcessor.Models.Common;
 /// </summary>
 public sealed class MultiStream : Stream
 {
+    public MultiStream() { }
+
+    public MultiStream(Stream[] streams)
+    {
+        streamList.AddRange(streams);
+    }
+
+    public MultiStream(List<Stream> streams)
+    {
+        streamList.AddRange(streams);
+    }
+
+    public MultiStream(IEnumerable<Stream> streams)
+    {
+        streamList.AddRange(streams.ToArray());
+    }
+
+    public MultiStream(ICollection<Stream> streams)
+    {
+        streamList.AddRange(streams.ToArray());
+    }
+
     /// <summary>
     /// A list of streams to be combined into the virtual stream.
     /// </summary>

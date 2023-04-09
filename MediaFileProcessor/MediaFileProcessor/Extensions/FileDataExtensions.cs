@@ -1,4 +1,5 @@
 ﻿using System.Runtime.InteropServices;
+using MediaFileProcessor.Models.Common;
 using MediaFileProcessor.Models.Enums;
 namespace MediaFileProcessor.Extensions;
 
@@ -152,5 +153,148 @@ public static class FileDataExtensions
         }
 
         return z;
+    }
+
+    public static byte[] ConcatByteArrays(ReadOnlySpan<byte> array1, ReadOnlySpan<byte> array2)
+    {
+        var totalSize = array1.Length + array2.Length;
+
+        var result = new byte[totalSize];
+
+        array1.CopyTo(result);
+        array2.CopyTo(result.AsSpan(array1.Length));
+
+        return result;
+    }
+
+    public static MultiStream GetFilesFromByteArray(MemoryStream stream, byte[] signature)
+    {
+        //TODO Add to FileFormatType
+        var arrayToSearch = stream.ToArray();
+        var indices = new List<int>();
+        var ms = new MultiStream();
+
+        for (var i = 0; i < arrayToSearch.Length - signature.Length; i++)
+        {
+            var matchFound = true;
+
+            for (var j = 0; j < signature.Length; j++)
+            {
+                if (arrayToSearch[i + j] != signature[j])
+                {
+                    matchFound = false;
+
+                    break;
+                }
+            }
+
+            if (matchFound)
+            {
+                if(indices.Count != 0)
+                    ms.AddStream(new MemoryStream(arrayToSearch[indices.Last()..i]));
+                indices.Add(i);
+            }
+        }
+
+        ms.AddStream(new MemoryStream(arrayToSearch[indices.Last()..]));
+
+        return ms;
+    }
+
+    public static MultiStream GetFilesFromByteArray(byte[] array, byte[] signature)
+    {
+        var indices = new List<int>();
+        var ms = new MultiStream();
+
+        for (var i = 0; i < array.Length - signature.Length; i++)
+        {
+            var matchFound = true;
+
+            for (var j = 0; j < signature.Length; j++)
+            {
+                if (array[i + j] != signature[j])
+                {
+                    matchFound = false;
+
+                    break;
+                }
+            }
+
+            if (matchFound)
+            {
+                if(indices.Count != 0)
+                    ms.AddStream(new MemoryStream(array[indices.Last()..i]));
+                indices.Add(i);
+            }
+        }
+
+        ms.AddStream(new MemoryStream(array[indices.Last()..]));
+
+        return ms;
+    }
+
+    public static MultiStream GetFilesFromByteArray(MemoryStream stream, byte[] signature, Action<byte[]> action)
+    {
+        var arrayToSearch = stream.ToArray();
+        var indices = new List<int>();
+        var ms = new MultiStream();
+
+        for (var i = 0; i < arrayToSearch.Length - signature.Length; i++)
+        {
+            var matchFound = true;
+
+            for (var j = 0; j < signature.Length; j++)
+            {
+                if (arrayToSearch[i + j] != signature[j])
+                {
+                    matchFound = false;
+
+                    break;
+                }
+            }
+
+            if (matchFound)
+            {
+                if(indices.Count != 0)
+                    action(arrayToSearch[indices.Last()..i]);
+                indices.Add(i);
+            }
+        }
+
+        action(arrayToSearch[indices.Last()..]);
+
+        return ms;
+    }
+
+    public static MultiStream GetFilesFromByteArray(byte[] array, byte[] signature, Action<byte[]> action)
+    {
+        var indices = new List<int>();
+        var ms = new MultiStream();
+
+        for (var i = 0; i < array.Length - signature.Length; i++)
+        {
+            var matchFound = true;
+
+            for (var j = 0; j < signature.Length; j++)
+            {
+                if (array[i + j] != signature[j])
+                {
+                    matchFound = false;
+
+                    break;
+                }
+            }
+
+            if (matchFound)
+            {
+                if(indices.Count != 0)
+                    action(array[indices.Last()..i]);
+                indices.Add(i);
+            }
+        }
+
+        action(array[indices.Last()..]);
+
+        return ms;
     }
 }

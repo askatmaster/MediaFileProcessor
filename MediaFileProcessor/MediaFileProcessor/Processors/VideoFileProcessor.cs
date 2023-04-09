@@ -444,7 +444,7 @@ public class VideoFileProcessor : IVideoFileProcessor
 
         var stream = await ExecuteAsync(settings, cancellationToken ?? new CancellationToken());
 
-        return new StreamDecoder().GetMultiStreamBySignatureTest1(stream!, outputFormat.Value.GetSignature());
+        return new StreamDecoder().GetMultiStreamBySignature(stream!, outputFormat.Value.GetSignature());
     }
 
     //======================================================================================================================================================================
