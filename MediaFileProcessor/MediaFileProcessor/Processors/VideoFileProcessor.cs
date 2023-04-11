@@ -840,8 +840,43 @@ public class VideoFileProcessor : IVideoFileProcessor
 
         var settings = new VideoProcessingSettings().ReplaceIfExist()
                                                     .SetInputFiles(audioFile, videoFile)
-                                                    .AudioCodec(AudioCodecType.COPY)
                                                     .SetOutputArguments(outputFile);
+
+        switch (outputFormat)
+        {
+            case FileFormatType._3GP or FileFormatType.ASF:
+                settings.AudioCodec(AudioCodecType.MP3);
+                break;
+            case FileFormatType.M2TS:
+                settings.AudioCodec(AudioCodecType.AC3);
+                break;
+            case FileFormatType.MKV:
+                settings.AudioCodec(AudioCodecType.MP3);
+                break;
+            case FileFormatType.RM:
+                settings.AudioCodec(AudioCodecType.AC3);
+                break;
+            case FileFormatType.WEBM:
+                settings.CustomArguments(" -c:a libopus ");
+                break;
+            case FileFormatType.VOB:
+                settings.AudioCodec(AudioCodecType.AC3);
+                settings.CustomArguments(" -max_muxing_queue_size 1024 ");
+                break;
+            case FileFormatType.MXF:
+                settings.CustomArguments(" -filter:a \"aformat=sample_rates=48000\" ");
+                settings.CustomArguments(" -c:a pcm_s16le -ar 48000 ");
+                break;
+            case FileFormatType.MOV or FileFormatType.MP4 or FileFormatType.MPEG:
+                settings.AudioCodec(AudioCodecType.MP3);
+                break;
+            // case FileFormatType.M4V:
+            //     settings.AudioCodec(AudioCodecType.AAC);
+            //     break;
+            default:
+                settings.AudioCodec(AudioCodecType.COPY);
+                break;
+        }
 
         switch(outputFormat)
         {
@@ -859,6 +894,18 @@ public class VideoFileProcessor : IVideoFileProcessor
                 break;
             case FileFormatType.M4V:
                 settings.VideoCodec(VideoCodecType.MPEG4);
+
+                break;
+            case FileFormatType.ASF:
+                settings.VideoCodec(VideoCodecType.LIBX264);
+
+                break;
+            case FileFormatType.MOV:
+                settings.VideoCodec(VideoCodecType.LIBX264);
+
+                break;
+            case FileFormatType.MP4:
+                settings.VideoCodec(VideoCodecType.LIBX264);
 
                 break;
             case FileFormatType._3GP:

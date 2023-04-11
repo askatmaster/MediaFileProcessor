@@ -75,5 +75,12 @@ public enum AudioCodecType
     /// WMA is a proprietary audio format developed by Microsoft,
     /// and it offers both lossless and lossy compression options.
     /// </remarks>
-    WMAV2 = 7
+    WMAV2 = 7,
+
+    /// <summary>
+    /// AC3 (Audio Codec 3), also known as Dolby Digital, is a lossy audio compression format developed by Dolby Laboratories.
+    /// It is widely used in surround sound systems, such as those in movie theaters and home theaters.
+    /// AC3 supports multiple audio channels, making it suitable for multi-channel audio setups (e.g., 5.1 or 7.1 surround sound).
+    /// </summary>
+    AC3 = 8
 }

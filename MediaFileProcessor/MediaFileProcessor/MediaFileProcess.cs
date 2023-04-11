@@ -266,11 +266,7 @@ public class MediaFileProcess : IDisposable
             tasks[i] = inputStream.CopyToAsync(pipe)
                                   .ContinueWith(_ =>
                                   {
-                                      //TODO fix tiff format
-                                      //TODO fix 3gp format add audio
-                                      //TODO fix m2ts format add audio
-                                      //TODO fix mpeg, mxf format add audio
-                                      //TODO fix m4v, mkv, mov, mp4 format add audio
+                                      //TODO fix m4v add audio
                                       // Wait for the data to be transmitted completely
                                       pipe.WaitForPipeDrain();
 

@@ -42,6 +42,7 @@ Console.ResetColor();
 //     }
 // }
 
+await TestAVI.AddAudioToVideoAsync();
 // await TestAVI.TestExtractFrameFromVideo();
 // await TestAVI.ConvertVideoToImages();
 // await TestAVI.ConvertImagesToVideo();
@@ -57,12 +58,6 @@ Console.ResetColor();
 // Console.WriteLine(header.IsM2TS());
 
 //=================================================================================================================
-
-
-byte[] data = new byte[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-ArraySegment<byte> segment = new ArraySegment<byte>(data, 2, 5);
-
-Console.WriteLine(segment.Array.Length);
 
 // for (int i = 0; i < segment.Count; i++)
 // {
