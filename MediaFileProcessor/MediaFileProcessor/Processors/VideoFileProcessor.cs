@@ -817,7 +817,6 @@ public class VideoFileProcessor : IVideoFileProcessor
 
     //======================================================================================================================================================================
 
-    //TODO fix this method
     /// <summary>
     /// Adds audio to a video file.
     /// </summary>

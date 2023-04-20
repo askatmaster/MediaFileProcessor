@@ -14,7 +14,8 @@ public static class FileDataExtensions
     /// <typeparam name="T">The enum type to search for the value in.</typeparam>
     /// <param name="value">The string value to search for.</param>
     /// <returns>True if the value exists in the enum type T, false otherwise.</returns>
-    public static bool ExistsInEnum<T>(this string value) where T : Enum
+    public static bool ExistsInEnum<T>(this string value)
+        where T : Enum
     {
         return Enum.GetNames(typeof(T)).Any(i => "." + i.Replace("_", "").ToLower() == value.ToLower());
     }
@@ -139,8 +140,7 @@ public static class FileDataExtensions
     public static byte[] ConcatByteArrays(bool onlyNotDefaultArrays, params byte[][] arrays)
     {
         if(onlyNotDefaultArrays)
-            arrays = arrays.Where(x => x.Any(y => y != 0))
-                           .ToArray();
+            arrays = arrays.Where(x => x.Any(y => y != 0)).ToArray();
 
         var z = new byte[arrays.Sum(x => x.Length)];
 
@@ -167,9 +167,211 @@ public static class FileDataExtensions
         return result;
     }
 
-    public static MultiStream GetFilesFromByteArray(MemoryStream stream, byte[] signature)
+    public static byte[]? FindFirstOccurrence(Span<byte> span, List<byte[]> byteArrays)
     {
-        //TODO Add to FileFormatType
+        var minLength = int.MaxValue;
+        byte[]? matchedArray = null;
+
+        foreach (var byteArray in byteArrays)
+        {
+            var tempPos = -1;
+
+            for (var i = 0; i <= span.Length - byteArray.Length; i++)
+            {
+                var isMatch = true;
+
+                for (var j = 0; j < byteArray.Length; j++)
+                {
+                    if (span[i + j] != byteArray[j])
+                    {
+                        isMatch = false;
+
+                        break;
+                    }
+                }
+
+                if (isMatch)
+                {
+                    tempPos = i;
+
+                    break;
+                }
+            }
+
+            if (tempPos != -1 && tempPos < minLength)
+            {
+                minLength = tempPos;
+                matchedArray = byteArray;
+            }
+        }
+
+        return matchedArray;
+    }
+
+    public static MultiStream GetFilesFromByteArray(byte[] array, FileFormatType format, Action<byte[]> action)
+    {
+        var signatures = format.GetSignature();
+
+        var span = array.AsSpan(0, array.Length - 1);
+        var signature = FindFirstOccurrence(span, signatures);
+
+        if(signature is null)
+            throw new Exception($"{format.ToString()} signature not fount");
+
+        var indices = new List<int>();
+        var ms = new MultiStream();
+
+        for (var i = 0; i < array.Length - signature.Length; i++)
+        {
+            var matchFound = true;
+
+            for (var j = 0; j < signature.Length; j++)
+            {
+                if (array[i + j] != signature[j])
+                {
+                    matchFound = false;
+
+                    break;
+                }
+            }
+
+            if (matchFound)
+            {
+                if(indices.Count != 0)
+                    action(array[indices.Last()..i]);
+                indices.Add(i);
+            }
+        }
+
+        action(array[indices.Last()..]);
+
+        return ms;
+    }
+
+    public static MultiStream GetFilesFromByteArray(byte[] array, FileFormatType format)
+    {
+        var signatures = format.GetSignature();
+
+        var span = array.AsSpan(0, array.Length - 1);
+        var signature = FindFirstOccurrence(span, signatures);
+
+        if(signature is null)
+            throw new Exception($"{format.ToString()} signature not fount");
+
+        var indices = new List<int>();
+        var ms = new MultiStream();
+
+        for (var i = 0; i < array.Length - signature.Length; i++)
+        {
+            var matchFound = true;
+
+            for (var j = 0; j < signature.Length; j++)
+            {
+                if (array[i + j] != signature[j])
+                {
+                    matchFound = false;
+
+                    break;
+                }
+            }
+
+            if (matchFound)
+            {
+                if(indices.Count != 0)
+                    ms.AddStream(new MemoryStream(array[indices.Last()..i]));
+                indices.Add(i);
+            }
+        }
+
+        ms.AddStream(new MemoryStream(array[indices.Last()..]));
+
+        return ms;
+    }
+
+    public static MultiStream GetFilesFromStream(MemoryStream stream, FileFormatType format, Action<byte[]> action)
+    {
+        var arrayToSearch = stream.ToArray();
+        var signatures = format.GetSignature();
+
+        var span = arrayToSearch.AsSpan(0, arrayToSearch.Length - 1);
+        var signature = FindFirstOccurrence(span, signatures);
+
+        if(signature is null)
+            throw new Exception($"{format.ToString()} signature not fount");
+
+        var indices = new List<int>();
+        var ms = new MultiStream();
+
+        for (var i = 0; i < arrayToSearch.Length - signature.Length; i++)
+        {
+            var matchFound = true;
+
+            for (var j = 0; j < signature.Length; j++)
+            {
+                if (arrayToSearch[i + j] != signature[j])
+                {
+                    matchFound = false;
+
+                    break;
+                }
+            }
+
+            if (matchFound)
+            {
+                if(indices.Count != 0)
+                    action(arrayToSearch[indices.Last()..i]);
+                indices.Add(i);
+            }
+        }
+
+        action(arrayToSearch[indices.Last()..]);
+
+        return ms;
+    }
+
+    public static MultiStream GetFilesFromStream(MemoryStream stream, FileFormatType format)
+    {
+        var arrayToSearch = stream.ToArray();
+        var signatures = format.GetSignature();
+
+        var span = arrayToSearch.AsSpan(0, arrayToSearch.Length - 1);
+        var signature = FindFirstOccurrence(span, signatures);
+
+        if(signature is null)
+            throw new Exception($"{format.ToString()} signature not fount");
+
+        var indices = new List<int>();
+        var ms = new MultiStream();
+
+        for (var i = 0; i < arrayToSearch.Length - signature.Length; i++)
+        {
+            var matchFound = true;
+
+            for (var j = 0; j < signature.Length; j++)
+            {
+                if (arrayToSearch[i + j] != signature[j])
+                {
+                    matchFound = false;
+
+                    break;
+                }
+            }
+
+            if (matchFound)
+            {
+                if(indices.Count != 0)
+                    ms.AddStream(new MemoryStream(arrayToSearch[indices.Last()..i]));
+                indices.Add(i);
+            }
+        }
+
+        ms.AddStream(new MemoryStream(arrayToSearch[indices.Last()..]));
+
+        return ms;
+    }
+
+    public static MultiStream GetFilesFromStream(MemoryStream stream, byte[] signature)
+    {
         var arrayToSearch = stream.ToArray();
         var indices = new List<int>();
         var ms = new MultiStream();
@@ -233,7 +435,7 @@ public static class FileDataExtensions
         return ms;
     }
 
-    public static MultiStream GetFilesFromByteArray(MemoryStream stream, byte[] signature, Action<byte[]> action)
+    public static MultiStream GetFilesFromStream(MemoryStream stream, byte[] signature, Action<byte[]> action)
     {
         var arrayToSearch = stream.ToArray();
         var indices = new List<int>();
