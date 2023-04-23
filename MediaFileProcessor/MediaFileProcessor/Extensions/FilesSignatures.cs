@@ -94,7 +94,6 @@ public static class FilesSignatures
         new byte[] { 0x06, 0x0E, 0x2B, 0x34, 0x02, 0x05, 0x01, 0x01, 0x0D, 0x01, 0x02, 0x01, 0x01, 0x02 }
     };
 
-    //TODO distinguish between mkv
     private static List<byte[]> WEBM => new ()
     {
         new byte[] { 0x1A, 0x45, 0xDF, 0xA3 }
@@ -125,7 +124,6 @@ public static class FilesSignatures
         new byte[] { 0x42, 0x4D }
     };
 
-    //TODO distinguish between WMA
     private static List<byte[]> ASF => new ()
     {
         new byte[] { 0x30, 0x26, 0xB2, 0x75, 0x8E, 0x66, 0xCF, 0x11, 0xA6, 0xD9, 0x00, 0xAA, 0x00, 0x62, 0xCE, 0x6C }
@@ -245,20 +243,17 @@ public static class FilesSignatures
             >= 12 when IsM4V(signature) => FileFormatType.M4V,
             >= 8 when IsMP4(signature) => FileFormatType.MP4,
             >= 16 when IsMOV(signature) => FileFormatType.MOV,
-            >= 4 when IsMKV(signature) => FileFormatType.MKV,
             >= 6 when IsVOB(signature) => FileFormatType.VOB,
             >= 4 when IsMPEG(signature) => FileFormatType.MPEG,
             >= 16 when IsAVI(signature) => FileFormatType.AVI,
             >= 6 when IsGIF(signature) => FileFormatType.GIF,
             >= 8 when IsM2TS(signature) => FileFormatType.M2TS,
             >= 14 when IsMXF(signature) => FileFormatType.MXF,
-            >= 4 when IsWEBM(signature) => FileFormatType.WEBM,
             >= 4 when IsGXF(signature) => FileFormatType.GXF,
             >= 4 when IsFLV(signature) => FileFormatType.FLV,
             >= 4 when IsOGG(signature) => FileFormatType.OGG,
             >= 16 when IsWMV(signature) => FileFormatType.WMV,
             >= 2 when IsBMP(signature) => FileFormatType.BMP,
-            >= 16 when IsASF(signature) => FileFormatType.ASF,
             >= 3 when IsMP3(signature) => FileFormatType.MP3,
             >= 4 when IsRM(signature) => FileFormatType.RM,
             >= 4 when IsPSD(signature) => FileFormatType.PSD,
@@ -267,6 +262,9 @@ public static class FilesSignatures
             >= 4 when IsFLAC(signature) => FileFormatType.FLAC,
             >= 2 when IsAAC(signature) => FileFormatType.AAC,
             >= 16 when IsWMA(signature) => FileFormatType.WMA,
+            >= 16 when IsASF(signature) => FileFormatType.ASF,
+            >= 4 when IsWEBM(signature) => FileFormatType.WEBM,
+            >= 4 when IsMKV(signature) => FileFormatType.MKV,
             _ => throw new Exception("Unable to determine the format")
         };
     }
@@ -283,20 +281,17 @@ public static class FilesSignatures
             >= 12 when IsM4V(signature) => FileFormatType.M4V,
             >= 8 when IsMP4(signature) => FileFormatType.MP4,
             >= 16 when IsMOV(signature) => FileFormatType.MOV,
-            >= 4 when IsMKV(signature) => FileFormatType.MKV,
             >= 6 when IsVOB(signature) => FileFormatType.VOB,
             >= 4 when IsMPEG(signature) => FileFormatType.MPEG,
             >= 16 when IsAVI(signature) => FileFormatType.AVI,
             >= 6 when IsGIF(signature) => FileFormatType.GIF,
             >= 8 when IsM2TS(signature) => FileFormatType.M2TS,
             >= 14 when IsMXF(signature) => FileFormatType.MXF,
-            >= 4 when IsWEBM(signature) => FileFormatType.WEBM,
             >= 4 when IsGXF(signature) => FileFormatType.GXF,
             >= 4 when IsFLV(signature) => FileFormatType.FLV,
             >= 4 when IsOGG(signature) => FileFormatType.OGG,
             >= 16 when IsWMV(signature) => FileFormatType.WMV,
             >= 2 when IsBMP(signature) => FileFormatType.BMP,
-            >= 16 when IsASF(signature) => FileFormatType.ASF,
             >= 3 when IsMP3(signature) => FileFormatType.MP3,
             >= 4 when IsRM(signature) => FileFormatType.RM,
             >= 4 when IsPSD(signature) => FileFormatType.PSD,
@@ -305,6 +300,9 @@ public static class FilesSignatures
             >= 4 when IsFLAC(signature) => FileFormatType.FLAC,
             >= 2 when IsAAC(signature) => FileFormatType.AAC,
             >= 16 when IsWMA(signature) => FileFormatType.WMA,
+            >= 16 when IsASF(signature) => FileFormatType.ASF,
+            >= 4 when IsWEBM(signature) => FileFormatType.WEBM,
+            >= 4 when IsMKV(signature) => FileFormatType.MKV,
             _ => throw new Exception("Unable to determine the format")
         };
     }
@@ -494,7 +492,42 @@ public static class FilesSignatures
         if(buffer.Length < 4)
             throw new ArgumentException("The signature that you are verifying must be at least 4 bytes long");
 
-        return buffer[0] == 0x1A && buffer[1] == 0x45 && buffer[2] == 0xDF && buffer[3] == 0xA3;
+        if(!(buffer[0] == 0x1A && buffer[1] == 0x45 && buffer[2] == 0xDF && buffer[3] == 0xA3))
+            return false;
+
+        var format = GetFileFormat(buffer);
+
+        return format switch
+        {
+            null => false,
+            "matroska" => true,
+            _ => false
+        };
+    }
+
+    public static bool IsMKV(this Stream stream)
+    {
+        if(stream.Length < 4)
+            throw new ArgumentException("The signature that you are verifying must be at least 4 bytes long");
+
+        var buffer = new byte[4];
+        stream.Read(buffer, 0, buffer.Length);
+
+        if(!(buffer[0] == 0x1A && buffer[1] == 0x45 && buffer[2] == 0xDF && buffer[3] == 0xA3))
+            return false;
+
+        stream.Seek(0, SeekOrigin.Begin);
+
+        var format = GetFileFormat(stream);
+
+        stream.Seek(0, SeekOrigin.Begin);
+
+        return format switch
+        {
+            null => false,
+            "matroska" => true,
+            _ => false
+        };
     }
 
     public static bool IsMKV(this ReadOnlySpan<byte> buffer)
@@ -502,7 +535,194 @@ public static class FilesSignatures
         if(buffer.Length < 4)
             throw new ArgumentException("The signature that you are verifying must be at least 4 bytes long");
 
-        return buffer[0] == 0x1A && buffer[1] == 0x45 && buffer[2] == 0xDF && buffer[3] == 0xA3;
+        if(!(buffer[0] == 0x1A && buffer[1] == 0x45 && buffer[2] == 0xDF && buffer[3] == 0xA3))
+            return false;
+
+        var format = GetFileFormat(buffer.ToArray());
+
+        return format switch
+        {
+            null => false,
+            "matroska" => true,
+            _ => false
+        };
+    }
+
+    private static string? GetFileFormat(Stream stream)
+    {
+        var buffer = new byte[4];
+        stream.Read(buffer, 0, buffer.Length);
+
+        if (!CompareByteArrays(buffer, MKV.First()))
+            return null; // The file signature does not match EBML
+
+        while (stream.Position < stream.Length)
+        {
+            var currentByte = stream.ReadByte();
+
+            if (currentByte == 0x42)
+            {
+                var nextBytePosition = stream.Position;
+                var nextByte = stream.ReadByte();
+
+                if (nextByte == 0x82)
+                {
+                    var dataSize = ReadVariableLengthInteger(stream);
+                    var docTypeBuffer = new byte[dataSize];
+                    stream.Read(docTypeBuffer, 0, dataSize);
+
+                    var docType = Encoding.ASCII.GetString(docTypeBuffer);
+
+                    if (docType is "webm" or "matroska")
+                        return docType;
+                }
+                else
+                {
+                    stream.Position = nextBytePosition;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private static string? GetFileFormat(byte[] fileData)
+    {
+        var position = 0;
+
+        if (!CompareByteArrays(MKV.First(), fileData, position))
+            return null; // Сигнатура файла не совпадает с EBML
+
+        position += MKV.First().Length;
+
+        while (position < fileData.Length)
+        {
+            if (fileData[position] == 0x42)
+            {
+                var nextBytePosition = position + 1;
+
+                if (fileData[nextBytePosition] == 0x82)
+                {
+                    position += 2;
+                    var dataSize = ReadVariableLengthInteger(fileData, ref position);
+                    var docTypeBuffer = new byte[dataSize];
+                    Array.Copy(fileData, position, docTypeBuffer, 0, dataSize);
+
+                    var docType = Encoding.ASCII.GetString(docTypeBuffer);
+
+                    if (docType is "webm" or "matroska")
+                        return docType;
+                }
+                else
+                {
+                    position = nextBytePosition;
+                }
+            }
+            else
+            {
+                position++;
+            }
+        }
+
+        return null;
+    }
+
+    private static int ReadVariableLengthInteger(Stream fs)
+    {
+        var firstByte = fs.ReadByte();
+        var bytesRead = 0;
+
+        if (firstByte == -1)
+            return -1;
+
+        var dataMask = 0x7F;
+
+        for (var i = 7; i >= 0; i--)
+        {
+            if ((firstByte & (1 << i)) != 0)
+            {
+                bytesRead = 8 - i;
+
+                break;
+            }
+
+            dataMask >>= 1;
+        }
+
+        var value = firstByte & dataMask;
+
+        for (var i = 1; i < bytesRead; i++)
+        {
+            var nextByte = fs.ReadByte();
+
+            if (nextByte == -1)
+                return -1;
+
+            value = (value << 7) | (nextByte & 0x7F);
+        }
+
+        return value;
+    }
+
+    private static int ReadVariableLengthInteger(byte[] data, ref int position)
+    {
+        int firstByte = data[position++];
+        var bytesRead = 0;
+
+        if (firstByte == -1)
+            return -1;
+
+        var dataMask = 0x7F;
+
+        for (var i = 7; i >= 0; i--)
+        {
+            if ((firstByte & (1 << i)) != 0)
+            {
+                bytesRead = 8 - i;
+
+                break;
+            }
+
+            dataMask >>= 1;
+        }
+
+        var value = firstByte & dataMask;
+
+        for (var i = 1; i < bytesRead; i++)
+        {
+            int nextByte = data[position++];
+            value = (value << 7) | (nextByte & 0x7F);
+        }
+
+        return value;
+    }
+
+    private static bool CompareByteArrays(byte[] arr1, byte[] arr2)
+    {
+        if (arr1.Length != arr2.Length)
+            return false;
+
+        for (var i = 0; i < arr1.Length; i++)
+        {
+            if (arr1[i] != arr2[i])
+                return false;
+        }
+
+        return true;
+    }
+
+    private static bool CompareByteArrays(byte[] arr1, byte[] arr2, int position)
+    {
+        if (arr1.Length + position > arr2.Length)
+            return false;
+
+        for (var i = 0; i < arr1.Length; i++)
+        {
+            if (arr1[i] != arr2[position + i])
+                return false;
+        }
+
+        return true;
     }
 
     public static bool IsAVI(this byte[] buffer)
@@ -710,7 +930,42 @@ public static class FilesSignatures
         if(buffer.Length < 4)
             throw new ArgumentException("The signature that you are verifying must be at least 4 bytes long");
 
-        return buffer[0] == 0x1A && buffer[1] == 0x45 && buffer[2] == 0xDF && buffer[3] == 0xA3;
+        if(!(buffer[0] == 0x1A && buffer[1] == 0x45 && buffer[2] == 0xDF && buffer[3] == 0xA3))
+            return false;
+
+        var format = GetFileFormat(buffer);
+
+        return format switch
+        {
+            null => false,
+            "webm" => true,
+            _ => false
+        };
+    }
+
+    public static bool IsWEBM(this Stream stream)
+    {
+        if(stream.Length < 4)
+            throw new ArgumentException("The signature that you are verifying must be at least 4 bytes long");
+
+        var buffer = new byte[4];
+        stream.Read(buffer, 0, buffer.Length);
+
+        if(!(buffer[0] == 0x1A && buffer[1] == 0x45 && buffer[2] == 0xDF && buffer[3] == 0xA3))
+            return false;
+
+        stream.Seek(0, SeekOrigin.Begin);
+
+        var format = GetFileFormat(stream);
+
+        stream.Seek(0, SeekOrigin.Begin);
+
+        return format switch
+        {
+            null => false,
+            "webm" => true,
+            _ => false
+        };
     }
 
     public static bool IsWEBM(this ReadOnlySpan<byte> buffer)
@@ -718,7 +973,17 @@ public static class FilesSignatures
         if(buffer.Length < 4)
             throw new ArgumentException("The signature that you are verifying must be at least 4 bytes long");
 
-        return buffer[0] == 0x1A && buffer[1] == 0x45 && buffer[2] == 0xDF && buffer[3] == 0xA3;
+        if(!(buffer[0] == 0x1A && buffer[1] == 0x45 && buffer[2] == 0xDF && buffer[3] == 0xA3))
+            return false;
+
+        var format = GetFileFormat(buffer.ToArray());
+
+        return format switch
+        {
+            null => false,
+            "webm" => true,
+            _ => false
+        };
     }
 
     public static bool IsGXF(this byte[] buffer)
@@ -899,6 +1164,7 @@ public static class FilesSignatures
                 if (sourceSpan[i + j] != patternSpan[j])
                 {
                     match = false;
+
                     break;
                 }
             }
@@ -1177,24 +1443,68 @@ public static class FilesSignatures
         if(buffer.Length < 16)
             throw new ArgumentException("The signature that you are verifying must be at least 16 bytes long");
 
-        return (buffer[0] == 0x30
-             && buffer[1] == 0x26
-             && buffer[2] == 0xB2
-             && buffer[3] == 0x75
-             && buffer[4] == 0x8E
-             && buffer[5] == 0x66
-             && buffer[6] == 0xCF
-             && buffer[7] == 0x11
-             && buffer[8] == 0xA6
-             && buffer[9] == 0xD9
-             && buffer[10] == 0x00
-             && buffer[11] == 0xAA
-             && buffer[12] == 0x00
-             && buffer[13] == 0x62
-             && buffer[14] == 0xCE
-             && buffer[15] == 0x6C)
-         || (buffer[0] == 0x02 && buffer[1] == 0x00 && buffer[2] == 0x00 && buffer[3] == 0x00)
-         || (buffer[0] == 0xFE && buffer[1] == 0xFF);
+        if (!((buffer[0] == 0x30
+                 && buffer[1] == 0x26
+                 && buffer[2] == 0xB2
+                 && buffer[3] == 0x75
+                 && buffer[4] == 0x8E
+                 && buffer[5] == 0x66
+                 && buffer[6] == 0xCF
+                 && buffer[7] == 0x11
+                 && buffer[8] == 0xA6
+                 && buffer[9] == 0xD9
+                 && buffer[10] == 0x00
+                 && buffer[11] == 0xAA
+                 && buffer[12] == 0x00
+                 && buffer[13] == 0x62
+                 && buffer[14] == 0xCE
+                 && buffer[15] == 0x6C)
+             || (buffer[0] == 0x02 && buffer[1] == 0x00 && buffer[2] == 0x00 && buffer[3] == 0x00)
+             || (buffer[0] == 0xFE && buffer[1] == 0xFF)))
+            return false;
+
+        return IsWmaFormat(buffer);
+    }
+
+    private static bool IsWmaFormat(byte[] fileData)
+    {
+        using (var ms = new MemoryStream(fileData))
+        {
+            var guidBuffer = new byte[16];
+            ms.Read(guidBuffer, 0, 16);
+
+            // To verify the signature of an ASF file
+            var fileGuid = new Guid(guidBuffer);
+            var asfGuid = new Guid("75B22630-668E-11CF-A6D9-00AA0062CE6C");
+
+            if (fileGuid != asfGuid)
+                return false;
+
+            // To find an audio stream with a WMA codec
+            var wmaCodecBytes = "161"u8.ToArray();
+            var buffer = new byte[4096];
+            int bytesRead;
+
+            while ((bytesRead = ms.Read(buffer, 0, buffer.Length)) > 0)
+            {
+                for (var i = 0; i < bytesRead - wmaCodecBytes.Length; i++)
+                {
+                    var match = true;
+                    for (var j = 0; j < wmaCodecBytes.Length; j++)
+                    {
+                        if (buffer[i + j] != wmaCodecBytes[j])
+                        {
+                            match = false;
+                            break;
+                        }
+                    }
+                    if (match)
+                        return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     public static bool IsWMA(this ReadOnlySpan<byte> buffer)
@@ -1202,23 +1512,26 @@ public static class FilesSignatures
         if(buffer.Length < 16)
             throw new ArgumentException("The signature that you are verifying must be at least 16 bytes long");
 
-        return (buffer[0] == 0x30
-             && buffer[1] == 0x26
-             && buffer[2] == 0xB2
-             && buffer[3] == 0x75
-             && buffer[4] == 0x8E
-             && buffer[5] == 0x66
-             && buffer[6] == 0xCF
-             && buffer[7] == 0x11
-             && buffer[8] == 0xA6
-             && buffer[9] == 0xD9
-             && buffer[10] == 0x00
-             && buffer[11] == 0xAA
-             && buffer[12] == 0x00
-             && buffer[13] == 0x62
-             && buffer[14] == 0xCE
-             && buffer[15] == 0x6C)
-         || (buffer[0] == 0x02 && buffer[1] == 0x00 && buffer[2] == 0x00 && buffer[3] == 0x00)
-         || (buffer[0] == 0xFE && buffer[1] == 0xFF);
+        if (!((buffer[0] == 0x30
+                 && buffer[1] == 0x26
+                 && buffer[2] == 0xB2
+                 && buffer[3] == 0x75
+                 && buffer[4] == 0x8E
+                 && buffer[5] == 0x66
+                 && buffer[6] == 0xCF
+                 && buffer[7] == 0x11
+                 && buffer[8] == 0xA6
+                 && buffer[9] == 0xD9
+                 && buffer[10] == 0x00
+                 && buffer[11] == 0xAA
+                 && buffer[12] == 0x00
+                 && buffer[13] == 0x62
+                 && buffer[14] == 0xCE
+                 && buffer[15] == 0x6C)
+             || (buffer[0] == 0x02 && buffer[1] == 0x00 && buffer[2] == 0x00 && buffer[3] == 0x00)
+             || (buffer[0] == 0xFE && buffer[1] == 0xFF)))
+            return false;
+
+        return IsWmaFormat(buffer.ToArray());
     }
 }

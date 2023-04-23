@@ -1,4 +1,5 @@
-﻿using ConsoleTest;
+﻿using System.Text;
+using ConsoleTest;
 using ConsoleTest.TestsVideo;
 using MediaFileProcessor.Extensions;
 using MediaFileProcessor.Models.Common;
@@ -42,7 +43,7 @@ Console.ResetColor();
 //     }
 // }
 
-await TestAVI.AddAudioToVideoAsync();
+// await TestAVI.AddAudioToVideoAsync();
 // await TestAVI.TestExtractFrameFromVideo();
 // await TestAVI.ConvertVideoToImages();
 // await TestAVI.ConvertImagesToVideo();
