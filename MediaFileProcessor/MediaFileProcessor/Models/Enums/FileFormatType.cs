@@ -82,7 +82,6 @@ public enum FileFormatType
     /// </remarks>
     MPEG = 9,
 
-    //TODO tests
     /// <summary>
     /// The file format type for MPEG-TS files.
     /// </summary>
@@ -90,7 +89,7 @@ public enum FileFormatType
     /// MPEG-TS is a standard format for the transport of video and audio over the Internet,
     /// and it is widely used for delivering video to set-top boxes and other digital devices.
     /// </remarks>
-    MPEGTS = 10,
+    TS = 10,
 
     /// <summary>
     /// WAV (Waveform Audio File Format) is a standard digital audio file format developed by Microsoft and IBM.
@@ -143,7 +142,6 @@ public enum FileFormatType
     /// </remarks>
     WEBM = 16,
 
-    //TODO tests
     /// <summary>
     /// GXF file format. This format is commonly used in broadcast applications to store video and audio content.
     /// </summary>

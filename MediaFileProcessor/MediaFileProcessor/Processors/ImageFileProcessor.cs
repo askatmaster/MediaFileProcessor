@@ -83,7 +83,7 @@ public class ImageFileProcessor : IImageFileProcessor
                                          ImageFormat outputFormat,
                                          CancellationToken? cancellationToken = null)
     {
-        await ExecuteCompressImageAsync(file, inputFormat, quality, filterType, thumbnail, outputFile, outputFormat, cancellationToken ?? new CancellationToken());
+        await ExecuteCompressImageAsync(file, inputFormat, quality, filterType, thumbnail, outputFile, outputFormat, cancellationToken ?? default);
     }
 
     /// <inheritdoc />
@@ -95,7 +95,7 @@ public class ImageFileProcessor : IImageFileProcessor
                                                                ImageFormat outputFormat,
                                                                CancellationToken? cancellationToken = null)
     {
-        return (await ExecuteCompressImageAsync(file, inputFormat, quality, filterType, thumbnail, null, outputFormat, cancellationToken ?? new CancellationToken()))!;
+        return (await ExecuteCompressImageAsync(file, inputFormat, quality, filterType, thumbnail, null, outputFormat, cancellationToken ?? default))!;
     }
 
     /// <inheritdoc />
@@ -107,7 +107,7 @@ public class ImageFileProcessor : IImageFileProcessor
                                                         ImageFormat outputFormat,
                                                         CancellationToken? cancellationToken = null)
     {
-        return (await ExecuteCompressImageAsync(file, inputFormat, quality, filterType, thumbnail, null, outputFormat, cancellationToken ?? new CancellationToken()))!
+        return (await ExecuteCompressImageAsync(file, inputFormat, quality, filterType, thumbnail, null, outputFormat, cancellationToken ?? default))!
             .ToArray();
     }
 
@@ -136,7 +136,7 @@ public class ImageFileProcessor : IImageFileProcessor
     /// <inheritdoc />
     public async Task ConvertImageAsync(MediaFile file, ImageFormat inputFormat, string outputFile, CancellationToken? cancellationToken = null)
     {
-        await ExecuteConvertImageAsync(file, inputFormat, outputFile, null, cancellationToken ?? new CancellationToken());
+        await ExecuteConvertImageAsync(file, inputFormat, outputFile, null, cancellationToken ?? default);
     }
 
     /// <inheritdoc />
@@ -145,13 +145,13 @@ public class ImageFileProcessor : IImageFileProcessor
                                                               ImageFormat? outputFormat,
                                                               CancellationToken? cancellationToken = null)
     {
-        return (await ExecuteConvertImageAsync(file, inputFormat, null, outputFormat, cancellationToken ?? new CancellationToken()))!;
+        return (await ExecuteConvertImageAsync(file, inputFormat, null, outputFormat, cancellationToken ?? default))!;
     }
 
     /// <inheritdoc />
     public async Task<byte[]> ConvertImageAsBytesAsync(MediaFile file, ImageFormat inputFormat, ImageFormat? outputFormat, CancellationToken? cancellationToken = null)
     {
-        return (await ExecuteConvertImageAsync(file, inputFormat, null, outputFormat, cancellationToken ?? new CancellationToken()))!.ToArray();
+        return (await ExecuteConvertImageAsync(file, inputFormat, null, outputFormat, cancellationToken ?? default))!.ToArray();
     }
 
     //======================================================================================================================================================================
@@ -186,7 +186,7 @@ public class ImageFileProcessor : IImageFileProcessor
     /// <inheritdoc />
     public async Task ResizeImageAsync(MediaFile file, ImageFormat inputFormat, string size, string outputFile, CancellationToken? cancellationToken = null)
     {
-        await ExecuteResizeImageAsync(file, inputFormat, size, null, outputFile, cancellationToken ?? new CancellationToken());
+        await ExecuteResizeImageAsync(file, inputFormat, size, null, outputFile, cancellationToken ?? default);
     }
 
     /// <inheritdoc />
@@ -196,7 +196,7 @@ public class ImageFileProcessor : IImageFileProcessor
                                                              ImageFormat? outputFormat,
                                                              CancellationToken? cancellationToken = null)
     {
-        return (await ExecuteResizeImageAsync(file, inputFormat, size, outputFormat, null, cancellationToken ?? new CancellationToken()))!;
+        return (await ExecuteResizeImageAsync(file, inputFormat, size, outputFormat, null, cancellationToken ?? default))!;
     }
 
     /// <inheritdoc />
@@ -206,7 +206,7 @@ public class ImageFileProcessor : IImageFileProcessor
                                                       ImageFormat? outputFormat,
                                                       CancellationToken? cancellationToken = null)
     {
-        return (await ExecuteResizeImageAsync(file, inputFormat, size, outputFormat, null, cancellationToken ?? new CancellationToken()))!.ToArray();
+        return (await ExecuteResizeImageAsync(file, inputFormat, size, outputFormat, null, cancellationToken ?? default))!.ToArray();
     }
 
     //======================================================================================================================================================================
@@ -234,19 +234,19 @@ public class ImageFileProcessor : IImageFileProcessor
     /// <inheritdoc />
     public async Task ImagesToGifAsync(MediaFile file, int delay, ImageFormat inputFormat, string? outputFile, CancellationToken? cancellationToken = null)
     {
-        await ExecuteImagesToGifAsync(file, delay, inputFormat, outputFile, cancellationToken ?? new CancellationToken());
+        await ExecuteImagesToGifAsync(file, delay, inputFormat, outputFile, cancellationToken ?? default);
     }
 
     /// <inheritdoc />
     public async Task<MemoryStream> ImagesToGifAsStreamAsync(MediaFile file, int delay, ImageFormat inputFormat, CancellationToken? cancellationToken = null)
     {
-        return (await ExecuteImagesToGifAsync(file, delay, inputFormat, null, cancellationToken ?? new CancellationToken()))!;
+        return (await ExecuteImagesToGifAsync(file, delay, inputFormat, null, cancellationToken ?? default))!;
     }
 
     /// <inheritdoc />
     public async Task<byte[]> ImagesToGifAsBytesAsync(MediaFile file, int delay, ImageFormat inputFormat, CancellationToken? cancellationToken = null)
     {
-        return (await ExecuteImagesToGifAsync(file, delay, inputFormat, null, cancellationToken ?? new CancellationToken()))!.ToArray();
+        return (await ExecuteImagesToGifAsync(file, delay, inputFormat, null, cancellationToken ?? default))!.ToArray();
     }
 
     /// <summary>

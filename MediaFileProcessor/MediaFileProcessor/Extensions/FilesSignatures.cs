@@ -265,6 +265,7 @@ public static class FilesSignatures
             >= 16 when IsASF(signature) => FileFormatType.ASF,
             >= 4 when IsWEBM(signature) => FileFormatType.WEBM,
             >= 4 when IsMKV(signature) => FileFormatType.MKV,
+            >= 4 when IsTS(signature) => FileFormatType.TS,
             _ => throw new Exception("Unable to determine the format")
         };
     }
@@ -303,8 +304,25 @@ public static class FilesSignatures
             >= 16 when IsASF(signature) => FileFormatType.ASF,
             >= 4 when IsWEBM(signature) => FileFormatType.WEBM,
             >= 4 when IsMKV(signature) => FileFormatType.MKV,
+            >= 4 when IsTS(signature) => FileFormatType.TS,
             _ => throw new Exception("Unable to determine the format")
         };
+    }
+
+    public static bool IsTS(this byte[] buffer)
+    {
+        if(buffer.Length < 3)
+            throw new ArgumentException("The signature that you are verifying must be at least 3 bytes long");
+
+        return buffer[0] == 0x47;
+    }
+
+    public static bool IsTS(this ReadOnlySpan<byte> buffer)
+    {
+        if(buffer.Length < 3)
+            throw new ArgumentException("The signature that you are verifying must be at least 3 bytes long");
+
+        return buffer[0] == 0x47;
     }
 
     public static bool IsJPEG(this byte[] buffer)
@@ -994,6 +1012,7 @@ public static class FilesSignatures
         return buffer[0] == 0x47 && buffer[1] == 0x58 && buffer[2] == 0x46 && buffer[3] == 0x30;
     }
 
+    //TODO fix recognition
     public static bool IsGXF(this ReadOnlySpan<byte> buffer)
     {
         if(buffer.Length < 4)
@@ -1065,7 +1084,7 @@ public static class FilesSignatures
         var wmv3 = "WMV3"u8.ToArray();
         var deviceConformanceTemplate = Encoding.Unicode.GetBytes("DeviceConformanceTemplate MP @ML");
 
-        var headerBuff = buffer[..1024];
+        var headerBuff = buffer.AsSpan(0, 1024);
 
         if (IndexOf(headerBuff, aspectRatio) != -1)
             return true;

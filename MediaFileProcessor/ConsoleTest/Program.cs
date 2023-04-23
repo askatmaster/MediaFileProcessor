@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Text;
 using ConsoleTest;
 using ConsoleTest.TestsVideo;
 using MediaFileProcessor.Extensions;
@@ -54,9 +55,9 @@ Console.ResetColor();
 
 //=================================================================================================================
 
-// var sample = TestFile.GetPath(FileFormatType.M2TS);
-// var header = sample.ToBytes()[..1024];
-// Console.WriteLine(header.IsM2TS());
+// var sample = TestFile.GetPath(FileFormatType.TS);
+// var header = sample.ToBytes()[..50];
+// Console.WriteLine(header.IsMPEG());
 
 //=================================================================================================================
 

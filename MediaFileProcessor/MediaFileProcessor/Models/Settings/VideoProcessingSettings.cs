@@ -276,9 +276,9 @@ public class VideoProcessingSettings : ProcessingSettings
     /// Create the filtergraph specified by filtergraph and use it to filter the stream.
     /// This is an alias for -filter:a
     /// </summary>
-    public VideoProcessingSettings AudioFilterGraph(int number)
+    public VideoProcessingSettings AudioFilterGraph(string value)
     {
-        _stringBuilder.Append($" -af {number}");
+        _stringBuilder.Append($" -af {value}");
 
         return this;
     }
@@ -431,11 +431,7 @@ public class VideoProcessingSettings : ProcessingSettings
     /// </summary>
     public VideoProcessingSettings VideoAspectRatio(VideoAspectRatioType ratioType)
     {
-        var ratio = ratioType.ToString();
-        ratio = ratio[1..];
-        ratio = ratio.Replace("_", ":");
-
-        _stringBuilder.Append($" -aspect {ratio} ");
+        _stringBuilder.Append($" -aspect {ratioType.ToString()[1..].Replace("_", ":")} ");
 
         return this;
     }
@@ -566,7 +562,7 @@ public class VideoProcessingSettings : ProcessingSettings
         if (format.StartsWith("_"))
             format = format.Replace("_", "");
 
-        _stringBuilder.Append($" -f {format} ");
+        _stringBuilder.Append(formatType is FileFormatType.TS ? " -f mpegts " : $" -f {format} ");
 
         return this;
     }
@@ -872,6 +868,7 @@ public class VideoProcessingSettings : ProcessingSettings
     /// </summary>
     public VideoProcessingSettings Quality(int value)
     {
+        //-q:v
         _stringBuilder.Append($" -quality {value} ");
 
         return this;
@@ -1085,6 +1082,19 @@ public class VideoProcessingSettings : ProcessingSettings
     }
 
     /// <summary>
+    /// The -max_muxing_queue_size option in FFmpeg is used to specify the maximum number of packets that can be buffered while muxing (combining audio and video streams into a container format).
+    /// If the muxing queue overflows, the conversion process might fail, and you may see an error message like "Too many packets buffered for output stream" in the console output.
+    /// The default value for -max_muxing_queue_size is 1000. In some cases,
+    /// especially when working with high-resolution video or high frame rate video, you might need to increase this value to prevent the muxing queue from overflowing.
+    /// </summary>
+    public VideoProcessingSettings MaxMuxingQueueSize(int size)
+    {
+        _stringBuilder.Append($" -max_muxing_queue_size {size}");
+
+        return this;
+    }
+
+    /// <summary>
     /// Setting Output Arguments
     /// </summary>
     public VideoProcessingSettings SetOutputArguments(string? arg)
@@ -1228,10 +1238,6 @@ public class VideoProcessingSettings : ProcessingSettings
         InputStreams.AddRange(PipeNames.Select(pipeName => pipeName.Value));
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="streams"></param>
     public void SetInputStreams(params Stream[] streams)
     {
         if(streams.Length is 0)

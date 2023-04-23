@@ -3,15 +3,12 @@ using System.IO.Pipes;
 using System.Runtime.InteropServices;
 using MediaFileProcessor.Models.Settings;
 namespace MediaFileProcessor;
-//TODO replace indexes in all files to avoid unnecessary memory allocation
-//TODO change cancelationToken to default
-
 /// <summary>
 /// Represents a media file processing class
 /// </summary>
 public class MediaFileProcess : IDisposable
 {
-    private Process Process { get; }
+    private Process? Process { get; set; }
 
     /// <summary>
     /// The processing settings for the media file process.
@@ -32,13 +29,6 @@ public class MediaFileProcess : IDisposable
     /// The pipe names for the process.
     /// </summary>
     private string[]? PipeNames { get; set; }
-
-    /// <summary>
-    /// Flag indicating whether the executable process has been executed.
-    /// If true then you should no longer try to execute this process.
-    /// Any arguments like named pipes or input or output streams can be closed or their pointers shifted
-    /// </summary>
-    private bool IsDisposed { get; set; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="MediaFileProcess"/> class.
@@ -67,10 +57,10 @@ public class MediaFileProcess : IDisposable
         Process.StartInfo.RedirectStandardError = Settings.RedirectStandardError;
         Process.EnableRaisingEvents = Settings.EnableRaisingEvents;
         Process.StartInfo.WindowStyle = Settings.WindowStyle;
+
         if(Settings.ProcessOnExitedHandler is not null)
             Process.Exited += Settings.ProcessOnExitedHandler;
-        else
-            Process.Exited += ProcessOnExited;
+
 
         if(Settings.OutputDataReceivedEventHandler is not null)
             Process.OutputDataReceived += Settings.OutputDataReceivedEventHandler;
@@ -78,6 +68,7 @@ public class MediaFileProcess : IDisposable
         if(Settings.ErrorDataReceivedHandler is not null)
             Process.ErrorDataReceived += Settings.ErrorDataReceivedHandler;
 
+        Process.Exited += ProcessOnExited;
         AppDomain.CurrentDomain.UnhandledException += UnhandledExceptionHandler;
         AppDomain.CurrentDomain.ProcessExit += DomainProcessExitHandler;
     }
@@ -90,9 +81,11 @@ public class MediaFileProcess : IDisposable
     /// <param name="e">The event arguments</param>
     private void ProcessOnExited(object sender, EventArgs e)
     {
+        if(Process is null)
+            return;
+
         Process.WaitForExit();
         Process.Exited -= ProcessOnExited;
-        IsDisposed = true;
     }
 
     /// <summary>
@@ -104,7 +97,7 @@ public class MediaFileProcess : IDisposable
     /// RedirectStandardOutput is set to false</returns>
     public async Task<MemoryStream?> ExecuteAsync(CancellationToken cancellationToken)
     {
-        if(IsDisposed)
+        if(Process is null)
             throw new ObjectDisposedException("The process is no longer executable. "
                                             + "Any arguments like named pipes or input or output streams can be closed or their pointers shifted");
 
@@ -136,7 +129,7 @@ public class MediaFileProcess : IDisposable
                 var processExited = false;
 
                 //Starting the process.
-                Process.Start();
+                Process!.Start();
 
                 //Registers a callback for when the cancellation token is cancelled.
                 //This will kill the process if it is still running.
@@ -205,7 +198,7 @@ public class MediaFileProcess : IDisposable
             try
             {
                 // Copy data from the input stream to the standard input of the process
-                InputStreams[0].CopyTo(Process.StandardInput.BaseStream);
+                InputStreams[0].CopyTo(Process!.StandardInput.BaseStream);
 
                 // Flush the data to the standard input of the process
                 Process.StandardInput.Flush();
@@ -313,7 +306,7 @@ public class MediaFileProcess : IDisposable
         do
         {
             // Read data from the process and store the number of bytes read
-            lastRead = Process.StandardOutput.BaseStream.Read(buffer, 0, buffer.Length);
+            lastRead = Process!.StandardOutput.BaseStream.Read(buffer, 0, buffer.Length);
 
             // Write the data to the output stream
             outputStream.Write(buffer, 0, lastRead);
@@ -351,6 +344,9 @@ public class MediaFileProcess : IDisposable
         }
 
         // Dispose of the process and kill it
+        if(Process is null)
+            return;
+
         Process.Dispose();
 
         try
@@ -363,8 +359,10 @@ public class MediaFileProcess : IDisposable
             if(e.Message != "No process is associated with this object.")
                 throw;
         }
-
-        IsDisposed = true;
+        finally
+        {
+            Process = null;
+        }
     }
 
     /// <summary>

@@ -35,6 +35,8 @@ public static class TestAVI
         // FileFormatType.RM,
         // FileFormatType.VOB,
         // FileFormatType.WEBM,
+        // FileFormatType.GXF,
+        // FileFormatType.TS,
         // FileFormatType.WMV
     };
 

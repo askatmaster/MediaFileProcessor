@@ -53,19 +53,19 @@ public class DocumentFileProcessor : IDocumentFileProcessor
     /// <inheritdoc />
     public async Task ConvertDocxToPdf(MediaFile file, string? outputFile, CancellationToken? cancellationToken = null)
     {
-        await ExecuteConvertDocxToPdf(file, outputFile, cancellationToken ?? new CancellationToken());
+        await ExecuteConvertDocxToPdf(file, outputFile, cancellationToken ?? default);
     }
 
     /// <inheritdoc />
     public async Task<MemoryStream> ConvertDocxToPdfAsStream(MediaFile file, CancellationToken? cancellationToken = null)
     {
-        return (await ExecuteConvertDocxToPdf(file, null, cancellationToken ?? new CancellationToken()))!;
+        return (await ExecuteConvertDocxToPdf(file, null, cancellationToken ?? default))!;
     }
 
     /// <inheritdoc />
     public async Task<byte[]> ConvertDocxToPdfAsBytes(MediaFile file, CancellationToken? cancellationToken = null)
     {
-        return (await ExecuteConvertDocxToPdf(file, null, cancellationToken ?? new CancellationToken()))!.ToArray();
+        return (await ExecuteConvertDocxToPdf(file, null, cancellationToken ?? default))!.ToArray();
     }
 
     /// <summary>

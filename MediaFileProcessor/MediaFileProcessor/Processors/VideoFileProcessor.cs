@@ -117,7 +117,7 @@ public class VideoFileProcessor : IVideoFileProcessor
                 throw new NotSupportedException("This output format is not supported");
         }
 
-        return await ExecuteAsync(settings, cancellationToken ?? new CancellationToken());
+        return await ExecuteAsync(settings, cancellationToken ?? default);
     }
 
     /// <summary>
@@ -259,7 +259,7 @@ public class VideoFileProcessor : IVideoFileProcessor
 
                     break;
                 case FileFormatType.M2TS:
-                    settings.Format(FileFormatType.MPEGTS);
+                    settings.Format(FileFormatType.TS);
 
                     break;
                 case FileFormatType.MKV:
@@ -280,7 +280,7 @@ public class VideoFileProcessor : IVideoFileProcessor
                     break;
             }
 
-        return await ExecuteAsync(settings, cancellationToken ?? new CancellationToken());
+        return await ExecuteAsync(settings, cancellationToken ?? default);
     }
 
     //======================================================================================================================================================================
@@ -344,7 +344,7 @@ public class VideoFileProcessor : IVideoFileProcessor
 
                     break;
                 case FileFormatType.M2TS:
-                    settings.Format(FileFormatType.MPEGTS);
+                    settings.Format(FileFormatType.TS);
 
                     break;
                 case FileFormatType.MKV:
@@ -370,7 +370,7 @@ public class VideoFileProcessor : IVideoFileProcessor
                     break;
             }
 
-        return await ExecuteAsync(settings, cancellationToken ?? new CancellationToken());
+        return await ExecuteAsync(settings, cancellationToken ?? default);
     }
 
     //======================================================================================================================================================================
@@ -442,7 +442,7 @@ public class VideoFileProcessor : IVideoFileProcessor
                 throw new NotSupportedException("This output format is not supported");
         }
 
-        var stream = await ExecuteAsync(settings, cancellationToken ?? new CancellationToken());
+        var stream = await ExecuteAsync(settings, cancellationToken ?? default);
 
         return new StreamDecoder().GetMultiStreamBySignature(stream!, outputFormat.Value.GetSignature());
     }
@@ -526,7 +526,7 @@ public class VideoFileProcessor : IVideoFileProcessor
                     break;
             }
 
-        return await ExecuteAsync(settings, cancellationToken ?? new CancellationToken());
+        return await ExecuteAsync(settings, cancellationToken ?? default);
     }
 
     //======================================================================================================================================================================
@@ -585,7 +585,7 @@ public class VideoFileProcessor : IVideoFileProcessor
 
                     break;
                 case FileFormatType.M2TS:
-                    settings.Format(FileFormatType.MPEGTS);
+                    settings.Format(FileFormatType.TS);
 
                     break;
                 case FileFormatType.MKV:
@@ -611,7 +611,7 @@ public class VideoFileProcessor : IVideoFileProcessor
                     break;
             }
 
-        return await ExecuteAsync(settings, cancellationToken ?? new CancellationToken());
+        return await ExecuteAsync(settings, cancellationToken ?? default);
     }
 
     //======================================================================================================================================================================
@@ -693,7 +693,7 @@ public class VideoFileProcessor : IVideoFileProcessor
 
                     break;
                 case FileFormatType.M2TS:
-                    settings.Format(FileFormatType.MPEGTS);
+                    settings.Format(FileFormatType.TS);
 
                     break;
                 case FileFormatType.MKV:
@@ -719,7 +719,7 @@ public class VideoFileProcessor : IVideoFileProcessor
                     break;
             }
 
-        return await ExecuteAsync(settings, cancellationToken ?? new CancellationToken());
+        return await ExecuteAsync(settings, cancellationToken ?? default);
     }
 
     //======================================================================================================================================================================
@@ -786,7 +786,7 @@ public class VideoFileProcessor : IVideoFileProcessor
 
                     break;
                 case FileFormatType.M2TS:
-                    settings.Format(FileFormatType.MPEGTS);
+                    settings.Format(FileFormatType.TS);
 
                     break;
                 case FileFormatType.MKV:
@@ -812,7 +812,7 @@ public class VideoFileProcessor : IVideoFileProcessor
                     break;
             }
 
-        return await ExecuteAsync(settings, cancellationToken ?? new CancellationToken());
+        return await ExecuteAsync(settings, cancellationToken ?? default);
     }
 
     //======================================================================================================================================================================
@@ -843,6 +843,13 @@ public class VideoFileProcessor : IVideoFileProcessor
 
         switch (outputFormat)
         {
+            case FileFormatType.GXF:
+                settings.VideoSize(VideoSizeType.PAL);
+                settings.Quality(2);
+                settings.AudioCodec(AudioCodecType.PCM_S16LE);
+                settings.AudioSampleRate(AudioSampleRateType.Hz48000);
+                settings.AudioChannel(1);
+                break;
             case FileFormatType._3GP or FileFormatType.ASF:
                 settings.AudioCodec(AudioCodecType.MP3);
                 break;
@@ -856,15 +863,16 @@ public class VideoFileProcessor : IVideoFileProcessor
                 settings.AudioCodec(AudioCodecType.AC3);
                 break;
             case FileFormatType.WEBM:
-                settings.CustomArguments(" -c:a libopus ");
+                settings.AudioCodec(AudioCodecType.LIBOPUS);
                 break;
             case FileFormatType.VOB:
                 settings.AudioCodec(AudioCodecType.AC3);
-                settings.CustomArguments(" -max_muxing_queue_size 1024 ");
+                settings.MaxMuxingQueueSize(1024);
                 break;
             case FileFormatType.MXF:
-                settings.CustomArguments(" -filter:a \"aformat=sample_rates=48000\" ");
-                settings.CustomArguments(" -c:a pcm_s16le -ar 48000 ");
+                settings.AudioFilterGraph("\"aformat=sample_rates=48000\"");
+                settings.AudioCodec(AudioCodecType.PCM_S16LE);
+                settings.AudioSampleRate(AudioSampleRateType.Hz48000);
                 break;
             case FileFormatType.MOV or FileFormatType.MP4 or FileFormatType.MPEG:
                 settings.AudioCodec(AudioCodecType.MP3);
@@ -885,6 +893,10 @@ public class VideoFileProcessor : IVideoFileProcessor
                 break;
             case FileFormatType.WMV:
                 settings.VideoCodec(VideoCodecType.WMV1);
+
+                break;
+            case FileFormatType.GXF:
+                settings.VideoCodec(VideoCodecType.MPEG2VIDEO);
 
                 break;
             case FileFormatType.WEBM:
@@ -926,7 +938,7 @@ public class VideoFileProcessor : IVideoFileProcessor
 
                     break;
                 case FileFormatType.M2TS:
-                    settings.Format(FileFormatType.MPEGTS);
+                    settings.Format(FileFormatType.TS);
 
                     break;
                 case FileFormatType.MKV:
@@ -952,7 +964,7 @@ public class VideoFileProcessor : IVideoFileProcessor
                     break;
             }
 
-        return await ExecuteAsync(settings, cancellationToken ?? new CancellationToken());
+        return await ExecuteAsync(settings, cancellationToken ?? default);
     }
 
     //======================================================================================================================================================================
@@ -976,7 +988,7 @@ public class VideoFileProcessor : IVideoFileProcessor
                                                    .Format(FileFormatType.GIF)
                                                    .SetOutputArguments(outputFile);
 
-        return await ExecuteAsync(setting, cancellationToken ?? new CancellationToken());
+        return await ExecuteAsync(setting, cancellationToken ?? default);
     }
 
     //======================================================================================================================================================================
@@ -1044,7 +1056,7 @@ public class VideoFileProcessor : IVideoFileProcessor
 
                     break;
                 case FileFormatType.M2TS:
-                    settings.Format(FileFormatType.MPEGTS);
+                    settings.Format(FileFormatType.TS);
 
                     break;
                 case FileFormatType.MKV:
@@ -1070,7 +1082,7 @@ public class VideoFileProcessor : IVideoFileProcessor
                     break;
             }
 
-        return await ExecuteAsync(settings, cancellationToken ?? new CancellationToken());
+        return await ExecuteAsync(settings, cancellationToken ?? default);
     }
 
     //======================================================================================================================================================================
@@ -1098,7 +1110,7 @@ public class VideoFileProcessor : IVideoFileProcessor
                                                    .VideoCodec(videoCodecType)
                                                    .VideoBSF(videoBSF)
                                                    .AudioCodec(audioCodecType)
-                                                   .Format(FileFormatType.MPEGTS)
+                                                   .Format(FileFormatType.TS)
                                                    .SetOutputArguments(output);
 
         await ExecuteAsync(setting, cancellationToken);
@@ -1161,7 +1173,7 @@ public class VideoFileProcessor : IVideoFileProcessor
 
                     break;
                 case FileFormatType.M2TS:
-                    settings.Format(FileFormatType.MPEGTS);
+                    settings.Format(FileFormatType.TS);
 
                     break;
                 case FileFormatType.MKV:
@@ -1217,7 +1229,7 @@ public class VideoFileProcessor : IVideoFileProcessor
 
         var process = new MediaFileProcess(_ffprobe, settings.GetProcessArguments(false), settings, settings.GetInputStreams());
 
-        var result = await process.ExecuteAsync(cancellationToken ?? new CancellationToken());
+        var result = await process.ExecuteAsync(cancellationToken ?? default);
 
         return Encoding.UTF8.GetString(result!.ToArray());
     }
@@ -1257,7 +1269,7 @@ public class VideoFileProcessor : IVideoFileProcessor
                                                    .Format(outputFormat.Value)
                                                    .SetOutputArguments(outputFile);
 
-        return await ExecuteAsync(setting, cancellationToken ?? new CancellationToken());
+        return await ExecuteAsync(setting, cancellationToken ?? default);
     }
 
     /// <summary>
