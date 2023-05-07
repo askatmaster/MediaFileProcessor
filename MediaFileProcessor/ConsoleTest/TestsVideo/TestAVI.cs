@@ -55,8 +55,8 @@ public static class TestAVI
     // {
     //     var sample = TestFile.GetPath(FileFormatType.MKV);
     //     var imageFormat = FileFormatType.JPG;
-    //     var resultPhysicalPath = TestFile.ResultFilePath + $@"TestExtractFrameFromVideo/resultPath.{imageFormat.ToString().ToLower()}";
-    //     var resultStreamPath = TestFile.ResultFilePath + $@"TestExtractFrameFromVideo/resultStream.{imageFormat.ToString().ToLower()}";
+    //     var resultPhysicalPath = TestFile.ResultFilePath + $@"TestExtractFrameFromVideo/resultPath.{imageFormat.ToString().ToLowerInvariant()}";
+    //     var resultStreamPath = TestFile.ResultFilePath + $@"TestExtractFrameFromVideo/resultStream.{imageFormat.ToString().ToLowerInvariant()}";
     //
     //     // Test block with physical paths to input and output files
     //     // await _videoProcessor.ExtractFrameFromVideoAsync(TimeSpan.FromMilliseconds(5000),
@@ -202,8 +202,8 @@ public static class TestAVI
             foreach ((var imageFormat, var value) in supportedImageFormats)
             {
                 var sample = TestFile.GetPath(videoFormat);
-                var resultPhysicalPath = TestFile.ResultFilePath + $@"TestExtractFrameFromVideo/resultPath.{imageFormat.ToString().ToLower()}";
-                var resultStreamPath = TestFile.ResultFilePath + $@"TestExtractFrameFromVideo/resultStream.{imageFormat.ToString().ToLower()}";
+                var resultPhysicalPath = TestFile.ResultFilePath + $@"TestExtractFrameFromVideo/resultPath.{imageFormat.ToString().ToLowerInvariant()}";
+                var resultStreamPath = TestFile.ResultFilePath + $@"TestExtractFrameFromVideo/resultStream.{imageFormat.ToString().ToLowerInvariant()}";
 
                 // Test block with physical paths to input and output files
                 await _videoProcessor.ExtractFrameFromVideoAsync(TimeSpan.FromMilliseconds(5000),
@@ -256,8 +256,8 @@ public static class TestAVI
         foreach (var videoFormat in supportedVideoFormats)
         {
             var sample = TestFile.GetPath(videoFormat);
-            var resultPhysicalPath = TestFile.ResultFilePath + @$"TestCutVideo/resultPath.{videoFormat.ToString().Replace("_", "").ToLower()}";
-            var resultStreamPath = TestFile.ResultFilePath + @$"TestCutVideo/resultStream.{videoFormat.ToString().Replace("_", "").ToLower()}";
+            var resultPhysicalPath = TestFile.ResultFilePath + @$"TestCutVideo/resultPath.{videoFormat.ToString().Replace("_", "").ToLowerInvariant()}";
+            var resultStreamPath = TestFile.ResultFilePath + @$"TestCutVideo/resultStream.{videoFormat.ToString().Replace("_", "").ToLowerInvariant()}";
 
             // Test block with physical paths to input and output files
             await _videoProcessor.CutVideoAsync(TimeSpan.FromMilliseconds(2000),
@@ -399,7 +399,7 @@ public static class TestAVI
             {
                 var sample = TestFile.GetPath(videoFormat);
 
-                var resultPhysicalPath = TestFile.ResultFilePath + $@"ConvertVideoToImages/Path/result%03d.{imageFormat.ToString().Replace("_", "").ToLower()}";
+                var resultPhysicalPath = TestFile.ResultFilePath + $@"ConvertVideoToImages/Path/result%03d.{imageFormat.ToString().Replace("_", "").ToLowerInvariant()}";
 
                 // Test block with physical paths to input and output files
                 await _videoProcessor.ConvertVideoToImagesAsync(new MediaFile(sample),
@@ -418,7 +418,7 @@ public static class TestAVI
 
                 foreach (var bytes in data)
                 {
-                    await using (var output = new FileStream(TestFile.ResultFilePath + @$"ConvertVideoToImages\Stream\result{count++:000}.{imageFormat.ToString().Replace("_", "").ToLower()}", FileMode.Create))
+                    await using (var output = new FileStream(TestFile.ResultFilePath + @$"ConvertVideoToImages\Stream\result{count++:000}.{imageFormat.ToString().Replace("_", "").ToLowerInvariant()}", FileMode.Create))
                         output.Write(bytes, 0, bytes.Length);
                 }
             }
@@ -544,10 +544,10 @@ public static class TestAVI
                 var stream = new MultiStream();
                 var files = new List<string>();
                 for (var i = 1; i <= 400; i++)
-                    files.Add(TestFile.ResultFilePath + $@"ConvertVideoToImages\Stream2\result{i:000}.{imageFormat.ToString().Replace("_", "").ToLower()}");
+                    files.Add(TestFile.ResultFilePath + $@"ConvertVideoToImages\Stream2\result{i:000}.{imageFormat.ToString().Replace("_", "").ToLowerInvariant()}");
 
-                var resultPhysicalPath = TestFile.ResultFilePath + @$"ConvertImagesToVideo\resultPath.{videoFormat.ToString().Replace("_", "").ToLower()}";
-                var resultStreamPath = TestFile.ResultFilePath + @$"ConvertImagesToVideo\resultStream.{videoFormat.ToString().Replace("_", "").ToLower()}";
+                var resultPhysicalPath = TestFile.ResultFilePath + @$"ConvertImagesToVideo\resultPath.{videoFormat.ToString().Replace("_", "").ToLowerInvariant()}";
+                var resultStreamPath = TestFile.ResultFilePath + @$"ConvertImagesToVideo\resultStream.{videoFormat.ToString().Replace("_", "").ToLowerInvariant()}";
 
                 foreach (var file in files)
                     stream.AddStream(new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read));
@@ -563,7 +563,7 @@ public static class TestAVI
                 var stream1 = new MultiStream();
                 var files1 = new List<string>();
                 for (var i = 1; i <= 400; i++)
-                    files1.Add(TestFile.ResultFilePath + $@"ConvertVideoToImages\Stream2\result{i:000}.{imageFormat.ToString().Replace("_", "").ToLower()}");
+                    files1.Add(TestFile.ResultFilePath + $@"ConvertVideoToImages\Stream2\result{i:000}.{imageFormat.ToString().Replace("_", "").ToLowerInvariant()}");
 
                 foreach (var file in files1)
                     stream1.AddStream(new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read));
@@ -582,8 +582,8 @@ public static class TestAVI
             foreach (var audioFormat in supportedAudioFormats)
             {
                 var sample = TestFile.GetPath(videoFormat);
-                var resultPhysicalPath = TestFile.ResultFilePath + $@"ExtractAudioFromVideo/resultPath.{audioFormat.ToString().ToLower()}";
-                var resultStreamPath = TestFile.ResultFilePath + $@"ExtractAudioFromVideo/resultStream.{audioFormat.ToString().ToLower()}";
+                var resultPhysicalPath = TestFile.ResultFilePath + $@"ExtractAudioFromVideo/resultPath.{audioFormat.ToString().ToLowerInvariant()}";
+                var resultStreamPath = TestFile.ResultFilePath + $@"ExtractAudioFromVideo/resultStream.{audioFormat.ToString().ToLowerInvariant()}";
 
                 // Test block with physical paths to input and output files
                 await _videoProcessor.ExtractAudioFromVideoAsync(new MediaFile(sample),
@@ -628,8 +628,8 @@ public static class TestAVI
             foreach (var outputFormat in results)
             {
                 var sample = TestFile.GetPath(videoFormat);
-                var resultPhysicalPath = TestFile.ResultFilePath + $@"ConvertVideo/resultPath.{outputFormat.ToString().Replace("_", "").ToLower()}";
-                var resultStreamPath = TestFile.ResultFilePath + $@"ConvertVideo/resultStream.{outputFormat.ToString().Replace("_", "").ToLower()}";
+                var resultPhysicalPath = TestFile.ResultFilePath + $@"ConvertVideo/resultPath.{outputFormat.ToString().Replace("_", "").ToLowerInvariant()}";
+                var resultStreamPath = TestFile.ResultFilePath + $@"ConvertVideo/resultStream.{outputFormat.ToString().Replace("_", "").ToLowerInvariant()}";
 
                 // Test block with physical paths to input and output files
                 await _videoProcessor.ConvertVideoAsync(new MediaFile(sample), resultPhysicalPath);
@@ -652,8 +652,8 @@ public static class TestAVI
         {
             var sample = TestFile.GetPath(videoFormat);
             var png = TestFile.GetPath(FileFormatType.TIFF);
-            var resultPhysicalPath = TestFile.ResultFilePath + $@"AddWaterMarkToVideoAsync/resultPath.{videoFormat.ToString().Replace("_", "").ToLower()}";
-            var resultStreamPath = TestFile.ResultFilePath + $@"AddWaterMarkToVideoAsync/resultStream.{videoFormat.ToString().Replace("_", "").ToLower()}";
+            var resultPhysicalPath = TestFile.ResultFilePath + $@"AddWaterMarkToVideoAsync/resultPath.{videoFormat.ToString().Replace("_", "").ToLowerInvariant()}";
+            var resultStreamPath = TestFile.ResultFilePath + $@"AddWaterMarkToVideoAsync/resultStream.{videoFormat.ToString().Replace("_", "").ToLowerInvariant()}";
 
             // Test block with physical paths to input and output files
             await _videoProcessor.AddWaterMarkToVideoAsync(new MediaFile(sample), new MediaFile(png), PositionType.Up, resultPhysicalPath);
@@ -676,8 +676,8 @@ public static class TestAVI
         foreach (var videoFormat in supportedVideoFormats)
         {
             var sample = TestFile.GetPath(videoFormat);
-            var resultPhysicalPath = TestFile.ResultFilePath + $@"ExtractVideoFromFileAsync/resultPath.{videoFormat.ToString().Replace("_", "").ToLower()}";
-            var resultStreamPath = TestFile.ResultFilePath + $@"ExtractVideoFromFileAsync/resultStream.{videoFormat.ToString().Replace("_", "").ToLower()}";
+            var resultPhysicalPath = TestFile.ResultFilePath + $@"ExtractVideoFromFileAsync/resultPath.{videoFormat.ToString().Replace("_", "").ToLowerInvariant()}";
+            var resultStreamPath = TestFile.ResultFilePath + $@"ExtractVideoFromFileAsync/resultStream.{videoFormat.ToString().Replace("_", "").ToLowerInvariant()}";
 
             // Test block with physical paths to input and output files
             await _videoProcessor.ExtractVideoFromFileAsync(new MediaFile(sample), resultPhysicalPath);
@@ -699,8 +699,8 @@ public static class TestAVI
         {
             var sample = TestFile.GetPath(videoFormat);
             var audio = TestFile.GetPath(FileFormatType.AAC);
-            var resultPhysicalPath = TestFile.ResultFilePath + $@"AddAudioToVideoAsync/resultPath.{videoFormat.ToString().Replace("_", "").ToLower()}";
-            var resultStreamPath = TestFile.ResultFilePath + $@"AddAudioToVideoAsync/resultStream.{videoFormat.ToString().Replace("_", "").ToLower()}";
+            var resultPhysicalPath = TestFile.ResultFilePath + $@"AddAudioToVideoAsync/resultPath.{videoFormat.ToString().Replace("_", "").ToLowerInvariant()}";
+            var resultStreamPath = TestFile.ResultFilePath + $@"AddAudioToVideoAsync/resultStream.{videoFormat.ToString().Replace("_", "").ToLowerInvariant()}";
 
             // Test block with physical paths to input and output files
             await _videoProcessor.AddAudioToVideoAsync(new MediaFile(audio), new MediaFile(sample), resultPhysicalPath);
@@ -723,8 +723,8 @@ public static class TestAVI
         {
             var sample = TestFile.GetPath(videoFormat);
             var audio = TestFile.GetPath(FileFormatType.AAC);
-            var resultPhysicalPath = TestFile.ResultFilePath + $@"ConvertVideoToGifAsync/resultPath.{FileFormatType.GIF.ToString().Replace("_", "").ToLower()}";
-            var resultStreamPath = TestFile.ResultFilePath + $@"ConvertVideoToGifAsync/resultStream.{FileFormatType.GIF.ToString().Replace("_", "").ToLower()}";
+            var resultPhysicalPath = TestFile.ResultFilePath + $@"ConvertVideoToGifAsync/resultPath.{FileFormatType.GIF.ToString().Replace("_", "").ToLowerInvariant()}";
+            var resultStreamPath = TestFile.ResultFilePath + $@"ConvertVideoToGifAsync/resultStream.{FileFormatType.GIF.ToString().Replace("_", "").ToLowerInvariant()}";
 
             // Test block with physical paths to input and output files
             await _videoProcessor.ConvertVideoToGifAsync(new MediaFile(sample), 5, 320, 0, resultPhysicalPath);
@@ -747,8 +747,8 @@ public static class TestAVI
         foreach (var videoFormat in supportedVideoFormats)
         {
             var sample = TestFile.GetPath(videoFormat);
-            var resultPhysicalPath = TestFile.ResultFilePath + $@"CompressVideoAsync/resultPath.{videoFormat.ToString().Replace("_", "").ToLower()}";
-            var resultStreamPath = TestFile.ResultFilePath + $@"CompressVideoAsync/resultStream.{videoFormat.ToString().Replace("_", "").ToLower()}";
+            var resultPhysicalPath = TestFile.ResultFilePath + $@"CompressVideoAsync/resultPath.{videoFormat.ToString().Replace("_", "").ToLowerInvariant()}";
+            var resultStreamPath = TestFile.ResultFilePath + $@"CompressVideoAsync/resultStream.{videoFormat.ToString().Replace("_", "").ToLowerInvariant()}";
 
             // Test block with physical paths to input and output files
             await _videoProcessor.CompressVideoAsync(new MediaFile(sample), 50, resultPhysicalPath);
@@ -788,8 +788,8 @@ public static class TestAVI
         foreach (var videoFormat in supportedVideoFormats)
         {
             var sample = TestFile.GetPath(videoFormat);
-            var resultPhysicalPath = TestFile.ResultFilePath + $@"ConcatVideosAsync/resultPath.{videoFormat.ToString().Replace("_", "").ToLower()}";
-            var resultStreamPath = TestFile.ResultFilePath + $@"ConcatVideosAsync/resultStream.{videoFormat.ToString().Replace("_", "").ToLower()}";
+            var resultPhysicalPath = TestFile.ResultFilePath + $@"ConcatVideosAsync/resultPath.{videoFormat.ToString().Replace("_", "").ToLowerInvariant()}";
+            var resultStreamPath = TestFile.ResultFilePath + $@"ConcatVideosAsync/resultStream.{videoFormat.ToString().Replace("_", "").ToLowerInvariant()}";
 
             var files = new List<MediaFile>();
 

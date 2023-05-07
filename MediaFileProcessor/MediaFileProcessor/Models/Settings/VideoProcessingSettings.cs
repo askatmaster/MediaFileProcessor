@@ -52,9 +52,9 @@ public class VideoProcessingSettings : ProcessingSettings
     /// </summary>
     public VideoProcessingSettings HardwareAcceleration(HardwareAccelerationType hardwareAcceleration, bool hardwareAccelerationOutputFormatCopy)
     {
-        _stringBuilder.Append($" -hwaccel {hardwareAcceleration.ToString().ToLower()} ");
+        _stringBuilder.Append($" -hwaccel {hardwareAcceleration.ToString().ToLowerInvariant()} ");
         if(hardwareAccelerationOutputFormatCopy)
-            _stringBuilder.Append($" -hwaccel_output_format {HardwareAccelerationType.CUDA.ToString().ToLower()} ");
+            _stringBuilder.Append($" -hwaccel_output_format {HardwareAccelerationType.CUDA.ToString().ToLowerInvariant()} ");
 
         return this;
     }
@@ -65,6 +65,16 @@ public class VideoProcessingSettings : ProcessingSettings
     public VideoProcessingSettings AudioBitRate(int bitRate)
     {
         _stringBuilder.Append($" -ab {bitRate}k ");
+
+        return this;
+    }
+
+    /// <summary>
+    /// Audio bitrate
+    /// </summary>
+    public VideoProcessingSettings AudioBitRate(AudioBitrate bitRate)
+    {
+        _stringBuilder.Append($" -ab {bitRate.ToString().Replace("_", "")} ");
 
         return this;
     }
@@ -86,7 +96,7 @@ public class VideoProcessingSettings : ProcessingSettings
     /// </summary>
     public VideoProcessingSettings AudioCodec(AudioCodecType audioCodec)
     {
-        _stringBuilder.Append($" -c:a {audioCodec.ToString().ToLower()} ");
+        _stringBuilder.Append($" -c:a {audioCodec.ToString().ToLowerInvariant()} ");
 
         return this;
     }
@@ -97,6 +107,16 @@ public class VideoProcessingSettings : ProcessingSettings
     public VideoProcessingSettings SubtitlesCodec(string arg)
     {
         _stringBuilder.Append($" -c:s {arg} ");
+
+        return this;
+    }
+
+    /// <summary>
+    /// Set the subtitle codec
+    /// </summary>
+    public VideoProcessingSettings SubtitlesCodec(SubtitleCodec arg)
+    {
+        _stringBuilder.Append($" -c:s {arg.ToString().ToLowerInvariant()} ");
 
         return this;
     }
@@ -175,15 +195,21 @@ public class VideoProcessingSettings : ProcessingSettings
     }
 
     /// <summary>
-    /// Assign an input as a sync source.
-    /// This will take the difference between the start times of the target and reference inputs and offset the timestamps of the target file by that difference
-    /// The source timestamps of the two inputs should derive from the same clock source for expected results.
-    /// If copyts is set then start_at_zero must also be set.
-    /// If either of the inputs has no starting timestamp then no sync adjustment is made.
+    /// Sync audio
     /// </summary>
-    public VideoProcessingSettings InputSync(string index)
+    public VideoProcessingSettings ASync(AudioSyncMethod index)
     {
-        _stringBuilder.Append($" -isync {index}");
+        _stringBuilder.Append($" -async {index.ToString().ToLowerInvariant()}");
+
+        return this;
+    }
+
+    /// <summary>
+    /// Sync video
+    /// </summary>
+    public VideoProcessingSettings VSync(VideoSyncMethod index)
+    {
+        _stringBuilder.Append($" -vsync {index.ToString().ToLowerInvariant()}");
 
         return this;
     }
@@ -191,9 +217,9 @@ public class VideoProcessingSettings : ProcessingSettings
     /// <summary>
     /// Set the input time offset
     /// </summary>
-    public VideoProcessingSettings InputTimeOffset(string offset)
+    public VideoProcessingSettings InputTimeOffset(TimeSpan offset)
     {
-        _stringBuilder.Append($" -itsoffset {offset}");
+        _stringBuilder.Append($" -itsoffset {offset.TotalSeconds:00:00:00.000} ".Replace(",", "."));
 
         return this;
     }
@@ -201,9 +227,9 @@ public class VideoProcessingSettings : ProcessingSettings
     /// <summary>
     /// Rescale input timestamps. scale should be a floating point number
     /// </summary>
-    public VideoProcessingSettings InputTimestampScale(string scale)
+    public VideoProcessingSettings InputTimestampScale(TimeSpan scale)
     {
-        _stringBuilder.Append($" -itsscale {scale}");
+        _stringBuilder.Append($" -itsscale {scale.TotalSeconds:00:00:00.000} ".Replace(",", "."));
 
         return this;
     }
@@ -284,6 +310,17 @@ public class VideoProcessingSettings : ProcessingSettings
     }
 
     /// <summary>
+    /// Create the filtergraph specified by filtergraph and use it to filter the stream.
+    /// This is an alias for -filter:a
+    /// </summary>
+    public VideoProcessingSettings AudioFilterGraph(AudioFilter value)
+    {
+        _stringBuilder.Append($" -af {value.ToString().ToLowerInvariant()}");
+
+        return this;
+    }
+
+    /// <summary>
     /// Stop writing to the stream after framecount frames
     /// </summary>
     public VideoProcessingSettings Frames(string value, string? stream = null)
@@ -327,6 +364,9 @@ public class VideoProcessingSettings : ProcessingSettings
 
     /// <summary>
     /// Set the audio quality (codec-specific, VBR).
+    /// For libmp3lame (MP3) and libvorbis (OGG), the -aq value defines the audio quality in the range from 0 (best quality) to 9 (smallest file size).
+    /// For the libfdk_aac (AAC) codec, the value determines the bitrate in bits per second. However,
+    /// this is not a complete list of possible values for all codecs, and each codec can have its own quality settings.
     /// </summary>
     public VideoProcessingSettings AudioQuality(string value)
     {
@@ -497,6 +537,16 @@ public class VideoProcessingSettings : ProcessingSettings
     }
 
     /// <summary>
+    /// Pixel format. Available formats can be gathered via `ffmpeg -pix_fmts`.
+    /// </summary>
+    public VideoProcessingSettings PixelFormat(PixelFormat format)
+    {
+        _stringBuilder.Append($" -pix_fmt {format} ");
+
+        return this;
+    }
+
+    /// <summary>
     /// Video sizes
     /// </summary>
     public VideoProcessingSettings VideoSize(VideoSizeType videoSize, int? witdh = null, int? height = null)
@@ -537,7 +587,7 @@ public class VideoProcessingSettings : ProcessingSettings
     /// </summary>
     public VideoProcessingSettings VideoCodecPreset(VideoCodecPresetType preset)
     {
-        _stringBuilder.Append($" -preset {preset.ToString().ToLower()} ");
+        _stringBuilder.Append($" -preset {preset.ToString().ToLowerInvariant()} ");
 
         return this;
     }

@@ -17,7 +17,7 @@ public static class FileDataExtensions
     public static bool ExistsInEnum<T>(this string value)
         where T : Enum
     {
-        return Enum.GetNames(typeof(T)).Any(i => "." + i.Replace("_", "").ToLower() == value.ToLower());
+        return Enum.GetNames(typeof(T)).Any(i => "." + i.Replace("_", "").ToLowerInvariant() == value.ToLowerInvariant());
     }
 
     /// <summary>

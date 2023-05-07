@@ -7,7 +7,7 @@ public static class TestFile
     public const string ResultFilePath = @"tests/";
     public static string GetPath(FileFormatType formatType)
     {
-        var filePath = BasePath + $"sample.{formatType}".ToLower().Replace("_", "");
+        var filePath = BasePath + $"sample.{formatType}".ToLowerInvariant().Replace("_", "");
 
         if(!File.Exists(filePath))
             throw new FileNotFoundException($"{filePath} not found");

@@ -1999,7 +1999,7 @@ public class ImageProcessingSettings : ProcessingSettings
             return this;
 
         _stringBuilder.Append($" {format.ToString()
-                                        .ToLower()}:");
+                                        .ToLowerInvariant()}:");
 
         return this;
     }
@@ -2013,7 +2013,7 @@ public class ImageProcessingSettings : ProcessingSettings
             return this;
 
         _stringBuilder.Append($" {format.ToString()
-                                        .ToLower()}:");
+                                        .ToLowerInvariant()}:");
 
         return this;
     }
