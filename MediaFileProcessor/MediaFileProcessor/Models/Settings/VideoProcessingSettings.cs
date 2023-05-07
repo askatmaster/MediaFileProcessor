@@ -541,7 +541,7 @@ public class VideoProcessingSettings : ProcessingSettings
     /// </summary>
     public VideoProcessingSettings PixelFormat(PixelFormat format)
     {
-        _stringBuilder.Append($" -pix_fmt {format} ");
+        _stringBuilder.Append($" -pix_fmt {format.ToString().ToLowerInvariant()} ");
 
         return this;
     }

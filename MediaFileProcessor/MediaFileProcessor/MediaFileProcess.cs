@@ -259,7 +259,6 @@ public class MediaFileProcess : IDisposable
             tasks[i] = inputStream.CopyToAsync(pipe)
                                   .ContinueWith(_ =>
                                   {
-                                      //TODO fix m4v add audio
                                       // Wait for the data to be transmitted completely
                                       pipe.WaitForPipeDrain();
 

@@ -835,6 +835,10 @@ public class VideoFileProcessor : IVideoFileProcessor
         if(outputFile is null && outputFormat is null)
             throw new Exception("If the outputFile is not specified then the outputFormat must be indicated necessarily");
 
+        //TODO fix m4v add audio
+        if(outputFile is null && outputFormat is FileFormatType.M4V)
+            throw new NotSupportedException($"{FileFormatType.M4V.ToString()} format is not supported");
+
         outputFormat ??= outputFile!.GetFileFormatType();
 
         var settings = new VideoProcessingSettings().ReplaceIfExist()
@@ -877,9 +881,6 @@ public class VideoFileProcessor : IVideoFileProcessor
             case FileFormatType.MOV or FileFormatType.MP4 or FileFormatType.MPEG:
                 settings.AudioCodec(AudioCodecType.MP3);
                 break;
-            // case FileFormatType.M4V:
-            //     settings.AudioCodec(AudioCodecType.AAC);
-            //     break;
             default:
                 settings.AudioCodec(AudioCodecType.COPY);
                 break;
