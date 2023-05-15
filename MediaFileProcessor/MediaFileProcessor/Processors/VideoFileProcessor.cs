@@ -164,7 +164,7 @@ public class VideoFileProcessor : IVideoFileProcessor
 
             settings.SetInputFiles(fileName is not null ? new MediaFile(fileName) : file);
 
-            settings.MovFralgs("faststart").SetOutputArguments(resultFileName ?? outputFile);
+            settings.MovFralgs(MovFlagsType.Faststart).SetOutputArguments(resultFileName ?? outputFile);
 
             switch(fileFormatType)
             {
@@ -173,7 +173,7 @@ public class VideoFileProcessor : IVideoFileProcessor
 
                     break;
                 case FileFormatType.WMV:
-                    settings.VideoCodec(VideoCodecType.LIBX264).AudioCodec(AudioCodecType.AAC).Strict("experimental").AudioBitRate(192);
+                    settings.VideoCodec(VideoCodecType.LIBX264).AudioCodec(AudioCodecType.AAC).Strict(FFmpegStrictness.Experimental).AudioBitRate(192);
 
                     break;
                 default:
@@ -1102,7 +1102,7 @@ public class VideoFileProcessor : IVideoFileProcessor
                                     string output,
                                     VideoCodecType videoCodecType,
                                     AudioCodecType audioCodecType,
-                                    string videoBSF,
+                                    VideoBitstreamFilter videoBSF,
                                     CancellationToken cancellationToken)
     {
         var setting = new VideoProcessingSettings().ReplaceIfExist()
@@ -1142,7 +1142,7 @@ public class VideoFileProcessor : IVideoFileProcessor
         {
             var outputFileName = $"_{i}{Guid.NewGuid()}.ts";
             intermediateFiles.Add(outputFileName);
-            await CreateMpegts(files[i], outputFileName, VideoCodecType.LIBX264, AudioCodecType.AAC, "h264_mp4toannexb", cancellationToken ?? default);
+            await CreateMpegts(files[i], outputFileName, VideoCodecType.LIBX264, AudioCodecType.AAC, VideoBitstreamFilter.H264_Mp4ToAnnexB, cancellationToken ?? default);
         }
 
         // Concatenate the intermediate files using the 'concat' argument in FFmpeg
@@ -1162,9 +1162,9 @@ public class VideoFileProcessor : IVideoFileProcessor
         if(outputFormat is FileFormatType.RM)
             settings.VideoSize(VideoSizeType.HD720).VideoCodec(VideoCodecType.RV10).Format(FileFormatType.RM);
         else if (outputFormat is FileFormatType.WEBM)
-            settings.VideoCodec(VideoCodecType.LIBVPX).AudioBSF("aac_adtstoasc").MovFralgs("+faststart");
+            settings.VideoCodec(VideoCodecType.LIBVPX).AudioBSF(AudioBitstreamFilterType.Aac_Adtstoasc).MovFralgs(MovFlagsType.Faststart);
         else
-            settings.CopyAllCodec().AudioBSF("aac_adtstoasc").MovFralgs("+faststart");
+            settings.CopyAllCodec().AudioBSF(AudioBitstreamFilterType.Aac_Adtstoasc).MovFralgs(MovFlagsType.Faststart);
 
         if(outputFile is null)
             switch(outputFormat)
@@ -1191,7 +1191,7 @@ public class VideoFileProcessor : IVideoFileProcessor
 
                     break;
                 default:
-                    settings.Format(outputFormat!.Value);
+                    settings.Format(outputFormat.Value);
 
                     break;
             }

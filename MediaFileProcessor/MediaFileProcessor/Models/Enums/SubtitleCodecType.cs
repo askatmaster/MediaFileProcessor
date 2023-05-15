@@ -3,7 +3,7 @@
 /// <summary>
 /// Enum representing subtitle codec values.
 /// </summary>
-public enum SubtitleCodec
+public enum SubtitleCodecType
 {
     /// <summary>
     /// Subtitle codec used in MP4 files.

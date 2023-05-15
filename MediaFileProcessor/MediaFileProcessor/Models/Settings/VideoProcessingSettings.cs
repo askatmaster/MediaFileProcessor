@@ -72,7 +72,7 @@ public class VideoProcessingSettings : ProcessingSettings
     /// <summary>
     /// Audio bitrate
     /// </summary>
-    public VideoProcessingSettings AudioBitRate(AudioBitrate bitRate)
+    public VideoProcessingSettings AudioBitRate(AudioBitrateType bitRate)
     {
         _stringBuilder.Append($" -ab {bitRate.ToString().Replace("_", "")} ");
 
@@ -114,7 +114,7 @@ public class VideoProcessingSettings : ProcessingSettings
     /// <summary>
     /// Set the subtitle codec
     /// </summary>
-    public VideoProcessingSettings SubtitlesCodec(SubtitleCodec arg)
+    public VideoProcessingSettings SubtitlesCodec(SubtitleCodecType arg)
     {
         _stringBuilder.Append($" -c:s {arg.ToString().ToLowerInvariant()} ");
 
@@ -197,7 +197,7 @@ public class VideoProcessingSettings : ProcessingSettings
     /// <summary>
     /// Sync audio
     /// </summary>
-    public VideoProcessingSettings ASync(AudioSyncMethod index)
+    public VideoProcessingSettings ASync(AudioSyncMethodType index)
     {
         _stringBuilder.Append($" -async {index.ToString().ToLowerInvariant()}");
 
@@ -207,7 +207,7 @@ public class VideoProcessingSettings : ProcessingSettings
     /// <summary>
     /// Sync video
     /// </summary>
-    public VideoProcessingSettings VSync(VideoSyncMethod index)
+    public VideoProcessingSettings VSync(VideoSyncMethodType index)
     {
         _stringBuilder.Append($" -vsync {index.ToString().ToLowerInvariant()}");
 
@@ -313,7 +313,7 @@ public class VideoProcessingSettings : ProcessingSettings
     /// Create the filtergraph specified by filtergraph and use it to filter the stream.
     /// This is an alias for -filter:a
     /// </summary>
-    public VideoProcessingSettings AudioFilterGraph(AudioFilter value)
+    public VideoProcessingSettings AudioFilterGraph(AudioFilterType value)
     {
         _stringBuilder.Append($" -af {value.ToString().ToLowerInvariant()}");
 
@@ -539,9 +539,9 @@ public class VideoProcessingSettings : ProcessingSettings
     /// <summary>
     /// Pixel format. Available formats can be gathered via `ffmpeg -pix_fmts`.
     /// </summary>
-    public VideoProcessingSettings PixelFormat(PixelFormat format)
+    public VideoProcessingSettings PixelFormat(PixelFormatType formatType)
     {
-        _stringBuilder.Append($" -pix_fmt {format.ToString().ToLowerInvariant()} ");
+        _stringBuilder.Append($" -pix_fmt {formatType.ToString().ToLowerInvariant()} ");
 
         return this;
     }
@@ -631,9 +631,9 @@ public class VideoProcessingSettings : ProcessingSettings
     /// <summary>
     /// enables experimental AAC audio encoding, which is required for some older versions of ffmpeg.
     /// </summary>
-    public VideoProcessingSettings Strict(string value)
+    public VideoProcessingSettings Strict(FFmpegStrictness value)
     {
-        _stringBuilder.Append($" -strict {value} ");
+        _stringBuilder.Append($" -strict {value.ToString().ToLowerInvariant()} ");
 
         return this;
     }
@@ -836,9 +836,9 @@ public class VideoProcessingSettings : ProcessingSettings
     /// <summary>
     /// Video BitStream Filter
     /// </summary>
-    public VideoProcessingSettings VideoBSF(string bsf)
+    public VideoProcessingSettings VideoBSF(VideoBitstreamFilter bsf)
     {
-        _stringBuilder.Append($" -bsf:v {bsf} ");
+        _stringBuilder.Append($" -bsf:v {bsf.ToString().ToLowerInvariant()} ");
 
         return this;
     }
@@ -846,9 +846,9 @@ public class VideoProcessingSettings : ProcessingSettings
     /// <summary>
     /// Subtitle BitStream Filter
     /// </summary>
-    public VideoProcessingSettings SubtitleBSF(string bsf)
+    public VideoProcessingSettings SubtitleBSF(SubtitleBitstreamFilterType bsf)
     {
-        _stringBuilder.Append($" -bsf:s {bsf} ");
+        _stringBuilder.Append($" -bsf:s {bsf.ToString().ToLowerInvariant()} ");
 
         return this;
     }
@@ -866,9 +866,9 @@ public class VideoProcessingSettings : ProcessingSettings
     /// <summary>
     /// Audio BitStream Filter
     /// </summary>
-    public VideoProcessingSettings AudioBSF(string bsf)
+    public VideoProcessingSettings AudioBSF(AudioBitstreamFilterType bsf)
     {
-        _stringBuilder.Append($" -bsf:a {bsf} ");
+        _stringBuilder.Append($" -bsf:a {bsf.ToString().ToLowerInvariant()} ");
 
         return this;
     }
@@ -876,9 +876,9 @@ public class VideoProcessingSettings : ProcessingSettings
     /// <summary>
     /// Start a new fragment at each video keyframe
     /// </summary>
-    public VideoProcessingSettings MovFralgs(string flag)
+    public VideoProcessingSettings MovFralgs(MovFlagsType flag)
     {
-        _stringBuilder.Append($" -movflags {flag} ");
+        _stringBuilder.Append($" -movflags +{flag.ToString().ToLowerInvariant()} ");
 
         return this;
     }

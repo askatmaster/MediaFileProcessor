@@ -3,7 +3,7 @@
 /// <summary>
 /// Specifies the pixel format for video encoding or decoding.
 /// </summary>
-public enum PixelFormat
+public enum PixelFormatType
 {
     /// <summary>
     /// 8 bits per pixel, YUV 4:0:0, full scale (JPEG).

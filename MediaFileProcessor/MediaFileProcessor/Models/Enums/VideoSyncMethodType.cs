@@ -3,7 +3,7 @@
 /// <summary>
 /// Enum representing video sync values.
 /// </summary>
-public enum VideoSyncMethod
+public enum VideoSyncMethodType
 {
     /// <summary>
     /// Each frame is passed with its timestamp from the demuxer to the muxer.

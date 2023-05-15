@@ -19,17 +19,17 @@ public class ImageProcessorTests
     public static async Task CompressImageTest(ImageFileProcessor processor)
     {
         //Test block with physical paths to input and output files
-        await processor.CompressImageAsync(new MediaFile(_image), ImageFormat.JPG, 60, FilterType.Lanczos, "x1080", @"G:\MagickImageFile\result.jpg", ImageFormat.JPG);
+        await processor.CompressImageAsync(new MediaFile(_image), ImageFormatType.JPG, 60, FilterType.Lanczos, "x1080", @"G:\MagickImageFile\result.jpg", ImageFormatType.JPG);
 
         //Block for testing file processing as streams without specifying physical paths
         await using var stream = new FileStream(_image, FileMode.Open);
-        var resultStream = await processor.CompressImageAsStreamAsync(new MediaFile(stream), ImageFormat.JPG, 60, FilterType.Lanczos, "x1080", ImageFormat.JPG);
+        var resultStream = await processor.CompressImageAsStreamAsync(new MediaFile(stream), ImageFormatType.JPG, 60, FilterType.Lanczos, "x1080", ImageFormatType.JPG);
         await using (var output = new FileStream(@"G:\MagickImageFile\result.jpg", FileMode.Create))
             resultStream.WriteTo(output);
 
         //Block for testing file processing as bytes without specifying physical paths
         var bytes = await File.ReadAllBytesAsync(_image);
-        var resultBytes = await processor.CompressImageAsBytesAsync(new MediaFile(bytes), ImageFormat.JPG, 60, FilterType.Lanczos, "x1080", ImageFormat.JPG);
+        var resultBytes = await processor.CompressImageAsBytesAsync(new MediaFile(bytes), ImageFormatType.JPG, 60, FilterType.Lanczos, "x1080", ImageFormatType.JPG);
         await using (var output = new FileStream(@"G:\MagickImageFile\result.jpg", FileMode.Create))
             output.Write(resultBytes);
     }

@@ -2007,7 +2007,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Set force output format
     /// </summary>
-    public ImageProcessingSettings Format(ImageFormat? format)
+    public ImageProcessingSettings Format(ImageFormatType? format)
     {
         if(format is null)
             return this;

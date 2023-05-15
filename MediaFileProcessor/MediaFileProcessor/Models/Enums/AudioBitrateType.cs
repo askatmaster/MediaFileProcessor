@@ -3,7 +3,7 @@
 /// <summary>
 /// Enum representing audio bitrate values in bits per second.
 /// </summary>
-public enum AudioBitrate
+public enum AudioBitrateType
 {
     _64k = 64000,
     _96k = 96000,

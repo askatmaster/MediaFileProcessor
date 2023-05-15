@@ -3,7 +3,7 @@
 /// <summary>
 /// Enum representing audio sync values.
 /// </summary>
-public enum AudioSyncMethod
+public enum AudioSyncMethodType
 {
     /// <summary>
     /// Audio is stretched/squeezed to match the timestamps.

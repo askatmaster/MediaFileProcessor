@@ -3,7 +3,7 @@
 /// <summary>
 /// Enum to represent different image formats.
 /// </summary>
-public enum ImageFormat
+public enum ImageFormatType
 {
     /// <summary>
     /// Joint Photographic Experts Group (JPG) image format.

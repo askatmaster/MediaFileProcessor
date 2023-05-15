@@ -1,6 +1,9 @@
 ﻿namespace MediaFileProcessor.Models.Enums;
 
-public enum AudioFilter
+/// <summary>
+/// Audio Filter Type
+/// </summary>
+public enum AudioFilterType
 {
     /// <summary>
     /// Changes the volume of the audio.
