@@ -149,7 +149,7 @@ public interface IVideoFileProcessor
     /// <param name="cancellationToken">A CancellationToken that can be used to cancel the operation</param>
     Task<MemoryStream?> AddSubtitlesAsync(MediaFile videoFile,
                                           MediaFile subsFile,
-                                          string language,
+                                          LanguageType language,
                                           string? outputFile = null,
                                           FileFormatType? outputFormat = null,
                                           CancellationToken? cancellationToken = null);

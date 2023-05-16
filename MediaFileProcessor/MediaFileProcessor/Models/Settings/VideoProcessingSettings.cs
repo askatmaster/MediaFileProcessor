@@ -896,9 +896,9 @@ public class VideoProcessingSettings : ProcessingSettings
     /// <summary>
     /// Set language
     /// </summary>
-    public VideoProcessingSettings Language(string lng)
+    public VideoProcessingSettings Language(LanguageType lng)
     {
-        _stringBuilder.Append($" language={lng} ");
+        _stringBuilder.Append($" language={lng.ToString().ToLowerInvariant()} ");
 
         return this;
     }
@@ -967,6 +967,21 @@ public class VideoProcessingSettings : ProcessingSettings
     public VideoProcessingSettings Readrate(string speed)
     {
         _stringBuilder.Append($" -readrate {speed} ");
+
+        return this;
+    }
+
+    /// <summary>
+    /// Limit input read speed.
+    ///Its value is a floating-point positive number which represents the maximum duration of media, in seconds, that should be ingested in one second of wallclock time.
+    /// Default value is zero and represents no imposed limitation on speed of ingestion. Value 1 represents real-time speed and is equivalent to -re.
+    /// Mainly used to simulate a capture device or live input stream (e.g. when reading from a file).
+    /// Should not be used with a low value when input is an actual capture device or live stream as it may cause packet loss.
+    /// It is useful for when flow speed of output packets is important, such as live streaming.
+    /// </summary>
+    public VideoProcessingSettings Readrate(ReadRateType speed)
+    {
+        _stringBuilder.Append($" -readrate {(int)speed}");
 
         return this;
     }
@@ -1112,9 +1127,9 @@ public class VideoProcessingSettings : ProcessingSettings
     /// This should only be used if auto detection does not work, or if usage of a different device type should be prohibited.
     /// Treating a DV device as HDV (or vice versa) will not work and result in undefined behavior. The values auto, dv and hdv are supported.
     /// </summary>
-    public VideoProcessingSettings DvDevice(string type)
+    public VideoProcessingSettings DvDevice(DvType type)
     {
-        _stringBuilder.Append($" -dvtype {type}");
+        _stringBuilder.Append($" -dvtype {type.ToString().ToLowerInvariant()}");
 
         return this;
     }

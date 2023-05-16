@@ -1249,7 +1249,7 @@ public class VideoFileProcessor : IVideoFileProcessor
     /// <returns>A memory stream containing the output video with added subtitles, or `null` if an output file is specified.</returns>
     public async Task<MemoryStream?> AddSubtitlesAsync(MediaFile videoFile,
                                                        MediaFile subsFile,
-                                                       string language,
+                                                       LanguageType language,
                                                        string? outputFile = null,
                                                        FileFormatType? outputFormat = null,
                                                        CancellationToken? cancellationToken = null)
