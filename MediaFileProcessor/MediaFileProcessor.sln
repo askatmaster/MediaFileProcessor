@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaFileProcessor", "Media
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleTest", "ConsoleTest\ConsoleTest.csproj", "{831343A2-AC68-482E-9E7B-E51C4BDEB242}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AOPInfrastructure", "AOPInfrastructure\AOPInfrastructure.csproj", "{8BB4DADC-4846-4405-9E7A-B75F437561C4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{831343A2-AC68-482E-9E7B-E51C4BDEB242}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{831343A2-AC68-482E-9E7B-E51C4BDEB242}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{831343A2-AC68-482E-9E7B-E51C4BDEB242}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BB4DADC-4846-4405-9E7A-B75F437561C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BB4DADC-4846-4405-9E7A-B75F437561C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BB4DADC-4846-4405-9E7A-B75F437561C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BB4DADC-4846-4405-9E7A-B75F437561C4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
