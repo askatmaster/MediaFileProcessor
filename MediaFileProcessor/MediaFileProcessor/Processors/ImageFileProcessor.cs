@@ -27,14 +27,15 @@ public class ImageFileProcessor : IImageFileProcessor
     private static readonly string _zipAddress = "https://imagemagick.org/archive/binaries/ImageMagick-7.1.0-61-portable-Q16-x64.zip";
 
     /// <inheritdoc />
-    public async Task<MemoryStream?> ExecuteAsync(ImageProcessingSettings settings, CancellationToken cancellationToken)
+    public async Task<MemoryStream?> ExecuteAsync(ImageBaseProcessingSettings settings, CancellationToken cancellationToken)
     {
-        using(var process = new MediaFileProcess(_convert,
+        using var process = new MediaFileProcess(_convert,
                                                  settings.GetProcessArguments(),
                                                  settings,
                                                  settings.GetInputStreams(),
-                                                 settings.GetInputPipeNames()))
-            return await process.ExecuteAsync(cancellationToken);
+                                                 settings.GetInputPipeNames());
+
+        return await process.ExecuteAsync(cancellationToken);
     }
 
     //======================================================================================================================================================================
@@ -60,7 +61,7 @@ public class ImageFileProcessor : IImageFileProcessor
                                                                 ImageFormatType outputFormatType,
                                                                 CancellationToken cancellationToken)
     {
-        var settings = new ImageProcessingSettings().Format(inputFormatType)
+        var settings = new ImageBaseProcessingSettings().Format(inputFormatType)
                                                     .SetInputFiles(file)
                                                     .Quality(quality)
                                                     .Filter(filterType)
@@ -128,7 +129,7 @@ public class ImageFileProcessor : IImageFileProcessor
                                                                ImageFormatType? outputFormat,
                                                                CancellationToken cancellationToken)
     {
-        var settings = new ImageProcessingSettings().Format(inputFormatType).SetInputFiles(file).Format(outputFormat).SetOutputFileArguments(outputFile);
+        var settings = new ImageBaseProcessingSettings().Format(inputFormatType).SetInputFiles(file).Format(outputFormat).SetOutputFileArguments(outputFile);
 
         return await ExecuteAsync(settings, cancellationToken);
     }
@@ -173,7 +174,7 @@ public class ImageFileProcessor : IImageFileProcessor
                                                               string? outputFile,
                                                               CancellationToken cancellationToken)
     {
-        var settings = new ImageProcessingSettings().Resize(size)
+        var settings = new ImageBaseProcessingSettings().Resize(size)
                                                     .Quality(92)
                                                     .Format(inputFormatType)
                                                     .SetInputFiles(file)
@@ -222,7 +223,7 @@ public class ImageFileProcessor : IImageFileProcessor
     /// <returns>The resulting gif as a memory stream, or null if outputFile is not null.</returns>
     private async Task<MemoryStream?> ExecuteImagesToGifAsync(MediaFile file, int delay, ImageFormatType inputFormatType, string? outputFile, CancellationToken cancellationToken)
     {
-        var settings = new ImageProcessingSettings().Delay(delay)
+        var settings = new ImageBaseProcessingSettings().Delay(delay)
                                                     .Format(inputFormatType)
                                                     .SetInputFiles(file)
                                                     .Format(FileFormatType.GIF)
@@ -255,7 +256,7 @@ public class ImageFileProcessor : IImageFileProcessor
     /// <exception cref="Exception">
     /// Thrown when either of the files convert.exe is not found in the ZIP archive.
     /// </exception>
-    public static async Task DownloadExecutableFiles()
+    public static async Task DownloadExecutableFilesAsync()
     {
         var fileName = $"{Guid.NewGuid()}.zip";
 
@@ -264,28 +265,24 @@ public class ImageFileProcessor : IImageFileProcessor
         try
         {
             // Downloads the ZIP archive from the remote location specified by _zipAddress.
-            await FileDownloadProcessor.DownloadFile(_zipAddress, fileName);
+            await FileDownloadProcessor.DownloadFileAsync(new Uri(_zipAddress), fileName);
 
             // Open an existing zip file for reading
-            using(var zip = ZipFileProcessor.Open(fileName, FileAccess.Read))
+            using var zip = ZipFileProcessor.Open(fileName, FileAccess.Read);
+
+            // Read the central directory collection
+            var dir = zip.ReadCentralDir();
+
+            // Look for the desired file
+            foreach (var entry in dir.Where(entry => Path.GetFileName(entry.FilenameInZip) == "convert.exe"))
             {
-                // Read the central directory collection
-                var dir = zip.ReadCentralDir();
-
-                // Look for the desired file
-                foreach (var entry in dir)
-                {
-                    if (Path.GetFileName(entry.FilenameInZip) == "convert.exe")
-                    {
-                        zip.ExtractFile(entry, "convert.exe"); // File found, extract it
-                        convertFound = true;
-                    }
-                }
-
-                // Check if both the files were found in the ZIP archive.
-                if(!convertFound)
-                    throw new Exception("convert.exe not found");
+                zip.ExtractFile(entry, "convert.exe"); // File found, extract it
+                convertFound = true;
             }
+
+            // Check if both the files were found in the ZIP archive.
+            if(!convertFound)
+                throw new FileNotFoundException("convert.exe not found");
         }
         finally
         {

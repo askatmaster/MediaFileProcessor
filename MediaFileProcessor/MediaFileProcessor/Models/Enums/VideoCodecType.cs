@@ -1,5 +1,8 @@
 ﻿namespace MediaFileProcessor.Models.Enums;
 
+/// <summary>
+/// Video codec type
+/// </summary>
 public enum VideoCodecType
 {
     /// <summary>

@@ -1,4 +1,5 @@
 using System.Collections;
+
 namespace MediaFileProcessor.Models.Common;
 
 /// <summary>
@@ -7,23 +8,40 @@ namespace MediaFileProcessor.Models.Common;
 /// </summary>
 public sealed class MultiStream : Stream
 {
-    public MultiStream() { }
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    public MultiStream()
+    {
+    }
 
+    /// <summary>
+    /// Constructor
+    /// </summary>
     public MultiStream(Stream[] streams)
     {
         streamList.AddRange(streams);
     }
 
+    /// <summary>
+    /// Constructor
+    /// </summary>
     public MultiStream(List<Stream> streams)
     {
         streamList.AddRange(streams);
     }
 
+    /// <summary>
+    /// Constructor
+    /// </summary>
     public MultiStream(IEnumerable<Stream> streams)
     {
         streamList.AddRange(streams.ToArray());
     }
 
+    /// <summary>
+    /// Constructor
+    /// </summary>
     public MultiStream(ICollection<Stream> streams)
     {
         streamList.AddRange(streams.ToArray());
@@ -63,6 +81,9 @@ public sealed class MultiStream : Stream
     /// </returns>
     public override bool CanWrite => false;
 
+    /// <summary>
+    /// Streams count
+    /// </summary>
     public int Count => streamList.Count;
 
     /// <summary>
@@ -71,14 +92,9 @@ public sealed class MultiStream : Stream
     /// <returns>
     /// The length of the virtual stream as a `long`.
     /// </returns>
-    public override long Length
-    {
-        get
-        {
-            return streamList.Cast<Stream>()
-                             .Sum(stream => stream.Length);
-        }
-    }
+    public override long Length =>
+        streamList.Cast<Stream>()
+                  .Sum(stream => stream.Length);
 
     /// <summary>
     /// Gets or sets the position within the virtual stream.
@@ -105,7 +121,7 @@ public sealed class MultiStream : Stream
     {
         var len = Length;
 
-        switch(origin)
+        switch (origin)
         {
             case SeekOrigin.Begin:
                 position = offset;
@@ -123,9 +139,9 @@ public sealed class MultiStream : Stream
                 throw new ArgumentOutOfRangeException(nameof(origin), origin, null);
         }
 
-        if(position > len)
+        if (position > len)
             position = len;
-        else if(position < 0)
+        else if (position < 0)
             position = 0;
 
         return position;
@@ -139,7 +155,7 @@ public sealed class MultiStream : Stream
     {
         var list = new List<byte[]>(streamList.Count);
 
-        foreach(Stream stream in streamList)
+        foreach (Stream stream in streamList)
         {
             var buffer = new byte[stream.Length];
             stream.Read(buffer, 0, (int)stream.Length);
@@ -158,7 +174,7 @@ public sealed class MultiStream : Stream
     {
         var list = new List<Stream>(streamList.Count);
 
-        foreach(Stream stream in streamList)
+        foreach (Stream stream in streamList)
         {
             stream.Seek(0, SeekOrigin.Begin);
             list.Add(stream);
@@ -178,23 +194,24 @@ public sealed class MultiStream : Stream
     {
         long len = 0;
         var result = 0;
-        var buf_pos = offset;
+        var bufPos = offset;
 
-        foreach(Stream stream in streamList)
+        foreach (Stream stream in streamList)
         {
-            if(position < len + stream.Length)
+            if (position < len + stream.Length)
             {
                 stream.Position = position - len;
-                var bytesRead = stream.Read(buffer, buf_pos, count);
+                var bytesRead = stream.Read(buffer, bufPos, count);
                 result += bytesRead;
-                buf_pos += bytesRead;
+                bufPos += bytesRead;
                 position += bytesRead;
 
-                if(bytesRead < count)
+                if (bytesRead < count)
                     count -= bytesRead;
                 else
                     break;
             }
+
             len += stream.Length;
         }
 
@@ -216,20 +233,24 @@ public sealed class MultiStream : Stream
     /// </summary>
     /// <param name="value">The length to set</param>
     /// <exception cref="NotImplementedException">This method is not implemented in this class</exception>
-    public override void SetLength(long value) { }
+    public override void SetLength(long value)
+    {
+    }
 
     /// <summary>
     /// Clears all buffers for the multiple streams and causes any buffered data to be written to the underlying devices.
     /// </summary>
     public override void Flush()
     {
-        for (var i = 0; i < streamList.Count; i++)
-            ((Stream)streamList[i]).Flush();
+        foreach (var t in streamList)
+            ((Stream)t).Flush();
     }
 
     /// <summary>
     /// Writes a specified number of bytes to the multiple streams from a buffer, starting at a specified index.
     /// WARNING!!! This method cannot be implemented in this class
     /// </summary>
-    public override void Write(byte[] buffer, int offset, int count) { }
+    public override void Write(byte[] buffer, int offset, int count)
+    {
+    }
 }

@@ -35,8 +35,7 @@ public class MediaFile
     {
         var fileExtension = inputArgument.GetExtension();
 
-
-        if(fileExtension != null)
+        if(fileExtension is not null)
         {
             InputType = MediaFileInputType.Path;
             InputFilePath = $"{inputArgument} ";
@@ -56,7 +55,7 @@ public class MediaFile
     public MediaFile(Stream inputFileStream)
     {
         if (!inputFileStream.CanRead)
-            throw new Exception("Stream cannot be read");
+            throw new NotSupportedException("The thread does not support reading.");
 
         var buffer = new byte[2024];
         var read = inputFileStream.Read(buffer, 0, buffer.Length);

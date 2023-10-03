@@ -1,14 +1,18 @@
 ﻿using MediaFileProcessor.Extensions;
 using MediaFileProcessor.Models.Common;
 using MediaFileProcessor.Models.Enums;
+
 namespace MediaFileProcessor.Models.Settings;
 
-public class DocumentFileProcessingSettings : ProcessingSettings
+/// <summary>
+/// Settings for document file processing
+/// </summary>
+public class DocumentFileBaseProcessingSettings : BaseProcessingSettings
 {
     /// <summary>
     /// To produce a standalone documen (e.g. a valid HTML file including 'head' and 'body' tags)
     /// </summary>
-    public DocumentFileProcessingSettings Standalone()
+    public DocumentFileBaseProcessingSettings Standalone()
     {
         _stringBuilder.Append(" -s ");
 
@@ -18,7 +22,7 @@ public class DocumentFileProcessingSettings : ProcessingSettings
     /// <summary>
     /// The input format can be specified using the -f/--from option
     /// </summary>
-    public DocumentFileProcessingSettings From(string format)
+    public DocumentFileBaseProcessingSettings From(string format)
     {
         _stringBuilder.Append($" -f {format}");
 
@@ -28,7 +32,7 @@ public class DocumentFileProcessingSettings : ProcessingSettings
     /// <summary>
     /// The output format using the -t/--to option
     /// </summary>
-    public DocumentFileProcessingSettings To(string format)
+    public DocumentFileBaseProcessingSettings To(string format)
     {
         _stringBuilder.Append($" -t {format}");
 
@@ -38,7 +42,7 @@ public class DocumentFileProcessingSettings : ProcessingSettings
     /// <summary>
     /// Specify the user data directory to search for pandoc data files
     /// </summary>
-    public DocumentFileProcessingSettings DataDirectory(string directory)
+    public DocumentFileBaseProcessingSettings DataDirectory(string directory)
     {
         _stringBuilder.Append($" --data-dir={directory}");
 
@@ -48,7 +52,7 @@ public class DocumentFileProcessingSettings : ProcessingSettings
     /// <summary>
     /// Specify a set of default option settings
     /// </summary>
-    public DocumentFileProcessingSettings DefaultOptionSettings(string file)
+    public DocumentFileBaseProcessingSettings DefaultOptionSettings(string file)
     {
         _stringBuilder.Append($" -d {file}");
 
@@ -58,7 +62,7 @@ public class DocumentFileProcessingSettings : ProcessingSettings
     /// <summary>
     /// Shift heading levels by a positive or negative integer
     /// </summary>
-    public DocumentFileProcessingSettings ShiftHeadingLevel(string number)
+    public DocumentFileBaseProcessingSettings ShiftHeadingLevel(string number)
     {
         _stringBuilder.Append($" --shift-heading-level-by={number}");
 
@@ -68,7 +72,7 @@ public class DocumentFileProcessingSettings : ProcessingSettings
     /// <summary>
     /// Specify an executable to be used as a filter transforming the pandoc AST after the input is parsed and before the output is written
     /// </summary>
-    public DocumentFileProcessingSettings Filter(string program)
+    public DocumentFileBaseProcessingSettings Filter(string program)
     {
         _stringBuilder.Append($" --filter={program}");
 
@@ -78,7 +82,7 @@ public class DocumentFileProcessingSettings : ProcessingSettings
     /// <summary>
     /// Set the metadata field KEY to the value VAL. A value specified on the command line overrides a value specified in the document using YAML metadata blocks
     /// </summary>
-    public DocumentFileProcessingSettings Metadata(string value)
+    public DocumentFileBaseProcessingSettings Metadata(string value)
     {
         _stringBuilder.Append($" --metadata={value}");
 
@@ -88,7 +92,7 @@ public class DocumentFileProcessingSettings : ProcessingSettings
     /// <summary>
     /// Read metadata from the supplied YAML (or JSON) file
     /// </summary>
-    public DocumentFileProcessingSettings MetadataFile(string file)
+    public DocumentFileBaseProcessingSettings MetadataFile(string file)
     {
         _stringBuilder.Append($" --metadata-file={file}");
 
@@ -98,7 +102,7 @@ public class DocumentFileProcessingSettings : ProcessingSettings
     /// <summary>
     /// Preserve tabs instead of converting them to spaces
     /// </summary>
-    public DocumentFileProcessingSettings PreserveTabs()
+    public DocumentFileBaseProcessingSettings PreserveTabs()
     {
         _stringBuilder.Append(" --preserve-tabs ");
 
@@ -108,7 +112,7 @@ public class DocumentFileProcessingSettings : ProcessingSettings
     /// <summary>
     /// Parse untranslatable HTML and LaTeX as raw
     /// </summary>
-    public DocumentFileProcessingSettings ParseRaw()
+    public DocumentFileBaseProcessingSettings ParseRaw()
     {
         _stringBuilder.Append(" --parse-raw ");
 
@@ -118,7 +122,7 @@ public class DocumentFileProcessingSettings : ProcessingSettings
     /// <summary>
     /// Normalize the document, including converting it to NFC Unicode normalization form
     /// </summary>
-    public DocumentFileProcessingSettings Normalize()
+    public DocumentFileBaseProcessingSettings Normalize()
     {
         _stringBuilder.Append(" --normalize ");
 
@@ -128,7 +132,7 @@ public class DocumentFileProcessingSettings : ProcessingSettings
     /// <summary>
     /// Link to a CSS stylesheet
     /// </summary>
-    public DocumentFileProcessingSettings CssUrl(string url)
+    public DocumentFileBaseProcessingSettings CssUrl(string url)
     {
         _stringBuilder.Append(" --css={url} ");
 
@@ -138,7 +142,7 @@ public class DocumentFileProcessingSettings : ProcessingSettings
     /// <summary>
     /// Print the default template for FORMAT
     /// </summary>
-    public DocumentFileProcessingSettings PrintDefaultTemplate(string format)
+    public DocumentFileBaseProcessingSettings PrintDefaultTemplate(string format)
     {
         _stringBuilder.Append(" -D {format} ");
 
@@ -148,7 +152,7 @@ public class DocumentFileProcessingSettings : ProcessingSettings
     /// <summary>
     /// Parse each file individually before combining for multifile documents.
     /// </summary>
-    public DocumentFileProcessingSettings FileScope()
+    public DocumentFileBaseProcessingSettings FileScope()
     {
         _stringBuilder.Append(" --file-scope ");
 
@@ -158,7 +162,7 @@ public class DocumentFileProcessingSettings : ProcessingSettings
     /// <summary>
     /// Additional settings that are not currently provided in the wrapper
     /// </summary>
-    public DocumentFileProcessingSettings CustomArguments(string arg)
+    public DocumentFileBaseProcessingSettings CustomArguments(string arg)
     {
         _stringBuilder.Append(arg);
 
@@ -173,7 +177,7 @@ public class DocumentFileProcessingSettings : ProcessingSettings
     /// <summary>
     /// Setting Output Arguments
     /// </summary>
-    public DocumentFileProcessingSettings SetOutputFileArguments(string? arg)
+    public DocumentFileBaseProcessingSettings SetOutputFileArguments(string? arg)
     {
         OutputFileArguments = arg;
 
@@ -186,24 +190,25 @@ public class DocumentFileProcessingSettings : ProcessingSettings
     /// <param name="files">An array of media files that represent the input files for the processing</param>
     /// <exception cref="NullReferenceException">Thrown when the input 'files' argument is null</exception>
     /// <returns>An instance of the DocumentFileProcessingSettings object, representing the current state of the processing settings</returns>
-    public DocumentFileProcessingSettings SetInputFiles(params MediaFile[]? files)
+    public DocumentFileBaseProcessingSettings SetInputFiles(params MediaFile[]? files)
     {
         // Check if the input files are specified
-        if(files is null)
-            throw new NullReferenceException("'CustomInputs' Arguments must be specified if there are no input files");
+        if (files is null)
+            throw new ArgumentException("'CustomInputs' Arguments must be specified if there are no input files");
 
         // If the number of input files is 0, throw an exception
-        switch(files.Length)
+        switch (files.Length)
         {
             case 0:
-                throw new Exception("No input files");
+                throw new NotSupportedException("No input files");
 
             // If there is only one input file
             case 1:
                 // Check the type of input file (Path, Template or NamedPipe)
                 // and append the file path to the string builder
                 _stringBuilder.Append(files[0].InputType is MediaFileInputType.Path or MediaFileInputType.NamedPipe
-                                          ? files[0].InputFilePath! : StandartInputRedirectArgument);
+                                          ? files[0].InputFilePath!
+                                          : StandartInputRedirectArgument);
 
                 // Set input streams for the files
                 SetInputStreams(files);
@@ -212,16 +217,17 @@ public class DocumentFileProcessingSettings : ProcessingSettings
         }
 
         // If there is only one stream type among the input files
-        if(files.Count(x => x.InputType == MediaFileInputType.Stream) <= 1)
+        if (files.Count(x => x.InputType == MediaFileInputType.Stream) <= 1)
         {
             // Aggregate the input file paths (or the standard input redirect argument) into a single string
             // and append it to the string builder
             _stringBuilder.Append(files.Aggregate(string.Empty,
                                                   (current, file) =>
                                                       current
-                                                    + " "
-                                                    + (file.InputType is MediaFileInputType.Path or MediaFileInputType.NamedPipe
-                                                          ? file.InputFilePath! : StandartInputRedirectArgument)));
+                                                      + " "
+                                                      + (file.InputType is MediaFileInputType.Path or MediaFileInputType.NamedPipe
+                                                             ? file.InputFilePath!
+                                                             : StandartInputRedirectArgument)));
 
             // Set input streams for the files
             SetInputStreams(files);
@@ -232,9 +238,10 @@ public class DocumentFileProcessingSettings : ProcessingSettings
         // If there are multiple stream types among the input files
         _stringBuilder.Append(files.Aggregate(string.Empty,
                                               (current, file) => current
-                                                + " "
-                                                + (file.InputType is MediaFileInputType.Path or MediaFileInputType.NamedPipe
-                                                      ? file.InputFilePath! : SetPipeChannel(Guid.NewGuid().ToString(), file))));
+                                                                 + " "
+                                                                 + (file.InputType is MediaFileInputType.Path or MediaFileInputType.NamedPipe
+                                                                        ? file.InputFilePath!
+                                                                        : SetPipeChannel(Guid.NewGuid().ToString(), file))));
 
         // Set input streams for the files
         SetInputStreams(files);
@@ -247,7 +254,7 @@ public class DocumentFileProcessingSettings : ProcessingSettings
     /// </summary>
     public override string GetProcessArguments(bool setOutputArguments = true)
     {
-        if(setOutputArguments)
+        if (setOutputArguments)
             return _stringBuilder + GetOutputArguments();
 
         return _stringBuilder.ToString();
@@ -295,11 +302,11 @@ public class DocumentFileProcessingSettings : ProcessingSettings
     private void SetInputStreams(params MediaFile[]? files)
     {
         // If null, return without doing anything
-        if(files is null)
+        if (files is null)
             return;
 
         // Check if there is only one input file with Stream type
-        if(files.Count(x => x.InputType == MediaFileInputType.Stream) == 1)
+        if (files.Count(x => x.InputType == MediaFileInputType.Stream) == 1)
         {
             // If yes, create the InputStreams list if it is null
             InputStreams ??= new List<Stream>();

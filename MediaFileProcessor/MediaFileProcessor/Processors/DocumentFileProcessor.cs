@@ -26,14 +26,15 @@ public class DocumentFileProcessor : IDocumentFileProcessor
     private static readonly string _zipAddress = "https://github.com/jgm/pandoc/releases/download/3.0.1/pandoc-3.0.1-windows-x86_64.zip";
 
     /// <inheritdoc />
-    public async Task<MemoryStream?> ExecuteAsync(DocumentFileProcessingSettings settings, CancellationToken cancellationToken)
+    public async Task<MemoryStream?> ExecuteAsync(DocumentFileBaseProcessingSettings settings, CancellationToken cancellationToken)
     {
-        using(var process = new MediaFileProcess(_pandoc,
+        using var process = new MediaFileProcess(_pandoc,
                                                  settings.GetProcessArguments(),
                                                  settings,
                                                  settings.GetInputStreams(),
-                                                 settings.GetInputPipeNames()))
-            return await process.ExecuteAsync(cancellationToken);
+                                                 settings.GetInputPipeNames());
+
+        return await process.ExecuteAsync(cancellationToken);
     }
 
     /// <summary>
@@ -45,7 +46,7 @@ public class DocumentFileProcessor : IDocumentFileProcessor
     /// <returns>A `MemoryStream` containing the converted PDF file.</returns>
     private async Task<MemoryStream?> ExecuteConvertDocxToPdf(MediaFile file, string? outputFile, CancellationToken cancellationToken)
     {
-        var settings = new DocumentFileProcessingSettings().From("docx").To("pdf").Standalone().SetInputFiles(file).SetOutputFileArguments(outputFile);
+        var settings = new DocumentFileBaseProcessingSettings().From("docx").To("pdf").Standalone().SetInputFiles(file).SetOutputFileArguments(outputFile);
 
         return await ExecuteAsync(settings, cancellationToken);
     }
@@ -74,7 +75,7 @@ public class DocumentFileProcessor : IDocumentFileProcessor
     /// <exception cref="Exception">
     /// Thrown when either of the files pandoc.exe is not found in the ZIP archive.
     /// </exception>
-    public static async Task DownloadExecutableFiles()
+    public static async Task DownloadExecutableFilesAsync()
     {
         var fileName = $"{Guid.NewGuid()}.zip";
         var pandocFound = false;
@@ -82,27 +83,23 @@ public class DocumentFileProcessor : IDocumentFileProcessor
         try
         {
             // Downloads the ZIP archive from the remote location specified by _zipAddress.
-            await FileDownloadProcessor.DownloadFile(_zipAddress, fileName);
+            await FileDownloadProcessor.DownloadFileAsync(new Uri(_zipAddress), fileName);
 
             // Open an existing zip file for reading
-            using(var zip = ZipFileProcessor.Open(fileName, FileAccess.Read))
+            using var zip = ZipFileProcessor.Open(fileName, FileAccess.Read);
+
+            // Read the central directory collection
+            var dir = zip.ReadCentralDir();
+
+            // Look for the desired file
+            foreach (var entry in dir.Where(entry => Path.GetFileName(entry.FilenameInZip) == "pandoc.exe"))
             {
-                // Read the central directory collection
-                var dir = zip.ReadCentralDir();
-
-                // Look for the desired file
-                foreach (var entry in dir)
-                {
-                    if (Path.GetFileName(entry.FilenameInZip) == "pandoc.exe")
-                    {
-                        zip.ExtractFile(entry, "pandoc.exe"); // File found, extract it}
-                        pandocFound = true;
-                    }
-                }
-
-                if(!pandocFound)
-                    throw new Exception("pandoc.exe not found");
+                zip.ExtractFile(entry, "pandoc.exe"); // File found, extract it}
+                pandocFound = true;
             }
+
+            if(!pandocFound)
+                throw new FileNotFoundException("pandoc.exe not found");
         }
         finally
         {

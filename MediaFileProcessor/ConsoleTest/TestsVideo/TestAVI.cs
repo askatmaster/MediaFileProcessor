@@ -199,7 +199,7 @@ public static class TestAVI
 
         foreach (var videoFormat in supportedVideoFormats)
         {
-            foreach ((var imageFormat, var value) in supportedImageFormats)
+            foreach (var (imageFormat, value) in supportedImageFormats)
             {
                 var sample = TestFile.GetPath(videoFormat);
                 var resultPhysicalPath = TestFile.ResultFilePath + $@"TestExtractFrameFromVideo/resultPath.{imageFormat.ToString().ToLowerInvariant()}";
@@ -395,7 +395,7 @@ public static class TestAVI
 
         foreach (var videoFormat in supportedVideoFormats)
         {
-            foreach ((var imageFormat, var value) in supportedImageFormats)
+            foreach (var (imageFormat, value) in supportedImageFormats)
             {
                 var sample = TestFile.GetPath(videoFormat);
 
@@ -418,8 +418,9 @@ public static class TestAVI
 
                 foreach (var bytes in data)
                 {
-                    await using (var output = new FileStream(TestFile.ResultFilePath + @$"ConvertVideoToImages\Stream\result{count++:000}.{imageFormat.ToString().Replace("_", "").ToLowerInvariant()}", FileMode.Create))
-                        output.Write(bytes, 0, bytes.Length);
+                    await using var output = new FileStream(TestFile.ResultFilePath + @$"ConvertVideoToImages\Stream\result{count++:000}.{imageFormat.ToString().Replace("_", "").ToLowerInvariant()}", FileMode.Create);
+
+                    output.Write(bytes, 0, bytes.Length);
                 }
             }
 
@@ -539,7 +540,7 @@ public static class TestAVI
 
         foreach (var videoFormat in supportedVideoFormats)
         {
-            foreach ((var imageFormat, var value) in supportedImageFormats)
+            foreach (var (imageFormat, value) in supportedImageFormats)
             {
                 var stream = new MultiStream();
                 var files = new List<string>();
@@ -569,8 +570,9 @@ public static class TestAVI
                     stream1.AddStream(new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read));
 
                 var resultStream = await _videoProcessor.ConvertImagesToVideoAsync(new MediaFile(stream1), 24, outputFormat: videoFormat);
-                await using (var output = new FileStream(resultStreamPath, FileMode.Create))
-                    resultStream!.WriteTo(output);
+                await using var output = new FileStream(resultStreamPath, FileMode.Create);
+
+                resultStream!.WriteTo(output);
             }
         }
     }

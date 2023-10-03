@@ -6,14 +6,14 @@ namespace MediaFileProcessor;
 /// <summary>
 /// Represents a media file processing class
 /// </summary>
-public class MediaFileProcess : IDisposable
+public sealed class MediaFileProcess : IDisposable
 {
     private Process? Process { get; set; }
 
     /// <summary>
     /// The processing settings for the media file process.
     /// </summary>
-    private ProcessingSettings Settings { get; }
+    private BaseProcessingSettings Settings { get; }
 
     /// <summary>
     /// The input streams for the process.
@@ -40,7 +40,7 @@ public class MediaFileProcess : IDisposable
     /// <param name="pipeNames">The pipe names for the process. Optional parameter.</param>
     public MediaFileProcess(string processFileName,
                             string arguments,
-                            ProcessingSettings settings,
+                            BaseProcessingSettings settings,
                             Stream[]? inputStreams = null,
                             string[]? pipeNames = null)
     {
@@ -217,23 +217,23 @@ public class MediaFileProcess : IDisposable
 
         // Based on the operating system, use the appropriate method for handling multiple input streams
         if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-            MultiInputWindowsOS();
+            MultiInputWindowsOs();
         else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            MultiInpuLinuxOS();
+            MultiInpuLinuxOs();
         else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
 
             // Throw an exception if the operating system is not supported for multi inputs
-            throw new Exception("Operating System not supported for multi inputs");
+            throw new NotSupportedException("Operating System not supported for multi inputs");
         else
 
             // Throw an exception if the operating system cannot be recognized
-            throw new Exception("Operating System not recognized");
+            throw new NotSupportedException("Operating System not recognized");
     }
 
     /// <summary>
     /// This method is used to handle the scenario when the OS is Windows and multiple input streams are being processed.
     /// </summary>
-    private void MultiInputWindowsOS()
+    private void MultiInputWindowsOs()
     {
         // Create an array of NamedPipeServerStream instances with the size of the input streams
         NamedPipes = new NamedPipeServerStream[InputStreams!.Length];
@@ -273,7 +273,7 @@ public class MediaFileProcess : IDisposable
 
     // MultiInputLinuxOS is a method that handles the input streams and pipes them to the process when the
     // operating system is Linux.
-    private void MultiInpuLinuxOS()
+    private void MultiInpuLinuxOs()
     {
         // Create an array of tasks to handle each input stream
         var tasks = new Task[InputStreams!.Length];
@@ -315,8 +315,11 @@ public class MediaFileProcess : IDisposable
     /// <summary>
     /// Implements the IDisposable interface to release unmanaged resources used by this object.
     /// </summary>
-    public void Dispose()
+    public void Dispose(bool disposing)
     {
+        if(disposing)
+            return;
+
         if (InputStreams != null)
         {
             foreach(var inputStream in InputStreams)
@@ -333,10 +336,9 @@ public class MediaFileProcess : IDisposable
 
         if (PipeNames != null)
         {
-            foreach (var pipeFile in PipeNames)
+            foreach (var pipeFile in PipeNames.Where(File.Exists))
             {
-                if(File.Exists(pipeFile))
-                    File.Delete(pipeFile);
+                File.Delete(pipeFile);
             }
 
             PipeNames = null;
@@ -365,11 +367,28 @@ public class MediaFileProcess : IDisposable
     }
 
     /// <summary>
+    /// Dispose pattern
+    /// </summary>
+    public void Dispose()
+    {
+        Dispose(false);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Destructor
+    /// </summary>
+    ~MediaFileProcess()
+    {
+        Dispose(false);
+    }
+
+    /// <summary>
     /// This method is executed in the event of an application crash so that child executable processes do not remain alive in the background
     /// </summary>
     private void UnhandledExceptionHandler(object sender, UnhandledExceptionEventArgs e)
     {
-        Dispose();
+        Dispose(false);
     }
 
     /// <summary>
@@ -377,6 +396,6 @@ public class MediaFileProcess : IDisposable
     /// </summary>
     private void DomainProcessExitHandler(object sender, EventArgs e)
     {
-        Dispose();
+        Dispose(false);
     }
 }

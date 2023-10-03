@@ -3,12 +3,15 @@ using MediaFileProcessor.Models.Common;
 using MediaFileProcessor.Models.Enums;
 namespace MediaFileProcessor.Models.Settings;
 
-public class ImageProcessingSettings : ProcessingSettings
+/// <summary>
+/// Settings for image processing
+/// </summary>
+public class ImageBaseProcessingSettings : BaseProcessingSettings
 {
     /// <summary>
     /// JPEG/MIFF/PNG compression level
     /// </summary>
-    public ImageProcessingSettings Quality(int quality)
+    public ImageBaseProcessingSettings Quality(int quality)
     {
         _stringBuilder.Append($" -quality {quality} ");
 
@@ -18,14 +21,18 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Use this filter when resizing an image
     /// </summary>
-    public ImageProcessingSettings Filter(FilterType filter)
+    public ImageBaseProcessingSettings Filter(FilterType filter)
     {
         _stringBuilder.Append($" -filter {filter.ToString()}");
 
         return this;
     }
 
-    public ImageProcessingSettings CustomInputs(string customInputs)
+    /// <summary>
+    /// Add custom inputs
+    /// </summary>
+    /// <param name="customInputs">inputs</param>
+    public ImageBaseProcessingSettings CustomInputs(string customInputs)
     {
         _stringBuilder.Append(customInputs);
 
@@ -35,7 +42,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// apply Paeth rotation to the image
     /// </summary>
-    public ImageProcessingSettings Rotate(int rotate)
+    public ImageBaseProcessingSettings Rotate(int rotate)
     {
         _stringBuilder.Append($" -rotate {rotate} ");
 
@@ -45,7 +52,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Image depth
     /// </summary>
-    public ImageProcessingSettings Depth(int depth)
+    public ImageBaseProcessingSettings Depth(int depth)
     {
         _stringBuilder.Append($" -depth {depth} ");
 
@@ -55,7 +62,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Horizontal and vertical density of the image
     /// </summary>
-    public ImageProcessingSettings Density(int density)
+    public ImageBaseProcessingSettings Density(int density)
     {
         _stringBuilder.Append($" -density {density} ");
 
@@ -65,7 +72,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Unsharpen the image
     /// </summary>
-    public ImageProcessingSettings UnSharp(string radius)
+    public ImageBaseProcessingSettings UnSharp(string radius)
     {
         _stringBuilder.Append($" -unsharp {radius} ");
 
@@ -75,7 +82,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Simulate radial blur
     /// </summary>
-    public ImageProcessingSettings RedialBlur(string angle)
+    public ImageBaseProcessingSettings RedialBlur(string angle)
     {
         _stringBuilder.Append($" -radial-blur {angle} ");
 
@@ -85,7 +92,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Enhance or reduce the image contrast
     /// </summary>
-    public ImageProcessingSettings Contrast(bool value)
+    public ImageBaseProcessingSettings Contrast(bool value)
     {
         if(value)
             _stringBuilder.Append(" +contrast ");
@@ -98,7 +105,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Set an image attribute
     /// </summary>
-    public ImageProcessingSettings SetAttribute(string value)
+    public ImageBaseProcessingSettings SetAttribute(string value)
     {
         _stringBuilder.Append($" -set {value}");
 
@@ -108,7 +115,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Set box
     /// </summary>
-    public ImageProcessingSettings Box(string box)
+    public ImageBaseProcessingSettings Box(string box)
     {
         _stringBuilder.Append($" -box {box}");
 
@@ -118,7 +125,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Color correct with a color decision list
     /// </summary>
-    public ImageProcessingSettings ColorDecisionList(string filename)
+    public ImageBaseProcessingSettings ColorDecisionList(string filename)
     {
         _stringBuilder.Append($" -cdl {filename} ");
 
@@ -128,7 +135,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Adaptively blur pixels; decrease effect near edges
     /// </summary>
-    public ImageProcessingSettings AdaptiveBlur(string geometry)
+    public ImageBaseProcessingSettings AdaptiveBlur(string geometry)
     {
         _stringBuilder.Append($" -adaptive-blur {geometry} ");
 
@@ -138,7 +145,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Adaptively resize image with data dependent triangulation
     /// </summary>
-    public ImageProcessingSettings AdaptiveResize(string geometry)
+    public ImageBaseProcessingSettings AdaptiveResize(string geometry)
     {
         _stringBuilder.Append($" -adaptive-resize {geometry} ");
 
@@ -148,7 +155,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Adaptively sharpen pixels; increase effect near edges
     /// </summary>
-    public ImageProcessingSettings AdaptiveSharpen(string geometry)
+    public ImageBaseProcessingSettings AdaptiveSharpen(string geometry)
     {
         _stringBuilder.Append($" -adaptive-sharpen {geometry} ");
 
@@ -158,7 +165,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Join images into a single multi-image file
     /// </summary>
-    public ImageProcessingSettings Adjoin()
+    public ImageBaseProcessingSettings Adjoin()
     {
         _stringBuilder.Append(" -adjoin ");
 
@@ -168,7 +175,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Affine transform matrix
     /// </summary>
-    public ImageProcessingSettings Affine(string matrix)
+    public ImageBaseProcessingSettings Affine(string matrix)
     {
         _stringBuilder.Append($" -affine {matrix} ");
 
@@ -178,7 +185,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// On, activate, off, deactivate, set, opaque, copy", transparent, extract, background, or shape the alpha channel
     /// </summary>
-    public ImageProcessingSettings Alpha()
+    public ImageBaseProcessingSettings Alpha()
     {
         _stringBuilder.Append(" -alpha ");
 
@@ -188,7 +195,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Annotate the image with text
     /// </summary>
-    public ImageProcessingSettings Annotate(string geometry, string text)
+    public ImageBaseProcessingSettings Annotate(string geometry, string text)
     {
         _stringBuilder.Append($" -annotate {geometry} {text} ");
 
@@ -198,7 +205,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Remove pixel-aliasing
     /// </summary>
-    public ImageProcessingSettings Antialias()
+    public ImageBaseProcessingSettings Antialias()
     {
         _stringBuilder.Append(" -antialias ");
 
@@ -208,7 +215,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Append an image sequence
     /// </summary>
-    public ImageProcessingSettings Append()
+    public ImageBaseProcessingSettings Append()
     {
         _stringBuilder.Append(" -append ");
 
@@ -218,7 +225,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Decipher image with this password
     /// </summary>
-    public ImageProcessingSettings Authenticate(string value)
+    public ImageBaseProcessingSettings Authenticate(string value)
     {
         _stringBuilder.Append($" -authenticate {value} ");
 
@@ -228,14 +235,14 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Automagically adjust gamma level of image
     /// </summary>
-    public ImageProcessingSettings AutoGamma()
+    public ImageBaseProcessingSettings AutoGamma()
     {
         _stringBuilder.Append(" -auto-gamma ");
 
         return this;
     }
 
-    public ImageProcessingSettings AutoLevel()
+    public ImageBaseProcessingSettings AutoLevel()
     {
         _stringBuilder.Append(" -auto-level ");
 
@@ -245,7 +252,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Automagically orient image
     /// </summary>
-    public ImageProcessingSettings AutoOrient()
+    public ImageBaseProcessingSettings AutoOrient()
     {
         _stringBuilder.Append(" -auto-orient ");
 
@@ -255,7 +262,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Automatically perform image thresholding
     /// </summary>
-    public ImageProcessingSettings AutoThreshold(string method)
+    public ImageBaseProcessingSettings AutoThreshold(string method)
     {
         _stringBuilder.Append($" -auto-threshold {method} ");
 
@@ -265,7 +272,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Background color
     /// </summary>
-    public ImageProcessingSettings Background(string color)
+    public ImageBaseProcessingSettings Background(string color)
     {
         _stringBuilder.Append($" -background {color} ");
 
@@ -275,7 +282,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Measure performance
     /// </summary>
-    public ImageProcessingSettings Bench(string iterations)
+    public ImageBaseProcessingSettings Bench(string iterations)
     {
         _stringBuilder.Append($" -bench {iterations} ");
 
@@ -285,7 +292,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Add bias when convolving an image
     /// </summary>
-    public ImageProcessingSettings Bias(string value)
+    public ImageBaseProcessingSettings Bias(string value)
     {
         _stringBuilder.Append($" -bias {value} ");
 
@@ -295,7 +302,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Non-linear, edge-preserving, and noise-reducing smoothing filter
     /// </summary>
-    public ImageProcessingSettings BilateralBlur(string geometry)
+    public ImageBaseProcessingSettings BilateralBlur(string geometry)
     {
         _stringBuilder.Append($" -bilateral-blur {geometry} ");
 
@@ -305,7 +312,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Force all pixels below the threshold into black
     /// </summary>
-    public ImageProcessingSettings BlackThreshold(string value)
+    public ImageBaseProcessingSettings BlackThreshold(string value)
     {
         _stringBuilder.Append($" -black-threshold {value} ");
 
@@ -315,7 +322,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Chromaticity blue primary point
     /// </summary>
-    public ImageProcessingSettings BluePrimary(string point)
+    public ImageBaseProcessingSettings BluePrimary(string point)
     {
         _stringBuilder.Append($" -blue-primary {point} ");
 
@@ -325,7 +332,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Simulate a scene at nighttime in the moonlight
     /// </summary>
-    public ImageProcessingSettings BlueShift(string factor)
+    public ImageBaseProcessingSettings BlueShift(string factor)
     {
         _stringBuilder.Append($" -blue-shift {factor} ");
 
@@ -335,7 +342,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Reduce image noise and reduce detail levels
     /// </summary>
-    public ImageProcessingSettings Blur(string geometry)
+    public ImageBaseProcessingSettings Blur(string geometry)
     {
         _stringBuilder.Append($" -blur {geometry} ");
 
@@ -345,7 +352,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Surround image with a border of color
     /// </summary>
-    public ImageProcessingSettings Border(string geometry)
+    public ImageBaseProcessingSettings Border(string geometry)
     {
         _stringBuilder.Append($" -border {geometry} ");
 
@@ -355,728 +362,728 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Border color
     /// </summary>
-    public ImageProcessingSettings BorderColor(string color)
+    public ImageBaseProcessingSettings BorderColor(string color)
     {
         _stringBuilder.Append($" -bordercolor {color} ");
 
         return this;
     }
 
-    public ImageProcessingSettings BrightnessContrast(string geometry)
+    public ImageBaseProcessingSettings BrightnessContrast(string geometry)
     {
         _stringBuilder.Append($" -brightness-contrast {geometry} ");
 
         return this;
     }
 
-    public ImageProcessingSettings Canny(string geometry)
+    public ImageBaseProcessingSettings Canny(string geometry)
     {
         _stringBuilder.Append($" -canny {geometry} ");
 
         return this;
     }
-    public ImageProcessingSettings Caption(string text)
+    public ImageBaseProcessingSettings Caption(string text)
     {
         _stringBuilder.Append($" -caption {text} ");
 
         return this;
     }
 
-    public ImageProcessingSettings Channel(string type)
+    public ImageBaseProcessingSettings Channel(string type)
     {
         _stringBuilder.Append($" -channel {type} ");
 
         return this;
     }
-    public ImageProcessingSettings Charcoal(string radius)
+    public ImageBaseProcessingSettings Charcoal(string radius)
     {
         _stringBuilder.Append($" -charcoal {radius} ");
 
         return this;
     }
-    public ImageProcessingSettings Chop(string geometry)
+    public ImageBaseProcessingSettings Chop(string geometry)
     {
         _stringBuilder.Append($" -chop {geometry} ");
 
         return this;
     }
-    public ImageProcessingSettings Clahe(string geometry)
+    public ImageBaseProcessingSettings Clahe(string geometry)
     {
         _stringBuilder.Append($" -clahe {geometry} ");
 
         return this;
     }
-    public ImageProcessingSettings Clamp()
+    public ImageBaseProcessingSettings Clamp()
     {
         _stringBuilder.Append(" -clamp ");
 
         return this;
     }
-    public ImageProcessingSettings Clip()
+    public ImageBaseProcessingSettings Clip()
     {
         _stringBuilder.Append(" -clip ");
 
         return this;
     }
-    public ImageProcessingSettings ClipMask(string filename)
+    public ImageBaseProcessingSettings ClipMask(string filename)
     {
         _stringBuilder.Append($" -clip-mask {filename} ");
 
         return this;
     }
-    public ImageProcessingSettings ClipPath(string id)
+    public ImageBaseProcessingSettings ClipPath(string id)
     {
         _stringBuilder.Append($" -clip-path {id} ");
 
         return this;
     }
-    public ImageProcessingSettings Clone(string index)
+    public ImageBaseProcessingSettings Clone(string index)
     {
         _stringBuilder.Append($" -clone {index} ");
 
         return this;
     }
-    public ImageProcessingSettings Clut()
+    public ImageBaseProcessingSettings Clut()
     {
         _stringBuilder.Append(" -clut ");
 
         return this;
     }
-    public ImageProcessingSettings ConnectedComponents(string connectivity)
+    public ImageBaseProcessingSettings ConnectedComponents(string connectivity)
     {
         _stringBuilder.Append($" -connected-components {connectivity} ");
 
         return this;
     }
-    public ImageProcessingSettings ContrastStretch(string geometry)
+    public ImageBaseProcessingSettings ContrastStretch(string geometry)
     {
         _stringBuilder.Append($" -contrast-stretch {geometry} ");
 
         return this;
     }
-    public ImageProcessingSettings Coalesce()
+    public ImageBaseProcessingSettings Coalesce()
     {
         _stringBuilder.Append(" -coalesce ");
 
         return this;
     }
-    public ImageProcessingSettings Colorize(string value)
+    public ImageBaseProcessingSettings Colorize(string value)
     {
         _stringBuilder.Append($" -colorize {value} ");
 
         return this;
     }
 
-    public ImageProcessingSettings ColorMatrix(string matrix)
+    public ImageBaseProcessingSettings ColorMatrix(string matrix)
     {
         _stringBuilder.Append($" -color-matrix {matrix} ");
 
         return this;
     }
 
-    public ImageProcessingSettings Colors(string value)
+    public ImageBaseProcessingSettings Colors(string value)
     {
         _stringBuilder.Append($" -colors {value} ");
 
         return this;
     }
-    public ImageProcessingSettings Colorspace(string type)
+    public ImageBaseProcessingSettings Colorspace(string type)
     {
         _stringBuilder.Append($" -colorspace {type} ");
 
         return this;
     }
-    public ImageProcessingSettings ColorThreshold(string startColorStopColor)
+    public ImageBaseProcessingSettings ColorThreshold(string startColorStopColor)
     {
         _stringBuilder.Append($" -color-threshold {startColorStopColor} ");
 
         return this;
     }
-    public ImageProcessingSettings Combine()
+    public ImageBaseProcessingSettings Combine()
     {
         _stringBuilder.Append(" -combine ");
 
         return this;
     }
-    public ImageProcessingSettings Comment(string text)
+    public ImageBaseProcessingSettings Comment(string text)
     {
         _stringBuilder.Append($" -comment {text} ");
 
         return this;
     }
-    public ImageProcessingSettings Compare()
+    public ImageBaseProcessingSettings Compare()
     {
         _stringBuilder.Append(" -compare ");
 
         return this;
     }
-    public ImageProcessingSettings ComplexOperator()
+    public ImageBaseProcessingSettings ComplexOperator()
     {
         _stringBuilder.Append(" -complexoperator ");
 
         return this;
     }
-    public ImageProcessingSettings Compose(string @operator)
+    public ImageBaseProcessingSettings Compose(string @operator)
     {
         _stringBuilder.Append($" -compose {@operator} ");
 
         return this;
     }
-    public ImageProcessingSettings Composite()
+    public ImageBaseProcessingSettings Composite()
     {
         _stringBuilder.Append(" -composite ");
 
         return this;
     }
-    public ImageProcessingSettings Compress(string type)
+    public ImageBaseProcessingSettings Compress(string type)
     {
         _stringBuilder.Append($" -compress {type} ");
 
         return this;
     }
-    public ImageProcessingSettings Contrast(string level)
+    public ImageBaseProcessingSettings Contrast(string level)
     {
         _stringBuilder.Append($" -contrast {level} ");
 
         return this;
     }
-    public ImageProcessingSettings Convolve(string coefficients)
+    public ImageBaseProcessingSettings Convolve(string coefficients)
     {
         _stringBuilder.Append($" -convolve {coefficients} ");
 
         return this;
     }
 
-    public ImageProcessingSettings Copy(string geometry, string offset)
+    public ImageBaseProcessingSettings Copy(string geometry, string offset)
     {
         _stringBuilder.Append($" -copy {geometry} {offset} ");
 
         return this;
     }
-    public ImageProcessingSettings Crop(string geometry)
+    public ImageBaseProcessingSettings Crop(string geometry)
     {
         _stringBuilder.Append($" -crop {geometry} ");
 
         return this;
     }
-    public ImageProcessingSettings Cycle(string amount)
+    public ImageBaseProcessingSettings Cycle(string amount)
     {
         _stringBuilder.Append($" -cycle {amount} ");
 
         return this;
     }
-    public ImageProcessingSettings Decipher(string filename)
+    public ImageBaseProcessingSettings Decipher(string filename)
     {
         _stringBuilder.Append($" -decipher {filename} ");
 
         return this;
     }
-    public ImageProcessingSettings Debug(string events)
+    public ImageBaseProcessingSettings Debug(string events)
     {
         _stringBuilder.Append($" -debug {events} ");
 
         return this;
     }
-    public ImageProcessingSettings Define(string formatOption)
+    public ImageBaseProcessingSettings Define(string formatOption)
     {
         _stringBuilder.Append($" -define {formatOption} ");
 
         return this;
     }
-    public ImageProcessingSettings Deconstruct()
+    public ImageBaseProcessingSettings Deconstruct()
     {
         _stringBuilder.Append(" -deconstruct ");
 
         return this;
     }
-    public ImageProcessingSettings Delay(int centiseconds)
+    public ImageBaseProcessingSettings Delay(int centiseconds)
     {
         _stringBuilder.Append($" -delay {centiseconds} ");
 
         return this;
     }
-    public ImageProcessingSettings Delete(string index)
+    public ImageBaseProcessingSettings Delete(string index)
     {
         _stringBuilder.Append($" -delete {index} ");
 
         return this;
     }
-    public ImageProcessingSettings Density(string geometry)
+    public ImageBaseProcessingSettings Density(string geometry)
     {
         _stringBuilder.Append($" -density {geometry} ");
 
         return this;
     }
-    public ImageProcessingSettings Depth(string value)
+    public ImageBaseProcessingSettings Depth(string value)
     {
         _stringBuilder.Append($" -depth {value} ");
 
         return this;
     }
-    public ImageProcessingSettings Despeckle()
+    public ImageBaseProcessingSettings Despeckle()
     {
         _stringBuilder.Append(" -despeckle ");
 
         return this;
     }
-    public ImageProcessingSettings Direction(string type)
+    public ImageBaseProcessingSettings Direction(string type)
     {
         _stringBuilder.Append($" -direction {type} ");
 
         return this;
     }
-    public ImageProcessingSettings Display(string server)
+    public ImageBaseProcessingSettings Display(string server)
     {
         _stringBuilder.Append($" -display {server} ");
 
         return this;
     }
-    public ImageProcessingSettings Dispose(string method)
+    public ImageBaseProcessingSettings Dispose(string method)
     {
         _stringBuilder.Append($" -dispose {method} ");
 
         return this;
     }
-    public ImageProcessingSettings DistributeCache(string port)
+    public ImageBaseProcessingSettings DistributeCache(string port)
     {
         _stringBuilder.Append($" -distribute-cache {port} ");
 
         return this;
     }
-    public ImageProcessingSettings Distort(string type, string coefficients)
+    public ImageBaseProcessingSettings Distort(string type, string coefficients)
     {
         _stringBuilder.Append($" -distort {type} {coefficients} ");
 
         return this;
     }
-    public ImageProcessingSettings Dither(string method)
+    public ImageBaseProcessingSettings Dither(string method)
     {
         _stringBuilder.Append($" -dither {method} ");
 
         return this;
     }
 
-    public ImageProcessingSettings Draw(string value)
+    public ImageBaseProcessingSettings Draw(string value)
     {
         _stringBuilder.Append($" -draw {value} ");
 
         return this;
     }
-    public ImageProcessingSettings Duplicate(string count, string indexes)
+    public ImageBaseProcessingSettings Duplicate(string count, string indexes)
     {
         _stringBuilder.Append($" -duplicate {count} {indexes} ");
 
         return this;
     }
-    public ImageProcessingSettings Edge(string radius)
+    public ImageBaseProcessingSettings Edge(string radius)
     {
         _stringBuilder.Append($" -edge {radius} ");
 
         return this;
     }
-    public ImageProcessingSettings Emboss(string radius)
+    public ImageBaseProcessingSettings Emboss(string radius)
     {
         _stringBuilder.Append($" -emboss {radius} ");
 
         return this;
     }
-    public ImageProcessingSettings Encipher(string filename)
+    public ImageBaseProcessingSettings Encipher(string filename)
     {
         _stringBuilder.Append($" -encipher {filename} ");
 
         return this;
     }
-    public ImageProcessingSettings Encoding(string type)
+    public ImageBaseProcessingSettings Encoding(string type)
     {
         _stringBuilder.Append($" -encoding {type} ");
 
         return this;
     }
-    public ImageProcessingSettings Endian(string type)
+    public ImageBaseProcessingSettings Endian(string type)
     {
         _stringBuilder.Append($" -endian {type} ");
 
         return this;
     }
-    public ImageProcessingSettings Enhance()
+    public ImageBaseProcessingSettings Enhance()
     {
         _stringBuilder.Append(" -enhance ");
 
         return this;
     }
-    public ImageProcessingSettings Equalize()
+    public ImageBaseProcessingSettings Equalize()
     {
         _stringBuilder.Append(" -equalize ");
 
         return this;
     }
-    public ImageProcessingSettings Evaluate(string @operator, string value)
+    public ImageBaseProcessingSettings Evaluate(string @operator, string value)
     {
         _stringBuilder.Append($" -evaluate {@operator} {value} ");
 
         return this;
     }
-    public ImageProcessingSettings EvaluateSequence(string @operator)
+    public ImageBaseProcessingSettings EvaluateSequence(string @operator)
     {
         _stringBuilder.Append($" -evaluate-sequence {@operator} ");
 
         return this;
     }
-    public ImageProcessingSettings Extent(string geometry)
+    public ImageBaseProcessingSettings Extent(string geometry)
     {
         _stringBuilder.Append($" -extent {geometry}");
 
         return this;
     }
 
-    public ImageProcessingSettings Extract(string geometry)
+    public ImageBaseProcessingSettings Extract(string geometry)
     {
         _stringBuilder.Append($" -extract {geometry} ");
 
         return this;
     }
-    public ImageProcessingSettings Family(string name)
+    public ImageBaseProcessingSettings Family(string name)
     {
         _stringBuilder.Append($" -family {name} ");
 
         return this;
     }
-    public ImageProcessingSettings Features(string distance)
+    public ImageBaseProcessingSettings Features(string distance)
     {
         _stringBuilder.Append($" -features {distance} ");
 
         return this;
     }
-    public ImageProcessingSettings FFT()
+    public ImageBaseProcessingSettings FFT()
     {
         _stringBuilder.Append(" -fft ");
 
         return this;
     }
-    public ImageProcessingSettings Fill(string color)
+    public ImageBaseProcessingSettings Fill(string color)
     {
         _stringBuilder.Append($" -fill {color} ");
 
         return this;
     }
 
-    public ImageProcessingSettings Flatten()
+    public ImageBaseProcessingSettings Flatten()
     {
         _stringBuilder.Append(" -flatten ");
 
         return this;
     }
-    public ImageProcessingSettings Flip()
+    public ImageBaseProcessingSettings Flip()
     {
         _stringBuilder.Append(" -flip ");
 
         return this;
     }
-    public ImageProcessingSettings Floodfill(string geometry, string color)
+    public ImageBaseProcessingSettings Floodfill(string geometry, string color)
     {
         _stringBuilder.Append($" -floodfill {geometry} {color} ");
 
         return this;
     }
-    public ImageProcessingSettings Flop()
+    public ImageBaseProcessingSettings Flop()
     {
         _stringBuilder.Append(" -flop ");
 
         return this;
     }
-    public ImageProcessingSettings Font(string name)
+    public ImageBaseProcessingSettings Font(string name)
     {
         _stringBuilder.Append($" -font {name} ");
 
         return this;
     }
 
-    public ImageProcessingSettings Frame(string geometry)
+    public ImageBaseProcessingSettings Frame(string geometry)
     {
         _stringBuilder.Append($" -frame {geometry} ");
 
         return this;
     }
-    public ImageProcessingSettings Function(string name)
+    public ImageBaseProcessingSettings Function(string name)
     {
         _stringBuilder.Append($" -function {name} ");
 
         return this;
     }
-    public ImageProcessingSettings Fuzz(string distance)
+    public ImageBaseProcessingSettings Fuzz(string distance)
     {
         _stringBuilder.Append($" -fuzz {distance} ");
 
         return this;
     }
-    public ImageProcessingSettings FX(string expression)
+    public ImageBaseProcessingSettings FX(string expression)
     {
         _stringBuilder.Append($" -fx {expression} ");
 
         return this;
     }
 
-    public ImageProcessingSettings Gamma(string value)
+    public ImageBaseProcessingSettings Gamma(string value)
     {
         _stringBuilder.Append($" -gamma {value} ");
 
         return this;
     }
-    public ImageProcessingSettings GaussianBlur(string geometry)
+    public ImageBaseProcessingSettings GaussianBlur(string geometry)
     {
         _stringBuilder.Append($" -gaussian-blur {geometry} ");
 
         return this;
     }
-    public ImageProcessingSettings Generate(string noiseType)
+    public ImageBaseProcessingSettings Generate(string noiseType)
     {
         _stringBuilder.Append($" -generate {noiseType} ");
 
         return this;
     }
-    public ImageProcessingSettings GenerateSignature()
+    public ImageBaseProcessingSettings GenerateSignature()
     {
         _stringBuilder.Append(" -generate-signature ");
 
         return this;
     }
-    public ImageProcessingSettings Get(string attribute)
+    public ImageBaseProcessingSettings Get(string attribute)
     {
         _stringBuilder.Append($" -get {attribute} ");
 
         return this;
     }
-    public ImageProcessingSettings GlobalThreshold(string geometry)
+    public ImageBaseProcessingSettings GlobalThreshold(string geometry)
     {
         _stringBuilder.Append($" -global-threshold {geometry} ");
 
         return this;
     }
-    public ImageProcessingSettings Gradient(string color)
+    public ImageBaseProcessingSettings Gradient(string color)
     {
         _stringBuilder.Append($" -gradient {color} ");
 
         return this;
     }
-    public ImageProcessingSettings Graph(string pixel)
+    public ImageBaseProcessingSettings Graph(string pixel)
     {
         _stringBuilder.Append($" -graph {pixel} ");
 
         return this;
     }
-    public ImageProcessingSettings Grayscale(string method)
+    public ImageBaseProcessingSettings Grayscale(string method)
     {
         _stringBuilder.Append($" -grayscale {method} ");
 
         return this;
     }
-    public ImageProcessingSettings GreenPrimary(string point)
+    public ImageBaseProcessingSettings GreenPrimary(string point)
     {
         _stringBuilder.Append($" -green-primary {point} ");
 
         return this;
     }
-    public ImageProcessingSettings Halftone(string pattern)
+    public ImageBaseProcessingSettings Halftone(string pattern)
     {
         _stringBuilder.Append($" -halftone {pattern} ");
 
         return this;
     }
-    public ImageProcessingSettings HighlightColor(string color)
+    public ImageBaseProcessingSettings HighlightColor(string color)
     {
         _stringBuilder.Append($" -highlight-color {color} ");
 
         return this;
     }
-    public ImageProcessingSettings HighlightStyle(string style)
+    public ImageBaseProcessingSettings HighlightStyle(string style)
     {
         _stringBuilder.Append($" -highlight-style {style} ");
 
         return this;
     }
-    public ImageProcessingSettings Histogram()
+    public ImageBaseProcessingSettings Histogram()
     {
         _stringBuilder.Append(" -histogram ");
 
         return this;
     }
 
-    public ImageProcessingSettings HoughLine(string geometry)
+    public ImageBaseProcessingSettings HoughLine(string geometry)
     {
         _stringBuilder.Append($" -hough-line {geometry} ");
 
         return this;
     }
-    public ImageProcessingSettings HSL(string type)
+    public ImageBaseProcessingSettings HSL(string type)
     {
         _stringBuilder.Append($" -hsl {type} ");
 
         return this;
     }
-    public ImageProcessingSettings HSB()
+    public ImageBaseProcessingSettings HSB()
     {
         _stringBuilder.Append(" -hsb ");
 
         return this;
     }
-    public ImageProcessingSettings HSLColor()
+    public ImageBaseProcessingSettings HSLColor()
     {
         _stringBuilder.Append(" -hsl-color ");
 
         return this;
     }
-    public ImageProcessingSettings HWEIGHT(string value)
+    public ImageBaseProcessingSettings HWEIGHT(string value)
     {
         _stringBuilder.Append($" -hweight {value} ");
 
         return this;
     }
-    public ImageProcessingSettings IDENTIFY()
+    public ImageBaseProcessingSettings IDENTIFY()
     {
         _stringBuilder.Append(" -identify ");
 
         return this;
     }
-    public ImageProcessingSettings IDENTITY()
+    public ImageBaseProcessingSettings IDENTITY()
     {
         _stringBuilder.Append(" -identity ");
 
         return this;
     }
-    public ImageProcessingSettings If(string expression)
+    public ImageBaseProcessingSettings If(string expression)
     {
         _stringBuilder.Append($" -if {expression} ");
 
         return this;
     }
-    public ImageProcessingSettings Implode(string value)
+    public ImageBaseProcessingSettings Implode(string value)
     {
         _stringBuilder.Append($" -implode {value} ");
 
         return this;
     }
-    public ImageProcessingSettings Import()
+    public ImageBaseProcessingSettings Import()
     {
         _stringBuilder.Append(" -import ");
 
         return this;
     }
-    public ImageProcessingSettings Indent(string value)
+    public ImageBaseProcessingSettings Indent(string value)
     {
         _stringBuilder.Append($" -indent {value} ");
 
         return this;
     }
-    public ImageProcessingSettings Info()
+    public ImageBaseProcessingSettings Info()
     {
         _stringBuilder.Append(" -info ");
 
         return this;
     }
-    public ImageProcessingSettings InkCoverage(string value)
+    public ImageBaseProcessingSettings InkCoverage(string value)
     {
         _stringBuilder.Append($" -ink-coverage {value} ");
 
         return this;
     }
-    public ImageProcessingSettings Insert(string index)
+    public ImageBaseProcessingSettings Insert(string index)
     {
         _stringBuilder.Append($" -insert {index} ");
 
         return this;
     }
-    public ImageProcessingSettings Intent(string type)
+    public ImageBaseProcessingSettings Intent(string type)
     {
         _stringBuilder.Append($" -intent {type} ");
 
         return this;
     }
-    public ImageProcessingSettings Interlace(string type)
+    public ImageBaseProcessingSettings Interlace(string type)
     {
         _stringBuilder.Append($" -interlace {type} ");
 
         return this;
     }
 
-    public ImageProcessingSettings Interpolate(string type)
+    public ImageBaseProcessingSettings Interpolate(string type)
     {
         _stringBuilder.Append($" -interpolate {type} ");
 
         return this;
     }
-    public ImageProcessingSettings Inverse()
+    public ImageBaseProcessingSettings Inverse()
     {
         _stringBuilder.Append(" -inverse ");
 
         return this;
     }
-    public ImageProcessingSettings Invert()
+    public ImageBaseProcessingSettings Invert()
     {
         _stringBuilder.Append(" -invert ");
 
         return this;
     }
-    public ImageProcessingSettings Iterations(string value)
+    public ImageBaseProcessingSettings Iterations(string value)
     {
         _stringBuilder.Append($" -iterations {value} ");
 
         return this;
     }
-    public ImageProcessingSettings Label(string value)
+    public ImageBaseProcessingSettings Label(string value)
     {
         _stringBuilder.Append($" -label {value} ");
 
         return this;
     }
-    public ImageProcessingSettings Lat(string value)
+    public ImageBaseProcessingSettings Lat(string value)
     {
         _stringBuilder.Append($" -lat {value} ");
 
         return this;
     }
-    public ImageProcessingSettings Layer(string type)
+    public ImageBaseProcessingSettings Layer(string type)
     {
         _stringBuilder.Append($" -layer {type} ");
 
         return this;
     }
-    public ImageProcessingSettings Level(string value)
+    public ImageBaseProcessingSettings Level(string value)
     {
         _stringBuilder.Append($" -level {value} ");
 
         return this;
     }
-    public ImageProcessingSettings LevelColors(string value)
+    public ImageBaseProcessingSettings LevelColors(string value)
     {
         _stringBuilder.Append($" -level-colors {value} ");
 
         return this;
     }
-    public ImageProcessingSettings Limit(string type)
+    public ImageBaseProcessingSettings Limit(string type)
     {
         _stringBuilder.Append($" -limit {type} ");
 
         return this;
     }
-    public ImageProcessingSettings LinearStretch(string value)
+    public ImageBaseProcessingSettings LinearStretch(string value)
     {
         _stringBuilder.Append($" -linear-stretch {value} ");
 
         return this;
     }
-    public ImageProcessingSettings LineSize(string value)
+    public ImageBaseProcessingSettings LineSize(string value)
     {
         _stringBuilder.Append($" -line-size {value} ");
 
         return this;
     }
-    public ImageProcessingSettings LiquidRescale(string value)
+    public ImageBaseProcessingSettings LiquidRescale(string value)
     {
         _stringBuilder.Append($" -liquid-rescale {value} ");
 
         return this;
     }
-    public ImageProcessingSettings List(string type)
+    public ImageBaseProcessingSettings List(string type)
     {
         _stringBuilder.Append($" -list {type} ");
 
@@ -1087,7 +1094,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Applies a matte color to the frame color
     /// </summary>
     /// <param name="color"></param>
-    public ImageProcessingSettings MatteColor(string color)
+    public ImageBaseProcessingSettings MatteColor(string color)
     {
         _stringBuilder.Append($" -mattecolor {color} ");
 
@@ -1097,7 +1104,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Applies a median filter to the image with a given radius
     /// </summary>
-    public ImageProcessingSettings Median(string radius)
+    public ImageBaseProcessingSettings Median(string radius)
     {
         _stringBuilder.Append($" -median {radius} ");
 
@@ -1107,7 +1114,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Delineates arbitrarily shaped clusters in the image using mean-shift geometry
     /// </summary>
-    public ImageProcessingSettings MeanShift(string geometry)
+    public ImageBaseProcessingSettings MeanShift(string geometry)
     {
         _stringBuilder.Append($" -mean-shift {geometry} ");
 
@@ -1117,7 +1124,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Measures differences between images using the specified metric type
     /// </summary>
-    public ImageProcessingSettings Metric(string type)
+    public ImageBaseProcessingSettings Metric(string type)
     {
         _stringBuilder.Append($" -metric {type} ");
 
@@ -1127,7 +1134,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Makes each pixel the 'predominant color' of the neighborhood with a given radius
     /// </summary>
-    public ImageProcessingSettings Mode(string radius)
+    public ImageBaseProcessingSettings Mode(string radius)
     {
         _stringBuilder.Append($" -mode {radius} ");
 
@@ -1137,7 +1144,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Varies the brightness, saturation, and hue of the image by a given value
     /// </summary>
-    public ImageProcessingSettings Modulate(string value)
+    public ImageBaseProcessingSettings Modulate(string value)
     {
         _stringBuilder.Append($" -modulate {value} ");
 
@@ -1147,7 +1154,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Monitors the progress of the image processing
     /// </summary>
-    public ImageProcessingSettings Monitor()
+    public ImageBaseProcessingSettings Monitor()
     {
         _stringBuilder.Append(" -monitor ");
 
@@ -1157,7 +1164,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Transforms the image to black and white
     /// </summary>
-    public ImageProcessingSettings Monochrome()
+    public ImageBaseProcessingSettings Monochrome()
     {
         _stringBuilder.Append(" -monochrome ");
 
@@ -1167,7 +1174,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Morphs an image sequence by a given value
     /// </summary>
-    public ImageProcessingSettings Morph(string value)
+    public ImageBaseProcessingSettings Morph(string value)
     {
         _stringBuilder.Append($" -morph {value} ");
 
@@ -1177,7 +1184,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Applies a morphology method to the image using a given kernel
     /// </summary>
-    public ImageProcessingSettings Morphology(string method, string kernel)
+    public ImageBaseProcessingSettings Morphology(string method, string kernel)
     {
         _stringBuilder.Append($" -morphology {method} {kernel} ");
 
@@ -1187,7 +1194,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Simulates motion blur on the image using a given geometry
     /// </summary>
-    public ImageProcessingSettings MotionBlur(string geometry)
+    public ImageBaseProcessingSettings MotionBlur(string geometry)
     {
         _stringBuilder.Append($" -motion-blur {geometry} ");
 
@@ -1197,7 +1204,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Replaces each pixel with its complementary color
     /// </summary>
-    public ImageProcessingSettings Negate()
+    public ImageBaseProcessingSettings Negate()
     {
         _stringBuilder.Append(" -negate ");
 
@@ -1207,7 +1214,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Adds or reduces noise in an image with a given radius
     /// </summary>
-    public ImageProcessingSettings Noise(string radius)
+    public ImageBaseProcessingSettings Noise(string radius)
     {
         _stringBuilder.Append($" -noise {radius} ");
 
@@ -1217,7 +1224,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Transforms the image to span the full range of colors
     /// </summary>
-    public ImageProcessingSettings Normalize()
+    public ImageBaseProcessingSettings Normalize()
     {
         _stringBuilder.Append(" -normalize ");
 
@@ -1228,7 +1235,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Changes the specified color to the fill color
     /// </summary>
     /// <param name="color">The color to be changed to the fill color</param>
-    public ImageProcessingSettings Opaque(string color)
+    public ImageBaseProcessingSettings Opaque(string color)
     {
         _stringBuilder.Append($" -opaque {color} ");
 
@@ -1239,7 +1246,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Applies ordered dithering to the image with a given NxN matrix
     /// </summary>
     /// <param name="nxn">The size of the dithering matrix</param>
-    public ImageProcessingSettings OrderedDither(string nxn)
+    public ImageBaseProcessingSettings OrderedDither(string nxn)
     {
         _stringBuilder.Append($" -ordered-dither {nxn} ");
 
@@ -1250,7 +1257,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Sets the orientation of the image
     /// </summary>
     /// <param name="type">The type of orientation to apply</param>
-    public ImageProcessingSettings Orient(string type)
+    public ImageBaseProcessingSettings Orient(string type)
     {
         _stringBuilder.Append($" -orient {type} ");
 
@@ -1261,7 +1268,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Sets the size and location of the image canvas
     /// </summary>
     /// <param name="geometry">The size and location of the canvas</param>
-    public ImageProcessingSettings Page(string geometry)
+    public ImageBaseProcessingSettings Page(string geometry)
     {
         _stringBuilder.Append($" -page {geometry} ");
 
@@ -1272,7 +1279,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Simulates an oil painting effect on the image with a given radius
     /// </summary>
     /// <param name="radius">The radius of the painting effect</param>
-    public ImageProcessingSettings Paint(string radius)
+    public ImageBaseProcessingSettings Paint(string radius)
     {
         _stringBuilder.Append($" -paint {radius} ");
 
@@ -1282,7 +1289,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Sets the value of each pixel whose value is less than |epsilon| to -epsilon or epsilon
     /// </summary>
-    public ImageProcessingSettings Perceptible()
+    public ImageBaseProcessingSettings Perceptible()
     {
         _stringBuilder.Append(" -perceptible ");
 
@@ -1292,7 +1299,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Efficiently determine image attributes
     /// </summary>
-    public ImageProcessingSettings Ping()
+    public ImageBaseProcessingSettings Ping()
     {
         _stringBuilder.Append(" -ping ");
 
@@ -1303,7 +1310,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Sets the font point size
     /// </summary>
     /// <param name="value">The font point size</param>
-    public ImageProcessingSettings Pointsize(string value)
+    public ImageBaseProcessingSettings Pointsize(string value)
     {
         _stringBuilder.Append($" -pointsize {value} ");
 
@@ -1314,7 +1321,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Simulates a Polaroid picture with a given angle
     /// </summary>
     /// <param name="angle">The angle of the Polaroid effect</param>
-    public ImageProcessingSettings Polaroid(string angle)
+    public ImageBaseProcessingSettings Polaroid(string angle)
     {
         _stringBuilder.Append($" -polaroid {angle} ");
 
@@ -1325,7 +1332,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Builds a polynomial from the image sequence and the corresponding terms (coefficients and degree pairs)
     /// </summary>
     /// <param name="terms">The terms of the polynomial</param>
-    public ImageProcessingSettings Poly(string terms)
+    public ImageBaseProcessingSettings Poly(string terms)
     {
         _stringBuilder.Append($" -poly {terms} ");
 
@@ -1336,7 +1343,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Reduces the image to a limited number of color levels
     /// </summary>
     /// <param name="levels">The number of color levels</param>
-    public ImageProcessingSettings Posterize(string levels)
+    public ImageBaseProcessingSettings Posterize(string levels)
     {
         _stringBuilder.Append($" -posterize {levels} ");
 
@@ -1347,7 +1354,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Sets the maximum number of significant digits to be printed
     /// </summary>
     /// <param name="value">The number of significant digits</param>
-    public ImageProcessingSettings Precision(string value)
+    public ImageBaseProcessingSettings Precision(string value)
     {
         _stringBuilder.Append($" -precision {value} ");
 
@@ -1358,7 +1365,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Sets the image preview type
     /// </summary>
     /// <param name="type">The type of preview</param>
-    public ImageProcessingSettings Preview(string type)
+    public ImageBaseProcessingSettings Preview(string type)
     {
         _stringBuilder.Append($" -preview {type} ");
 
@@ -1369,7 +1376,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Interprets the given string and prints it to the console
     /// </summary>
     /// <param name="str">The string to be printed</param>
-    public ImageProcessingSettings Print(string str)
+    public ImageBaseProcessingSettings Print(string str)
     {
         _stringBuilder.Append($" -print {str} ");
 
@@ -1380,7 +1387,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Processes the image with a custom image filter
     /// </summary>
     /// <param name="imageFilter">The custom image filter</param>
-    public ImageProcessingSettings Process(string imageFilter)
+    public ImageBaseProcessingSettings Process(string imageFilter)
     {
         _stringBuilder.Append($" -process {imageFilter} ");
 
@@ -1391,7 +1398,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Adds, deletes, or applies an image profile
     /// </summary>
     /// <param name="filename">The name of the profile file</param>
-    public ImageProcessingSettings Profile(string filename)
+    public ImageBaseProcessingSettings Profile(string filename)
     {
         _stringBuilder.Append($" -profile {filename} ");
 
@@ -1402,7 +1409,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Reduces the number of colors in the image in the specified colorspace
     /// </summary>
     /// <param name="colorspace">The colorspace to use for quantization</param>
-    public ImageProcessingSettings Quantize(string colorspace)
+    public ImageBaseProcessingSettings Quantize(string colorspace)
     {
         _stringBuilder.Append($" -quantize {colorspace} ");
 
@@ -1412,7 +1419,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Suppresses all warning messages
     /// </summary>
-    public ImageProcessingSettings Quiet()
+    public ImageBaseProcessingSettings Quiet()
     {
         _stringBuilder.Append(" -quiet ");
 
@@ -1423,7 +1430,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Applies a radial blur to the image with a given angle
     /// </summary>
     /// <param name="angle">The angle of the rotational blur</param>
-    public ImageProcessingSettings RotationalBlur(string angle)
+    public ImageBaseProcessingSettings RotationalBlur(string angle)
     {
         _stringBuilder.Append($" -rotational-blur {angle} ");
 
@@ -1434,7 +1441,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Lightens or darkens the edges of the image to create a 3-D effect
     /// </summary>
     /// <param name="value">The value to raise the edges by</param>
-    public ImageProcessingSettings Raise(string value)
+    public ImageBaseProcessingSettings Raise(string value)
     {
         _stringBuilder.Append($" -raise {value} ");
 
@@ -1446,7 +1453,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// </summary>
     /// <param name="low">The low threshold value</param>
     /// <param name="high">The high threshold value</param>
-    public ImageProcessingSettings RandomThreshold(string low, string high)
+    public ImageBaseProcessingSettings RandomThreshold(string low, string high)
     {
         _stringBuilder.Append($" -random-threshold {low} {high} ");
 
@@ -1460,7 +1467,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <param name="lowWhite">The low white threshold value</param>
     /// <param name="highWhite">The high white threshold value</param>
     /// <param name="highBlack">The high black threshold value</param>
-    public ImageProcessingSettings RangeThreshold(string lowBlack, string lowWhite, string highWhite, string highBlack)
+    public ImageBaseProcessingSettings RangeThreshold(string lowBlack, string lowWhite, string highWhite, string highBlack)
     {
         _stringBuilder.Append($" -range-threshold {lowBlack} {lowWhite} {highWhite} {highBlack} ");
 
@@ -1471,7 +1478,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Associates a read mask with the image
     /// </summary>
     /// <param name="filename">The name of the read mask file</param>
-    public ImageProcessingSettings ReadMask(string filename)
+    public ImageBaseProcessingSettings ReadMask(string filename)
     {
         _stringBuilder.Append($" -read-mask {filename} ");
 
@@ -1482,7 +1489,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Sets the chromaticity red primary point
     /// </summary>
     /// <param name="point">The red primary point</param>
-    public ImageProcessingSettings RedPrimary(string point)
+    public ImageBaseProcessingSettings RedPrimary(string point)
     {
         _stringBuilder.Append($" -red-primary {point} ");
 
@@ -1492,7 +1499,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Pays attention to warning messages
     /// </summary>
-    public ImageProcessingSettings RegardWarnings()
+    public ImageBaseProcessingSettings RegardWarnings()
     {
         _stringBuilder.Append(" -regard-warnings ");
 
@@ -1503,7 +1510,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Applies options to a portion of the image
     /// </summary>
     /// <param name="geometry">The region to apply options to</param>
-    public ImageProcessingSettings Region(string geometry)
+    public ImageBaseProcessingSettings Region(string geometry)
     {
         _stringBuilder.Append($" -region {geometry} ");
 
@@ -1514,7 +1521,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Transforms the image colors to match a given set of colors
     /// </summary>
     /// <param name="filename">The file containing the set of colors to match</param>
-    public ImageProcessingSettings Remap(string filename)
+    public ImageBaseProcessingSettings Remap(string filename)
     {
         _stringBuilder.Append($" -remap {filename} ");
 
@@ -1524,7 +1531,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Renders vector graphics
     /// </summary>
-    public ImageProcessingSettings Render()
+    public ImageBaseProcessingSettings Render()
     {
         _stringBuilder.Append(" -render ");
 
@@ -1535,7 +1542,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Sets the size and location of the image canvas
     /// </summary>
     /// <param name="geometry">The size and location of the canvas</param>
-    public ImageProcessingSettings Repage(string geometry)
+    public ImageBaseProcessingSettings Repage(string geometry)
     {
         _stringBuilder.Append($" -repage {geometry} ");
 
@@ -1546,7 +1553,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Changes the resolution of an image
     /// </summary>
     /// <param name="geometry">The new resolution of the image</param>
-    public ImageProcessingSettings Resample(string geometry)
+    public ImageBaseProcessingSettings Resample(string geometry)
     {
         _stringBuilder.Append($" -resample {geometry} ");
 
@@ -1557,7 +1564,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Resizes the image
     /// </summary>
     /// <param name="geometry">The new size of the image</param>
-    public ImageProcessingSettings Resize(string geometry)
+    public ImageBaseProcessingSettings Resize(string geometry)
     {
         _stringBuilder.Append($" -resize {geometry} ");
 
@@ -1567,7 +1574,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Settings remain in effect until the parenthesis boundary
     /// </summary>
-    public ImageProcessingSettings RespectParentheses()
+    public ImageBaseProcessingSettings RespectParentheses()
     {
         _stringBuilder.Append(" -respect-parentheses ");
 
@@ -1578,7 +1585,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Rolls the image vertically or horizontally
     /// </summary>
     /// <param name="geometry">The direction and amount to roll the image</param>
-    public ImageProcessingSettings Roll(string geometry)
+    public ImageBaseProcessingSettings Roll(string geometry)
     {
         _stringBuilder.Append($" -roll {geometry} ");
 
@@ -1589,7 +1596,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Applies Paeth rotation to the image
     /// </summary>
     /// <param name="degrees">The amount of rotation in degrees</param>
-    public ImageProcessingSettings Rotate(string degrees)
+    public ImageBaseProcessingSettings Rotate(string degrees)
     {
         _stringBuilder.Append($" -rotate {degrees} ");
 
@@ -1600,7 +1607,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Scales the image with pixel sampling
     /// </summary>
     /// <param name="geometry">The new size of the image</param>
-    public ImageProcessingSettings Sample(string geometry)
+    public ImageBaseProcessingSettings Sample(string geometry)
     {
         _stringBuilder.Append($" -sample {geometry} ");
 
@@ -1611,7 +1618,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Sets the horizontal and vertical sampling factor
     /// </summary>
     /// <param name="geometry">The horizontal and vertical sampling factor</param>
-    public ImageProcessingSettings SamplingFactor(string geometry)
+    public ImageBaseProcessingSettings SamplingFactor(string geometry)
     {
         _stringBuilder.Append($" -sampling-factor {geometry} ");
 
@@ -1622,7 +1629,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Scales the image
     /// </summary>
     /// <param name="geometry">The new size of the image</param>
-    public ImageProcessingSettings Scale(string geometry)
+    public ImageBaseProcessingSettings Scale(string geometry)
     {
         _stringBuilder.Append($" -scale {geometry} ");
 
@@ -1633,7 +1640,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Sets the image scene number
     /// </summary>
     /// <param name="value">The scene number</param>
-    public ImageProcessingSettings Scene(string value)
+    public ImageBaseProcessingSettings Scene(string value)
     {
         _stringBuilder.Append($" -scene {value} ");
 
@@ -1644,7 +1651,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Seeds a new sequence of pseudo-random numbers
     /// </summary>
     /// <param name="value">The seed value</param>
-    public ImageProcessingSettings Seed(string value)
+    public ImageBaseProcessingSettings Seed(string value)
     {
         _stringBuilder.Append($" -seed {value} ");
 
@@ -1655,7 +1662,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Segments an image
     /// </summary>
     /// <param name="values">The segmentation values</param>
-    public ImageProcessingSettings Segment(string values)
+    public ImageBaseProcessingSettings Segment(string values)
     {
         _stringBuilder.Append($" -segment {values} ");
 
@@ -1666,7 +1673,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Selectively blurs pixels within a contrast threshold
     /// </summary>
     /// <param name="geometry">The contrast threshold and blur radius</param>
-    public ImageProcessingSettings SelectiveBlur(string geometry)
+    public ImageBaseProcessingSettings SelectiveBlur(string geometry)
     {
         _stringBuilder.Append($" -selective-blur {geometry} ");
 
@@ -1676,7 +1683,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Separates an image channel into a grayscale image
     /// </summary>
-    public ImageProcessingSettings Separate()
+    public ImageBaseProcessingSettings Separate()
     {
         _stringBuilder.Append(" -separate ");
 
@@ -1687,7 +1694,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Simulates a sepia-toned photo
     /// </summary>
     /// <param name="threshold">The threshold value for the sepia effect</param>
-    public ImageProcessingSettings SepiaTone(string threshold)
+    public ImageBaseProcessingSettings SepiaTone(string threshold)
     {
         _stringBuilder.Append($" -sepia-tone {threshold}% ");
 
@@ -1699,7 +1706,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// </summary>
     /// <param name="attribute">The attribute to set</param>
     /// <param name="value">The value of the attribute</param>
-    public ImageProcessingSettings SetAttribute(string attribute, string value)
+    public ImageBaseProcessingSettings SetAttribute(string attribute, string value)
     {
         _stringBuilder.Append($" -set {attribute} {value} ");
 
@@ -1710,7 +1717,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Shades the image using a distant light source
     /// </summary>
     /// <param name="degrees">The angle of the light source</param>
-    public ImageProcessingSettings Shade(string degrees)
+    public ImageBaseProcessingSettings Shade(string degrees)
     {
         _stringBuilder.Append($" -shade {degrees} ");
 
@@ -1721,7 +1728,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Simulates an image shadow
     /// </summary>
     /// <param name="geometry">The offset and blur of the shadow</param>
-    public ImageProcessingSettings Shadow(string geometry)
+    public ImageBaseProcessingSettings Shadow(string geometry)
     {
         _stringBuilder.Append($" -shadow {geometry} ");
 
@@ -1732,7 +1739,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Sharpens the image
     /// </summary>
     /// <param name="geometry">The sharpness radius and sigma</param>
-    public ImageProcessingSettings Sharpen(string geometry)
+    public ImageBaseProcessingSettings Sharpen(string geometry)
     {
         _stringBuilder.Append($" -sharpen {geometry} ");
 
@@ -1743,7 +1750,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Shaves pixels from the image edges
     /// </summary>
     /// <param name="geometry">The number of pixels to shave from the edges</param>
-    public ImageProcessingSettings Shave(string geometry)
+    public ImageBaseProcessingSettings Shave(string geometry)
     {
         _stringBuilder.Append($" -shave {geometry} ");
 
@@ -1754,7 +1761,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Slides one edge of the image along the X or Y axis
     /// </summary>
     /// <param name="geometry">The X or Y offset and angle of the shear</param>
-    public ImageProcessingSettings Shear(string geometry)
+    public ImageBaseProcessingSettings Shear(string geometry)
     {
         _stringBuilder.Append($" -shear {geometry} ");
 
@@ -1765,7 +1772,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Increases the contrast without saturating highlights or shadows
     /// </summary>
     /// <param name="geometry">The contrast and mid-point values</param>
-    public ImageProcessingSettings SigmoidalContrast(string geometry)
+    public ImageBaseProcessingSettings SigmoidalContrast(string geometry)
     {
         _stringBuilder.Append($" -sigmoidal-contrast {geometry} ");
 
@@ -1776,7 +1783,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Smushes an image sequence together
     /// </summary>
     /// <param name="offset">The offset of the smush</param>
-    public ImageProcessingSettings Smush(string offset)
+    public ImageBaseProcessingSettings Smush(string offset)
     {
         _stringBuilder.Append($" -smush {offset} ");
 
@@ -1787,7 +1794,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Sets the width and height of the image
     /// </summary>
     /// <param name="geometry">The width and height of the image</param>
-    public ImageProcessingSettings Size(string geometry)
+    public ImageBaseProcessingSettings Size(string geometry)
     {
         _stringBuilder.Append($" -size {geometry} ");
 
@@ -1798,7 +1805,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Simulates a pencil sketch
     /// </summary>
     /// <param name="geometry">The sketch settings</param>
-    public ImageProcessingSettings Sketch(string geometry)
+    public ImageBaseProcessingSettings Sketch(string geometry)
     {
         _stringBuilder.Append($" -sketch {geometry} ");
 
@@ -1809,7 +1816,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Negates all pixels above the threshold level
     /// </summary>
     /// <param name="threshold">The threshold level</param>
-    public ImageProcessingSettings Solarize(string threshold)
+    public ImageBaseProcessingSettings Solarize(string threshold)
     {
         _stringBuilder.Append($" -solarize {threshold} ");
 
@@ -1819,7 +1826,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Sorts pixels within each scanline in ascending order of intensity
     /// </summary>
-    public ImageProcessingSettings SortPixels()
+    public ImageBaseProcessingSettings SortPixels()
     {
         _stringBuilder.Append(" -sort-pixels ");
 
@@ -1830,7 +1837,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Splices the background color into the image
     /// </summary>
     /// <param name="geometry">The number of pixels to splice and the gravity direction</param>
-    public ImageProcessingSettings Splice(string geometry)
+    public ImageBaseProcessingSettings Splice(string geometry)
     {
         _stringBuilder.Append($" -splice {geometry} ");
 
@@ -1841,7 +1848,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Displaces image pixels by a random amount
     /// </summary>
     /// <param name="radius">The maximum random displacement of pixels</param>
-    public ImageProcessingSettings Spread(string radius)
+    public ImageBaseProcessingSettings Spread(string radius)
     {
         _stringBuilder.Append($" -spread {radius} ");
 
@@ -1853,7 +1860,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// </summary>
     /// <param name="type">The type of statistic to use (e.g. "mean", "median", etc.)</param>
     /// <param name="geometry">The size of the neighborhood</param>
-    public ImageProcessingSettings Statistic(string type, string geometry)
+    public ImageBaseProcessingSettings Statistic(string type, string geometry)
     {
         _stringBuilder.Append($" -statistic {type} {geometry} ");
 
@@ -1863,7 +1870,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Strip image of all profiles and comments
     /// </summary>
-    public ImageProcessingSettings Strip()
+    public ImageBaseProcessingSettings Strip()
     {
         _stringBuilder.Append(" -strip ");
 
@@ -1874,7 +1881,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Sets the graphic primitive stroke color
     /// </summary>
     /// <param name="color">The stroke color</param>
-    public ImageProcessingSettings Stroke(string color)
+    public ImageBaseProcessingSettings Stroke(string color)
     {
         _stringBuilder.Append($" -stroke {color} ");
 
@@ -1885,7 +1892,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Sets the graphic primitive stroke width
     /// </summary>
     /// <param name="value">The stroke width</param>
-    public ImageProcessingSettings StrokeWidth(string value)
+    public ImageBaseProcessingSettings StrokeWidth(string value)
     {
         _stringBuilder.Append($" -strokewidth {value} ");
 
@@ -1896,7 +1903,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Render text with this font stretch
     /// </summary>
     /// <param name="type">The font stretch type (e.g. "condensed", "expanded", etc.)</param>
-    public ImageProcessingSettings Stretch(string type)
+    public ImageBaseProcessingSettings Stretch(string type)
     {
         _stringBuilder.Append($" -stretch {type} ");
 
@@ -1907,7 +1914,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Render text with this font style
     /// </summary>
     /// <param name="type">The font style type (e.g. "italic", "oblique", etc.)</param>
-    public ImageProcessingSettings Style(string type)
+    public ImageBaseProcessingSettings Style(string type)
     {
         _stringBuilder.Append($" -style {type} ");
 
@@ -1918,7 +1925,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Swap two images in the image sequence
     /// </summary>
     /// <param name="indexes">The indexes of the images to swap</param>
-    public ImageProcessingSettings Swap(string indexes)
+    public ImageBaseProcessingSettings Swap(string indexes)
     {
         _stringBuilder.Append($" -swap {indexes} ");
 
@@ -1929,7 +1936,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Swirl image pixels about the center
     /// </summary>
     /// <param name="degrees">The number of degrees to swirl the pixels</param>
-    public ImageProcessingSettings Swirl(string degrees)
+    public ImageBaseProcessingSettings Swirl(string degrees)
     {
         _stringBuilder.Append($" -swirl {degrees} ");
 
@@ -1939,7 +1946,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Synchronize image to storage device
     /// </summary>
-    public ImageProcessingSettings Synchronize()
+    public ImageBaseProcessingSettings Synchronize()
     {
         _stringBuilder.Append(" -synchronize ");
 
@@ -1950,7 +1957,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Tiles the specified texture onto the image background
     /// </summary>
     /// <param name="filename">The name of the texture file</param>
-    public ImageProcessingSettings Texture(string filename)
+    public ImageBaseProcessingSettings Texture(string filename)
     {
         _stringBuilder.Append($" -texture {filename} ");
 
@@ -1961,7 +1968,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Thresholds the image
     /// </summary>
     /// <param name="value">The threshold value</param>
-    public ImageProcessingSettings Threshold(string value)
+    public ImageBaseProcessingSettings Threshold(string value)
     {
         _stringBuilder.Append($" -threshold {value} ");
 
@@ -1972,7 +1979,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Creates a thumbnail of the image
     /// </summary>
     /// <param name="geometry">The size of the thumbnail</param>
-    public ImageProcessingSettings Thumbnail(string geometry)
+    public ImageBaseProcessingSettings Thumbnail(string geometry)
     {
         _stringBuilder.Append($" -thumbnail {geometry} ");
 
@@ -1983,7 +1990,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Tiles the specified image when filling a graphic primitive
     /// </summary>
     /// <param name="filename">The name of the image file</param>
-    public ImageProcessingSettings Tile(string filename)
+    public ImageBaseProcessingSettings Tile(string filename)
     {
         _stringBuilder.Append($" -tile {filename} ");
 
@@ -1993,7 +2000,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Set force output format
     /// </summary>
-    public ImageProcessingSettings Format(FileFormatType? format)
+    public ImageBaseProcessingSettings Format(FileFormatType? format)
     {
         if(format is null)
             return this;
@@ -2007,7 +2014,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Set force output format
     /// </summary>
-    public ImageProcessingSettings Format(ImageFormatType? format)
+    public ImageBaseProcessingSettings Format(ImageFormatType? format)
     {
         if(format is null)
             return this;
@@ -2021,7 +2028,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Additional settings that are not currently provided in the wrapper
     /// </summary>
-    public ImageProcessingSettings CustomArguments(string arg)
+    public ImageBaseProcessingSettings CustomArguments(string arg)
     {
         _stringBuilder.Append(arg);
 
@@ -2036,7 +2043,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Setting Output Arguments
     /// </summary>
-    public ImageProcessingSettings SetOutputFileArguments(string? arg)
+    public ImageBaseProcessingSettings SetOutputFileArguments(string? arg)
     {
         OutputFileArguments = arg;
 
@@ -2047,7 +2054,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Sets the transparent color
     /// </summary>
     /// <param name="color">The transparent color</param>
-    public ImageProcessingSettings TransparentColor(string color)
+    public ImageBaseProcessingSettings TransparentColor(string color)
     {
         _stringBuilder.Append($" -transparent-color {color} ");
 
@@ -2057,7 +2064,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Flips the image in the vertical direction and rotates 90 degrees
     /// </summary>
-    public ImageProcessingSettings Transpose()
+    public ImageBaseProcessingSettings Transpose()
     {
         _stringBuilder.Append(" -transpose ");
 
@@ -2067,7 +2074,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Flops the image in the horizontal direction and rotates 270 degrees
     /// </summary>
-    public ImageProcessingSettings Transverse()
+    public ImageBaseProcessingSettings Transverse()
     {
         _stringBuilder.Append(" -transverse ");
 
@@ -2077,7 +2084,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Trims image edges
     /// </summary>
-    public ImageProcessingSettings Trim()
+    public ImageBaseProcessingSettings Trim()
     {
         _stringBuilder.Append(" -trim ");
 
@@ -2088,7 +2095,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Sets the color tree depth
     /// </summary>
     /// <param name="value">The color tree depth</param>
-    public ImageProcessingSettings TreeDepth(string value)
+    public ImageBaseProcessingSettings TreeDepth(string value)
     {
         _stringBuilder.Append($" -treedepth {value} ");
 
@@ -2099,7 +2106,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Sets the image type
     /// </summary>
     /// <param name="type">The image type</param>
-    public ImageProcessingSettings Type(string type)
+    public ImageBaseProcessingSettings Type(string type)
     {
         _stringBuilder.Append($" -type {type} ");
 
@@ -2110,7 +2117,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Sets the annotation bounding box color
     /// </summary>
     /// <param name="color">The annotation bounding box color</param>
-    public ImageProcessingSettings Undercolor(string color)
+    public ImageBaseProcessingSettings Undercolor(string color)
     {
         _stringBuilder.Append($" -undercolor {color} ");
 
@@ -2120,7 +2127,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Discards all but one of any pixel color
     /// </summary>
-    public ImageProcessingSettings UniqueColors()
+    public ImageBaseProcessingSettings UniqueColors()
     {
         _stringBuilder.Append(" -unique-colors ");
 
@@ -2131,7 +2138,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Sets the units of image resolution
     /// </summary>
     /// <param name="type">The units of image resolution</param>
-    public ImageProcessingSettings Units(string type)
+    public ImageBaseProcessingSettings Units(string type)
     {
         _stringBuilder.Append($" -units {type} ");
 
@@ -2142,7 +2149,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Sharpens the image
     /// </summary>
     /// <param name="geometry">The sharpen geometry</param>
-    public ImageProcessingSettings Unsharp(string geometry)
+    public ImageBaseProcessingSettings Unsharp(string geometry)
     {
         _stringBuilder.Append($" -unsharp {geometry} ");
 
@@ -2152,7 +2159,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Prints version information
     /// </summary>
-    public ImageProcessingSettings Version()
+    public ImageBaseProcessingSettings Version()
     {
         _stringBuilder.Append(" -version ");
 
@@ -2162,7 +2169,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Enables FlashPix viewing transforms
     /// </summary>
-    public ImageProcessingSettings View()
+    public ImageBaseProcessingSettings View()
     {
         _stringBuilder.Append(" -view ");
 
@@ -2173,7 +2180,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Softens the edges of the image in vignette style
     /// </summary>
     /// <param name="geometry">The vignette geometry</param>
-    public ImageProcessingSettings Vignette(string geometry)
+    public ImageBaseProcessingSettings Vignette(string geometry)
     {
         _stringBuilder.Append($" -vignette {geometry} ");
 
@@ -2184,7 +2191,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Sets the access method for pixels outside the boundaries of the image
     /// </summary>
     /// <param name="method">The access method for pixels outside the boundaries of the image</param>
-    public ImageProcessingSettings VirtualPixel(string method)
+    public ImageBaseProcessingSettings VirtualPixel(string method)
     {
         _stringBuilder.Append($" -virtual-pixel {method} ");
 
@@ -2195,7 +2202,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Alters an image along a sine wave
     /// </summary>
     /// <param name="geometry">The wave geometry</param>
-    public ImageProcessingSettings Wave(string geometry)
+    public ImageBaseProcessingSettings Wave(string geometry)
     {
         _stringBuilder.Append($" -wave {geometry} ");
 
@@ -2206,7 +2213,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Removes noise from the image using a wavelet transform
     /// </summary>
     /// <param name="threshold">The wavelet denoise threshold</param>
-    public ImageProcessingSettings WaveletDenoise(string threshold)
+    public ImageBaseProcessingSettings WaveletDenoise(string threshold)
     {
         _stringBuilder.Append($" -wavelet-denoise {threshold} ");
 
@@ -2217,7 +2224,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Renders text with the specified font weight
     /// </summary>
     /// <param name="type">The font weight</param>
-    public ImageProcessingSettings Weight(string type)
+    public ImageBaseProcessingSettings Weight(string type)
     {
         _stringBuilder.Append($" -weight {type} ");
 
@@ -2228,7 +2235,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Sets the chromaticity white point
     /// </summary>
     /// <param name="point">The chromaticity white point</param>
-    public ImageProcessingSettings WhitePoint(string point)
+    public ImageBaseProcessingSettings WhitePoint(string point)
     {
         _stringBuilder.Append($" -white-point {point} ");
 
@@ -2239,7 +2246,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Forces all pixels above the threshold into white
     /// </summary>
     /// <param name="value">The white threshold value</param>
-    public ImageProcessingSettings WhiteThreshold(string value)
+    public ImageBaseProcessingSettings WhiteThreshold(string value)
     {
         _stringBuilder.Append($" -white-threshold {value} ");
 
@@ -2251,7 +2258,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Choose from normal, the default, or break-word.
     /// </summary>
     /// <param name="type">The word break type</param>
-    public ImageProcessingSettings WordBreak(string type)
+    public ImageBaseProcessingSettings WordBreak(string type)
     {
         _stringBuilder.Append($" -word-break {type} ");
 
@@ -2262,7 +2269,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Writes images to the specified file
     /// </summary>
     /// <param name="filename">The file name to write the images to</param>
-    public ImageProcessingSettings Write(string filename)
+    public ImageBaseProcessingSettings Write(string filename)
     {
         _stringBuilder.Append($" -write {filename} ");
 
@@ -2273,7 +2280,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// Associates a write mask with the image
     /// </summary>
     /// <param name="filename">The file name of the write mask</param>
-    public ImageProcessingSettings WriteMask(string filename)
+    public ImageBaseProcessingSettings WriteMask(string filename)
     {
         _stringBuilder.Append($" -write-mask {filename} ");
 
@@ -2283,7 +2290,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Prints detailed information about the image
     /// </summary>
-    public ImageProcessingSettings Verbose()
+    public ImageBaseProcessingSettings Verbose()
     {
         _stringBuilder.Append(" -verbose ");
 
@@ -2293,7 +2300,7 @@ public class ImageProcessingSettings : ProcessingSettings
     /// <summary>
     /// Set input files
     /// </summary>
-    public ImageProcessingSettings SetInputFiles(params MediaFile[]? files)
+    public ImageBaseProcessingSettings SetInputFiles(params MediaFile[]? files)
     {
         if(files is null)
             throw new NullReferenceException("'CustomInputs' Arguments must be specified if there are no input files");

@@ -5,7 +5,7 @@ namespace MediaFileProcessor.Models.Settings;
 /// <summary>
 /// Abstract class that provides basic properties and methods for processing settings
 /// </summary>
-public class ProcessingSettings
+public abstract class BaseProcessingSettings
 {
     /// <summary>
     /// A string builder to store the process arguments
