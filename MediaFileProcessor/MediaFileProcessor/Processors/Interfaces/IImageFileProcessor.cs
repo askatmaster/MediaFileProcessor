@@ -3,6 +3,9 @@ using MediaFileProcessor.Models.Enums;
 using MediaFileProcessor.Models.Settings;
 namespace MediaFileProcessor.Processors.Interfaces;
 
+/// <summary>
+/// Interface for ImageFileProcessor
+/// </summary>
 public interface IImageFileProcessor
 {
     /// <summary>

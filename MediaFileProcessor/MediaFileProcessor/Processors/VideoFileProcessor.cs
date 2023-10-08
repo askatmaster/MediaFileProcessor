@@ -11,8 +11,16 @@ namespace MediaFileProcessor.Processors;
 /// </summary>
 public class VideoFileProcessor : IVideoFileProcessor
 {
+    /// <summary>
+    /// Constructor
+    /// </summary>
     public VideoFileProcessor() { }
 
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="ffmpegExePath">The name of the ffmpeg executable.</param>
+    /// <param name="ffprobeExePath">The name of the _ffprobe executable.</param>
     public VideoFileProcessor(string ffmpegExePath, string ffprobeExePath)
     {
         _ffmpeg = ffmpegExePath;
@@ -22,17 +30,17 @@ public class VideoFileProcessor : IVideoFileProcessor
     /// <summary>
     /// The name of the ffmpeg executable.
     /// </summary>
-    private static string _ffmpeg = "ffmpeg";
+    private readonly string _ffmpeg = "ffmpeg";
 
     /// <summary>
     /// The name of the _ffprobe executable.
     /// </summary>
-    private static string _ffprobe = "ffprobe";
+    private readonly string _ffprobe = "ffprobe";
 
     /// <summary>
     /// The address from which the ffmpeg and ffprobe executable can be downloaded.
     /// </summary>
-    private static readonly string _zipAddress = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip";
+    private const string ZipAddress = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip";
 
     /// <inheritdoc />
     public async Task<MemoryStream?> ExecuteAsync(VideoBaseProcessingSettings settings, CancellationToken cancellationToken)
@@ -63,7 +71,7 @@ public class VideoFileProcessor : IVideoFileProcessor
         var settings = new VideoBaseProcessingSettings().ReplaceIfExist().Seek(timestamp).SetInputFiles(file).FramesNumber(1).SetOutputArguments(outputFile);
 
         if(outputFile is null && outputFormat is null)
-            throw new Exception("If the outputFile is not specified then the outputFormat must be indicated necessarily");
+            throw new FormatException("If the outputFile is not specified then the outputFormat must be indicated necessarily");
 
         outputFormat ??= outputFile!.GetFileFormatType();
 
@@ -156,9 +164,9 @@ public class VideoFileProcessor : IVideoFileProcessor
             if(file.InputType is MediaFileInputType.Stream)
             {
                 fileName = @$"{Guid.NewGuid()}.mp4";
-                using var output = new FileStream(fileName, FileMode.Create);
+                await using var output = new FileStream(fileName, FileMode.Create);
 
-                await file.InputFileStream!.CopyToAsync(output);
+                await file.InputFileStream!.CopyToAsync(output, cancellationToken);
             }
 
             if(outputFile is null)
@@ -188,7 +196,7 @@ public class VideoFileProcessor : IVideoFileProcessor
             {
                 await ExecuteAsync(settings, cancellationToken);
 
-                return new MemoryStream(File.ReadAllBytes(resultFileName!));
+                return new MemoryStream(await File.ReadAllBytesAsync(resultFileName!, cancellationToken));
             }
             else
             {
@@ -229,7 +237,7 @@ public class VideoFileProcessor : IVideoFileProcessor
         var settings = new VideoBaseProcessingSettings().ReplaceIfExist().SetInputFiles(file).Seek(startTime).TimePosition(endTime).SetOutputArguments(outputFile);
 
         if(outputFile is null && outputFormat is null)
-            throw new Exception("If the outputFile is not specified then the outputFormat must be indicated necessarily");
+            throw new FormatException("If the outputFile is not specified then the outputFormat must be indicated necessarily");
 
         outputFormat = outputFile?.GetFileFormatType() ?? outputFormat;
 
@@ -253,34 +261,36 @@ public class VideoFileProcessor : IVideoFileProcessor
                 break;
         }
 
-        if(outputFile is null)
-            switch(outputFormat)
-            {
-                case FileFormatType._3GP or FileFormatType.ASF or FileFormatType.MOV or FileFormatType.MP4:
-                    settings.Format(FileFormatType.MPEG);
+        if (outputFile is not null)
+            return await ExecuteAsync(settings, cancellationToken ?? default);
 
-                    break;
-                case FileFormatType.M2TS:
-                    settings.Format(FileFormatType.TS);
+        switch(outputFormat)
+        {
+            case FileFormatType._3GP or FileFormatType.ASF or FileFormatType.MOV or FileFormatType.MP4:
+                settings.Format(FileFormatType.MPEG);
 
-                    break;
-                case FileFormatType.MKV:
-                    settings.Format("matroska");
+                break;
+            case FileFormatType.M2TS:
+                settings.Format(FileFormatType.TS);
 
-                    break;
-                case FileFormatType.RM:
-                    settings.Format(outputFormat.Value);
+                break;
+            case FileFormatType.MKV:
+                settings.Format("matroska");
 
-                    break;
-                case FileFormatType.WMV:
-                    settings.Format(FileFormatType.ASF);
+                break;
+            case FileFormatType.RM:
+                settings.Format(outputFormat.Value);
 
-                    break;
-                default:
-                    settings.Format(outputFormat!.Value);
+                break;
+            case FileFormatType.WMV:
+                settings.Format(FileFormatType.ASF);
 
-                    break;
-            }
+                break;
+            default:
+                settings.Format(outputFormat!.Value);
+
+                break;
+        }
 
         return await ExecuteAsync(settings, cancellationToken ?? default);
     }
@@ -303,7 +313,7 @@ public class VideoFileProcessor : IVideoFileProcessor
                                                                  CancellationToken? cancellationToken = null)
     {
         if(outputFile is null && outputFormat is null)
-            throw new Exception("If the outputFile is not specified then the outputFormat must be indicated necessarily");
+            throw new NotSupportedException("If the outputFile is not specified then the outputFormat must be indicated necessarily");
 
         outputFormat ??= outputFile!.GetFileFormatType();
 
@@ -338,39 +348,41 @@ public class VideoFileProcessor : IVideoFileProcessor
                 break;
         }
 
-        if(outputFile is null)
-            switch(outputFormat)
-            {
-                case FileFormatType._3GP or FileFormatType.ASF or FileFormatType.MOV or FileFormatType.MP4:
-                    settings.Format(FileFormatType.MPEG);
+        if (outputFile is not null)
+            return await ExecuteAsync(settings, cancellationToken ?? default);
 
-                    break;
-                case FileFormatType.M2TS:
-                    settings.Format(FileFormatType.TS);
+        switch(outputFormat)
+        {
+            case FileFormatType._3GP or FileFormatType.ASF or FileFormatType.MOV or FileFormatType.MP4:
+                settings.Format(FileFormatType.MPEG);
 
-                    break;
-                case FileFormatType.MKV:
-                    settings.Format("matroska");
+                break;
+            case FileFormatType.M2TS:
+                settings.Format(FileFormatType.TS);
 
-                    break;
-                case FileFormatType.RM:
-                    settings.Format(outputFormat.Value);
+                break;
+            case FileFormatType.MKV:
+                settings.Format("matroska");
 
-                    break;
-                case FileFormatType.WMV:
-                    settings.Format(FileFormatType.ASF);
+                break;
+            case FileFormatType.RM:
+                settings.Format(outputFormat.Value);
 
-                    break;
-                case FileFormatType.M4V:
-                    settings.KeyFrame(30);
-                    settings.Format(FileFormatType.M4V);
+                break;
+            case FileFormatType.WMV:
+                settings.Format(FileFormatType.ASF);
 
-                    break;
-                default:
-                    settings.Format(outputFormat!.Value);
+                break;
+            case FileFormatType.M4V:
+                settings.KeyFrame(30);
+                settings.Format(FileFormatType.M4V);
 
-                    break;
-            }
+                break;
+            default:
+                settings.Format(outputFormat!.Value);
+
+                break;
+        }
 
         return await ExecuteAsync(settings, cancellationToken ?? default);
     }
@@ -393,7 +405,7 @@ public class VideoFileProcessor : IVideoFileProcessor
         var settings = new VideoBaseProcessingSettings().ReplaceIfExist().SetInputFiles(file).SetOutputArguments(outputImagesPattern);
 
         if(outputImagesPattern is null && outputFormat is null)
-            throw new Exception("If the outputImagesPattern is not specified then the outputFormat must be indicated necessarily");
+            throw new NotSupportedException("If the outputImagesPattern is not specified then the outputFormat must be indicated necessarily");
 
         outputFormat ??= outputImagesPattern!.GetFileFormatType();
 
@@ -465,7 +477,7 @@ public class VideoFileProcessor : IVideoFileProcessor
                                                                 CancellationToken? cancellationToken = null)
     {
         if(outputFile is null && outputFormat is null)
-            throw new Exception("If the outputFile is not specified then the outputFormat must be indicated necessarily");
+            throw new NotSupportedException("If the outputFile is not specified then the outputFormat must be indicated necessarily");
 
         outputFormat ??= outputFile!.GetFileFormatType();
 
@@ -503,30 +515,32 @@ public class VideoFileProcessor : IVideoFileProcessor
                 break;
         }
 
-        if(outputFile is null)
-            switch(outputFormat)
-            {
-                case FileFormatType.AAC:
-                    settings.Format("adts");
+        if (outputFile is not null)
+            return await ExecuteAsync(settings, cancellationToken ?? default);
 
-                    break;
-                case FileFormatType.FLAC:
-                    settings.Format(outputFormat.Value);
+        switch(outputFormat)
+        {
+            case FileFormatType.AAC:
+                settings.Format("adts");
 
-                    break;
-                case FileFormatType.WMA:
-                    settings.Format(FileFormatType.ASF);
+                break;
+            case FileFormatType.FLAC:
+                settings.Format(outputFormat.Value);
 
-                    break;
-                case FileFormatType.M4A:
-                    settings.Format("adts");
+                break;
+            case FileFormatType.WMA:
+                settings.Format(FileFormatType.ASF);
 
-                    break;
-                default:
-                    settings.Format(outputFormat.Value);
+                break;
+            case FileFormatType.M4A:
+                settings.Format("adts");
 
-                    break;
-            }
+                break;
+            default:
+                settings.Format(outputFormat.Value);
+
+                break;
+        }
 
         return await ExecuteAsync(settings, cancellationToken ?? default);
     }
@@ -547,7 +561,7 @@ public class VideoFileProcessor : IVideoFileProcessor
                                                        CancellationToken? cancellationToken = null)
     {
         if(outputFile is null && outputFormat is null)
-            throw new Exception("If the outputFile is not specified then the outputFormat must be indicated necessarily");
+            throw new NotSupportedException("If the outputFile is not specified then the outputFormat must be indicated necessarily");
 
         outputFormat ??= outputFile!.GetFileFormatType();
 
@@ -579,39 +593,41 @@ public class VideoFileProcessor : IVideoFileProcessor
                 break;
         }
 
-        if(outputFile is null)
-            switch(outputFormat)
-            {
-                case FileFormatType._3GP or FileFormatType.ASF or FileFormatType.MOV or FileFormatType.MP4:
-                    settings.Format(FileFormatType.MPEG);
+        if (outputFile is not null)
+            return await ExecuteAsync(settings, cancellationToken ?? default);
 
-                    break;
-                case FileFormatType.M2TS:
-                    settings.Format(FileFormatType.TS);
+        switch(outputFormat)
+        {
+            case FileFormatType._3GP or FileFormatType.ASF or FileFormatType.MOV or FileFormatType.MP4:
+                settings.Format(FileFormatType.MPEG);
 
-                    break;
-                case FileFormatType.MKV:
-                    settings.Format("matroska");
+                break;
+            case FileFormatType.M2TS:
+                settings.Format(FileFormatType.TS);
 
-                    break;
-                case FileFormatType.RM:
-                    settings.Format(outputFormat.Value);
+                break;
+            case FileFormatType.MKV:
+                settings.Format("matroska");
 
-                    break;
-                case FileFormatType.WMV:
-                    settings.Format(FileFormatType.ASF);
+                break;
+            case FileFormatType.RM:
+                settings.Format(outputFormat.Value);
 
-                    break;
-                case FileFormatType.M4V:
-                    settings.KeyFrame(22);
-                    settings.Format(FileFormatType.M4V);
+                break;
+            case FileFormatType.WMV:
+                settings.Format(FileFormatType.ASF);
 
-                    break;
-                default:
-                    settings.Format(outputFormat.Value);
+                break;
+            case FileFormatType.M4V:
+                settings.KeyFrame(22);
+                settings.Format(FileFormatType.M4V);
 
-                    break;
-            }
+                break;
+            default:
+                settings.Format(outputFormat.Value);
+
+                break;
+        }
 
         return await ExecuteAsync(settings, cancellationToken ?? default);
     }
@@ -636,7 +652,7 @@ public class VideoFileProcessor : IVideoFileProcessor
                                                               CancellationToken? cancellationToken = null)
     {
         if(outputFile is null && outputFormat is null)
-            throw new Exception("If the outputFile is not specified then the outputFormat must be indicated necessarily");
+            throw new NotSupportedException("If the outputFile is not specified then the outputFormat must be indicated necessarily");
 
         outputFormat ??= outputFile!.GetFileFormatType();
 
@@ -740,7 +756,7 @@ public class VideoFileProcessor : IVideoFileProcessor
                                                                CancellationToken? cancellationToken = null)
     {
         if(outputFile is null && outputFormat is null)
-            throw new Exception("If the outputFile is not specified then the outputFormat must be indicated necessarily");
+            throw new NotSupportedException("If the outputFile is not specified then the outputFormat must be indicated necessarily");
 
         outputFormat ??= outputFile!.GetFileFormatType();
 
@@ -780,39 +796,41 @@ public class VideoFileProcessor : IVideoFileProcessor
                 break;
         }
 
-        if(outputFile is null)
-            switch(outputFormat)
-            {
-                case FileFormatType._3GP or FileFormatType.ASF or FileFormatType.MOV or FileFormatType.MP4:
-                    settings.Format(FileFormatType.MPEG);
+        if (outputFile is not null)
+            return await ExecuteAsync(settings, cancellationToken ?? default);
 
-                    break;
-                case FileFormatType.M2TS:
-                    settings.Format(FileFormatType.TS);
+        switch(outputFormat)
+        {
+            case FileFormatType._3GP or FileFormatType.ASF or FileFormatType.MOV or FileFormatType.MP4:
+                settings.Format(FileFormatType.MPEG);
 
-                    break;
-                case FileFormatType.MKV:
-                    settings.Format("matroska");
+                break;
+            case FileFormatType.M2TS:
+                settings.Format(FileFormatType.TS);
 
-                    break;
-                case FileFormatType.RM:
-                    settings.Format(outputFormat.Value);
+                break;
+            case FileFormatType.MKV:
+                settings.Format("matroska");
 
-                    break;
-                case FileFormatType.WMV:
-                    settings.Format(FileFormatType.ASF);
+                break;
+            case FileFormatType.RM:
+                settings.Format(outputFormat.Value);
 
-                    break;
-                case FileFormatType.M4V:
-                    settings.KeyFrame(22);
-                    settings.Format(FileFormatType.M4V);
+                break;
+            case FileFormatType.WMV:
+                settings.Format(FileFormatType.ASF);
 
-                    break;
-                default:
-                    settings.Format(outputFormat.Value);
+                break;
+            case FileFormatType.M4V:
+                settings.KeyFrame(22);
+                settings.Format(FileFormatType.M4V);
 
-                    break;
-            }
+                break;
+            default:
+                settings.Format(outputFormat.Value);
+
+                break;
+        }
 
         return await ExecuteAsync(settings, cancellationToken ?? default);
     }
@@ -834,12 +852,15 @@ public class VideoFileProcessor : IVideoFileProcessor
                                                           FileFormatType? outputFormat = null,
                                                           CancellationToken? cancellationToken = null)
     {
-        if(outputFile is null && outputFormat is null)
-            throw new Exception("If the outputFile is not specified then the outputFormat must be indicated necessarily");
+        switch (outputFile)
+        {
+            case null when outputFormat is null:
+                throw new NotSupportedException("If the outputFile is not specified then the outputFormat must be indicated necessarily");
 
-        //TODO fix m4v add audio
-        if(outputFile is null && outputFormat is FileFormatType.M4V)
-            throw new NotSupportedException($"{FileFormatType.M4V.ToString()} format is not supported");
+            //TODO fix m4v add audio
+            case null when outputFormat is FileFormatType.M4V:
+                throw new NotSupportedException($"{FileFormatType.M4V.ToString()} format is not supported");
+        }
 
         outputFormat ??= outputFile!.GetFileFormatType();
 
@@ -883,89 +904,52 @@ public class VideoFileProcessor : IVideoFileProcessor
             case FileFormatType.MOV or FileFormatType.MP4 or FileFormatType.MPEG:
                 settings.AudioCodec(AudioCodecType.MP3);
                 break;
+            case FileFormatType.WMV:
+                settings.VideoCodec(VideoCodecType.WMV1);
+                break;
+            case FileFormatType.M4V:
+                settings.VideoCodec(VideoCodecType.MPEG4);
+                break;
             default:
                 settings.AudioCodec(AudioCodecType.COPY);
                 break;
         }
 
+        if (outputFile is not null)
+            return await ExecuteAsync(settings, cancellationToken ?? default);
+
         switch(outputFormat)
         {
+            case FileFormatType._3GP or FileFormatType.ASF or FileFormatType.MOV or FileFormatType.MP4:
+                settings.Format(FileFormatType.MPEG);
+
+                break;
+            case FileFormatType.M2TS:
+                settings.Format(FileFormatType.TS);
+
+                break;
+            case FileFormatType.MKV:
+                settings.Format("matroska");
+
+                break;
             case FileFormatType.RM:
-                settings.VideoSize(VideoSizeType.HD720);
-                settings.VideoCodec(VideoCodecType.RV10);
+                settings.Format(outputFormat.Value);
+
                 break;
             case FileFormatType.WMV:
-                settings.VideoCodec(VideoCodecType.WMV1);
-
-                break;
-            case FileFormatType.GXF:
-                settings.VideoCodec(VideoCodecType.MPEG2VIDEO);
-
-                break;
-            case FileFormatType.WEBM:
-                settings.VideoCodec(VideoCodecType.LIBVPX);
+                settings.Format(FileFormatType.ASF);
 
                 break;
             case FileFormatType.M4V:
-                settings.VideoCodec(VideoCodecType.MPEG4);
-
-                break;
-            case FileFormatType.ASF:
-                settings.VideoCodec(VideoCodecType.LIBX264);
-
-                break;
-            case FileFormatType.MOV:
-                settings.VideoCodec(VideoCodecType.LIBX264);
-
-                break;
-            case FileFormatType.MP4:
-                settings.VideoCodec(VideoCodecType.LIBX264);
-
-                break;
-            case FileFormatType._3GP:
-                settings.VideoCodec(VideoCodecType.LIBX264);
-                if(outputFile is not null)
-                    settings.Format(FileFormatType.MPEG);
+                settings.KeyFrame(22);
+                settings.Format(FileFormatType.M4V);
 
                 break;
             default:
-                settings.VideoCodec(VideoCodecType.COPY);
+                settings.Format(outputFormat.Value);
+
                 break;
         }
-
-        if(outputFile is null)
-            switch(outputFormat)
-            {
-                case FileFormatType._3GP or FileFormatType.ASF or FileFormatType.MOV or FileFormatType.MP4:
-                    settings.Format(FileFormatType.MPEG);
-
-                    break;
-                case FileFormatType.M2TS:
-                    settings.Format(FileFormatType.TS);
-
-                    break;
-                case FileFormatType.MKV:
-                    settings.Format("matroska");
-
-                    break;
-                case FileFormatType.RM:
-                    settings.Format(outputFormat.Value);
-
-                    break;
-                case FileFormatType.WMV:
-                    settings.Format(FileFormatType.ASF);
-
-                    break;
-                case FileFormatType.M4V:
-                    settings.KeyFrame(22);
-                    settings.Format(FileFormatType.M4V);
-
-                    break;
-                default:
-                    settings.Format(outputFormat.Value);
-
-                    break;
-            }
 
         return await ExecuteAsync(settings, cancellationToken ?? default);
     }
@@ -1051,39 +1035,41 @@ public class VideoFileProcessor : IVideoFileProcessor
                 break;
         }
 
-        if(outputFile is null)
-            switch(outputFormat)
-            {
-                case FileFormatType._3GP or FileFormatType.ASF or FileFormatType.MOV or FileFormatType.MP4:
-                    settings.Format(FileFormatType.MPEG);
+        if (outputFile is not null)
+            return await ExecuteAsync(settings, cancellationToken ?? default);
 
-                    break;
-                case FileFormatType.M2TS:
-                    settings.Format(FileFormatType.TS);
+        switch(outputFormat)
+        {
+            case FileFormatType._3GP or FileFormatType.ASF or FileFormatType.MOV or FileFormatType.MP4:
+                settings.Format(FileFormatType.MPEG);
 
-                    break;
-                case FileFormatType.MKV:
-                    settings.Format("matroska");
+                break;
+            case FileFormatType.M2TS:
+                settings.Format(FileFormatType.TS);
 
-                    break;
-                case FileFormatType.RM:
-                    settings.Format(outputFormat.Value);
+                break;
+            case FileFormatType.MKV:
+                settings.Format("matroska");
 
-                    break;
-                case FileFormatType.WMV:
-                    settings.Format(FileFormatType.ASF);
+                break;
+            case FileFormatType.RM:
+                settings.Format(outputFormat.Value);
 
-                    break;
-                case FileFormatType.M4V:
-                    settings.KeyFrame(22);
-                    settings.Format(FileFormatType.M4V);
+                break;
+            case FileFormatType.WMV:
+                settings.Format(FileFormatType.ASF);
 
-                    break;
-                default:
-                    settings.Format(outputFormat!.Value);
+                break;
+            case FileFormatType.M4V:
+                settings.KeyFrame(22);
+                settings.Format(FileFormatType.M4V);
 
-                    break;
-            }
+                break;
+            default:
+                settings.Format(outputFormat!.Value);
+
+                break;
+        }
 
         return await ExecuteAsync(settings, cancellationToken ?? default);
     }
@@ -1097,21 +1083,21 @@ public class VideoFileProcessor : IVideoFileProcessor
     /// <param name="output">The path of the output MPEG-TS file to be created.</param>
     /// <param name="videoCodecType">The type of video codec to be used for the output file.</param>
     /// <param name="audioCodecType">The type of audio codec to be used for the output file.</param>
-    /// <param name="videoBSF">The video bitstream filter to be used for the output file.</param>
+    /// <param name="videoBsf">The video bitstream filter to be used for the output file.</param>
     /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
     /// <returns>A task that represents the asynchronous operation.</returns>
-    private async Task CreateMpegts(MediaFile inputFile,
+    private async Task CreateMpegtsAsync(MediaFile inputFile,
                                     string output,
                                     VideoCodecType videoCodecType,
                                     AudioCodecType audioCodecType,
-                                    VideoBitstreamFilter videoBSF,
+                                    VideoBitstreamFilter videoBsf,
                                     CancellationToken cancellationToken)
     {
         var setting = new VideoBaseProcessingSettings().ReplaceIfExist()
                                                    .CustomArguments("-fflags +genpts")
                                                    .SetInputFiles(inputFile)
                                                    .VideoCodec(videoCodecType)
-                                                   .VideoBSF(videoBSF)
+                                                   .VideoBSF(videoBsf)
                                                    .AudioCodec(audioCodecType)
                                                    .Format(FileFormatType.TS)
                                                    .SetOutputArguments(output);
@@ -1133,7 +1119,7 @@ public class VideoFileProcessor : IVideoFileProcessor
                                                        CancellationToken? cancellationToken = null)
     {
         if(outputFile is null && outputFormat is null)
-            throw new Exception("If the outputFile is not specified then the outputFormat must be indicated necessarily");
+            throw new FormatException("If the outputFile is not specified then the outputFormat must be indicated necessarily");
 
         outputFormat ??= outputFile!.GetFileFormatType();
 
@@ -1144,7 +1130,7 @@ public class VideoFileProcessor : IVideoFileProcessor
         {
             var outputFileName = $"_{i}{Guid.NewGuid()}.ts";
             intermediateFiles.Add(outputFileName);
-            await CreateMpegts(files[i], outputFileName, VideoCodecType.LIBX264, AudioCodecType.AAC, VideoBitstreamFilter.H264_Mp4ToAnnexB, cancellationToken ?? default);
+            await CreateMpegtsAsync(files[i], outputFileName, VideoCodecType.LIBX264, AudioCodecType.AAC, VideoBitstreamFilter.H264_Mp4ToAnnexB, cancellationToken ?? default);
         }
 
         // Concatenate the intermediate files using the 'concat' argument in FFmpeg
@@ -1161,12 +1147,18 @@ public class VideoFileProcessor : IVideoFileProcessor
         // Set the output format and execute the FFmpeg command
         var settings = new VideoBaseProcessingSettings().ReplaceIfExist().CustomArguments(strCmd).SetOutputArguments(outputFile);
 
-        if(outputFormat is FileFormatType.RM)
-            settings.VideoSize(VideoSizeType.HD720).VideoCodec(VideoCodecType.RV10).Format(FileFormatType.RM);
-        else if (outputFormat is FileFormatType.WEBM)
-            settings.VideoCodec(VideoCodecType.LIBVPX).AudioBSF(AudioBitstreamFilterType.Aac_Adtstoasc).MovFralgs(MovFlagsType.Faststart);
-        else
-            settings.CopyAllCodec().AudioBSF(AudioBitstreamFilterType.Aac_Adtstoasc).MovFralgs(MovFlagsType.Faststart);
+        switch (outputFormat)
+        {
+            case FileFormatType.RM:
+                settings.VideoSize(VideoSizeType.HD720).VideoCodec(VideoCodecType.RV10).Format(FileFormatType.RM);
+                break;
+            case FileFormatType.WEBM:
+                settings.VideoCodec(VideoCodecType.LIBVPX).AudioBSF(AudioBitstreamFilterType.Aac_Adtstoasc).MovFralgs(MovFlagsType.Faststart);
+                break;
+            default:
+                settings.CopyAllCodec().AudioBSF(AudioBitstreamFilterType.Aac_Adtstoasc).MovFralgs(MovFlagsType.Faststart);
+                break;
+        }
 
         if(outputFile is null)
             switch(outputFormat)
@@ -1201,11 +1193,8 @@ public class VideoFileProcessor : IVideoFileProcessor
         var result = await ExecuteAsync(settings, cancellationToken ?? default);
 
         // Delete the intermediate files
-        foreach (var file in intermediateFiles)
-        {
-            if(File.Exists(file))
-                File.Delete(file);
-        }
+        foreach (var file in intermediateFiles.Where(File.Exists))
+            File.Delete(file);
 
         return result;
     }
@@ -1213,7 +1202,7 @@ public class VideoFileProcessor : IVideoFileProcessor
     //======================================================================================================================================================================
 
     /// <inheritdoc />
-    public async Task<string> GetVideoInfo(MediaFile videoFile, CancellationToken? cancellationToken = null)
+    public async Task<string> GetVideoInfoAsync(MediaFile videoFile, CancellationToken? cancellationToken = null)
     {
         VideoBaseProcessingSettings? settings;
 
@@ -1230,7 +1219,7 @@ public class VideoFileProcessor : IVideoFileProcessor
             settings.SetInputStreams(videoFile.InputFileStream!);
         }
 
-        var process = new MediaFileProcess(_ffprobe, settings.GetProcessArguments(false), settings, settings.GetInputStreams());
+        var process = new MediaFileProcess(_ffprobe, settings.GetProcessArguments(false), settings, settings.GetInputStreams()!);
 
         var result = await process.ExecuteAsync(cancellationToken ?? default);
 
@@ -1257,7 +1246,7 @@ public class VideoFileProcessor : IVideoFileProcessor
                                                        CancellationToken? cancellationToken = null)
     {
         if(outputFile is null && outputFormat is null)
-            throw new Exception("If the outputFile is not specified then the outputFormat must be indicated necessarily");
+            throw new FormatException("If the outputFile is not specified then the outputFormat must be indicated necessarily");
 
         outputFormat ??= outputFile!.GetFileFormatType();
 
@@ -1291,7 +1280,7 @@ public class VideoFileProcessor : IVideoFileProcessor
         try
         {
             // Downloads the ZIP archive from the remote location specified by _zipAddress.
-            await FileDownloadProcessor.DownloadFileAsync(new Uri(_zipAddress), fileName);
+            await FileDownloadProcessor.DownloadFileAsync(new Uri(ZipAddress), fileName);
 
             // Open an existing zip file for reading
             using var zip = ZipFileProcessor.Open(fileName, FileAccess.Read);

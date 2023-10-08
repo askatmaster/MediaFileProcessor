@@ -12,19 +12,26 @@ public class ImageFileProcessor : IImageFileProcessor
     /// <summary>
     /// The name of the convert executable.
     /// </summary>
-    private static string _convert = "convert";
+    private readonly string _convert = "convert";
 
+    /// <summary>
+    /// Constructor
+    /// </summary>
+    /// <param name="convertExePath">The name of the convert executable.</param>
     public ImageFileProcessor(string convertExePath)
     {
         _convert = convertExePath;
     }
 
+    /// <summary>
+    /// Constructor
+    /// </summary>
     public ImageFileProcessor() { }
 
     /// <summary>
     /// The address from which the convert executable can be downloaded.
     /// </summary>
-    private static readonly string _zipAddress = "https://imagemagick.org/archive/binaries/ImageMagick-7.1.0-61-portable-Q16-x64.zip";
+    private const string ZipAddress = "https://imagemagick.org/archive/binaries/ImageMagick-7.1.0-61-portable-Q16-x64.zip";
 
     /// <inheritdoc />
     public async Task<MemoryStream?> ExecuteAsync(ImageBaseProcessingSettings settings, CancellationToken cancellationToken)
@@ -265,7 +272,7 @@ public class ImageFileProcessor : IImageFileProcessor
         try
         {
             // Downloads the ZIP archive from the remote location specified by _zipAddress.
-            await FileDownloadProcessor.DownloadFileAsync(new Uri(_zipAddress), fileName);
+            await FileDownloadProcessor.DownloadFileAsync(new Uri(ZipAddress), fileName);
 
             // Open an existing zip file for reading
             using var zip = ZipFileProcessor.Open(fileName, FileAccess.Read);

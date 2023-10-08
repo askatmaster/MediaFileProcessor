@@ -3,6 +3,9 @@ using MediaFileProcessor.Models.Enums;
 using MediaFileProcessor.Models.Settings;
 namespace MediaFileProcessor.Processors.Interfaces;
 
+/// <summary>
+/// Interface for VideoFileProcessor
+/// </summary>
 public interface IVideoFileProcessor
 {
     /// <summary>
@@ -136,7 +139,7 @@ public interface IVideoFileProcessor
     /// <param name="videoFile">The video file for which information needs to be retrieved.</param>
     /// <param name="cancellationToken">A cancellation token to cancel the async operation.</param>
     /// <returns>A string that contains the video file's information in JSON format.</returns>
-    Task<string> GetVideoInfo(MediaFile videoFile, CancellationToken? cancellationToken = null);
+    Task<string> GetVideoInfoAsync(MediaFile videoFile, CancellationToken? cancellationToken = null);
 
     /// <summary>
     /// Asynchronously adds hard subtitles to a video file

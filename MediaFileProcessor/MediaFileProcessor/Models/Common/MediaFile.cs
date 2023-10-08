@@ -38,7 +38,7 @@ public class MediaFile
         if(fileExtension is not null)
         {
             InputType = MediaFileInputType.Path;
-            InputFilePath = $"{inputArgument} ";
+            InputFilePath = $"\"{inputArgument}\" ";
             FormatType = inputArgument.GetFileFormatType();
         }
         else

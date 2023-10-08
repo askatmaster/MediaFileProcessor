@@ -352,7 +352,7 @@ public class VideoProcessorTests
     public static async Task<VideoFileInfo> GetVideoInfoTest(VideoFileProcessor videoProcessor)
     {
         var stream = new FileStream(_video1, FileMode.Open);
-        var data = await videoProcessor.GetVideoInfo(new MediaFile(stream));
+        var data = await videoProcessor.GetVideoInfoAsync(new MediaFile(stream));
 
         return JsonConvert.DeserializeObject<VideoFileInfo>(data, _jsonSnakeCaseSerializerSettings)!;
     }

@@ -3,7 +3,7 @@ using MediaFileProcessor.Models.Settings;
 namespace MediaFileProcessor.Processors.Interfaces;
 
 /// <summary>
-/// 
+/// Interface for DocumentFileProcessor
 /// </summary>
 public interface IDocumentFileProcessor
 {
@@ -21,7 +21,7 @@ public interface IDocumentFileProcessor
     /// <param name="file">The .docx file to be converted.</param>
     /// <param name="outputFile">The file name of the converted PDF file.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
-    Task ConvertDocxToPdf(MediaFile file, string? outputFile, CancellationToken? cancellationToken = null);
+    Task ConvertDocxToPdfAsync(MediaFile file, string? outputFile, CancellationToken? cancellationToken = null);
 
     /// <summary>
     /// Converts the DOCX file to a PDF file as a stream.
@@ -29,7 +29,7 @@ public interface IDocumentFileProcessor
     /// <param name="file">The media file to be converted.</param>
     /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
     /// <returns>The memory stream that contains the converted PDF file.</returns>
-    Task<MemoryStream> ConvertDocxToPdfAsStream(MediaFile file, CancellationToken? cancellationToken = null);
+    Task<MemoryStream> ConvertDocxToPdfAsStreamAsync(MediaFile file, CancellationToken? cancellationToken = null);
 
     /// <summary>
     /// Converts the DOCX file to a PDF file as a byte array.
@@ -37,5 +37,5 @@ public interface IDocumentFileProcessor
     /// <param name="file">The media file to be converted.</param>
     /// <param name="cancellationToken">The cancellation token to cancel the operation.</param>
     /// <returns>The byte array that contains the converted PDF file.</returns>
-    Task<byte[]> ConvertDocxToPdfAsBytes(MediaFile file, CancellationToken? cancellationToken = null);
+    Task<byte[]> ConvertDocxToPdfAsBytesAsync(MediaFile file, CancellationToken? cancellationToken = null);
 }

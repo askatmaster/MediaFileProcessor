@@ -11,7 +11,7 @@ public class DocumentFileProcessor : IDocumentFileProcessor
     /// <summary>
     /// The name of the pandoc executable.
     /// </summary>
-    private static string _pandoc = "pandoc";
+    private readonly string _pandoc = "pandoc";
 
     public DocumentFileProcessor(string pandocExePath)
     {
@@ -23,7 +23,7 @@ public class DocumentFileProcessor : IDocumentFileProcessor
     /// <summary>
     /// The address from which the pandoc executable can be downloaded.
     /// </summary>
-    private static readonly string _zipAddress = "https://github.com/jgm/pandoc/releases/download/3.0.1/pandoc-3.0.1-windows-x86_64.zip";
+    private const string ZipAddress = "https://github.com/jgm/pandoc/releases/download/3.0.1/pandoc-3.0.1-windows-x86_64.zip";
 
     /// <inheritdoc />
     public async Task<MemoryStream?> ExecuteAsync(DocumentFileBaseProcessingSettings settings, CancellationToken cancellationToken)
@@ -44,7 +44,7 @@ public class DocumentFileProcessor : IDocumentFileProcessor
     /// <param name="outputFile">The file name of the converted PDF file. If `null`, the PDF file is not saved to disk.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
     /// <returns>A `MemoryStream` containing the converted PDF file.</returns>
-    private async Task<MemoryStream?> ExecuteConvertDocxToPdf(MediaFile file, string? outputFile, CancellationToken cancellationToken)
+    private async Task<MemoryStream?> ExecuteConvertDocxToPdfAsync(MediaFile file, string? outputFile, CancellationToken cancellationToken)
     {
         var settings = new DocumentFileBaseProcessingSettings().From("docx").To("pdf").Standalone().SetInputFiles(file).SetOutputFileArguments(outputFile);
 
@@ -52,21 +52,21 @@ public class DocumentFileProcessor : IDocumentFileProcessor
     }
 
     /// <inheritdoc />
-    public async Task ConvertDocxToPdf(MediaFile file, string? outputFile, CancellationToken? cancellationToken = null)
+    public async Task ConvertDocxToPdfAsync(MediaFile file, string? outputFile, CancellationToken? cancellationToken = null)
     {
-        await ExecuteConvertDocxToPdf(file, outputFile, cancellationToken ?? default);
+        await ExecuteConvertDocxToPdfAsync(file, outputFile, cancellationToken ?? default);
     }
 
     /// <inheritdoc />
-    public async Task<MemoryStream> ConvertDocxToPdfAsStream(MediaFile file, CancellationToken? cancellationToken = null)
+    public async Task<MemoryStream> ConvertDocxToPdfAsStreamAsync(MediaFile file, CancellationToken? cancellationToken = null)
     {
-        return (await ExecuteConvertDocxToPdf(file, null, cancellationToken ?? default))!;
+        return (await ExecuteConvertDocxToPdfAsync(file, null, cancellationToken ?? default))!;
     }
 
     /// <inheritdoc />
-    public async Task<byte[]> ConvertDocxToPdfAsBytes(MediaFile file, CancellationToken? cancellationToken = null)
+    public async Task<byte[]> ConvertDocxToPdfAsBytesAsync(MediaFile file, CancellationToken? cancellationToken = null)
     {
-        return (await ExecuteConvertDocxToPdf(file, null, cancellationToken ?? default))!.ToArray();
+        return (await ExecuteConvertDocxToPdfAsync(file, null, cancellationToken ?? default))!.ToArray();
     }
 
     /// <summary>
@@ -83,7 +83,7 @@ public class DocumentFileProcessor : IDocumentFileProcessor
         try
         {
             // Downloads the ZIP archive from the remote location specified by _zipAddress.
-            await FileDownloadProcessor.DownloadFileAsync(new Uri(_zipAddress), fileName);
+            await FileDownloadProcessor.DownloadFileAsync(new Uri(ZipAddress), fileName);
 
             // Open an existing zip file for reading
             using var zip = ZipFileProcessor.Open(fileName, FileAccess.Read);

@@ -3,6 +3,7 @@ using System.IO.Pipes;
 using System.Runtime.InteropServices;
 using MediaFileProcessor.Models.Settings;
 namespace MediaFileProcessor;
+
 /// <summary>
 /// Represents a media file processing class
 /// </summary>
@@ -36,36 +37,72 @@ public sealed class MediaFileProcess : IDisposable
     /// <param name="processFileName">The name of the process file.</param>
     /// <param name="arguments">The arguments for the process file.</param>
     /// <param name="settings">The processing settings for the media file process.</param>
+    public MediaFileProcess(string processFileName, string arguments, BaseProcessingSettings settings)
+        : this(processFileName, arguments, settings, null, null)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MediaFileProcess"/> class.
+    /// </summary>
+    /// <param name="processFileName">The name of the process file.</param>
+    /// <param name="arguments">The arguments for the process file.</param>
+    /// <param name="settings">The processing settings for the media file process.</param>
+    /// <param name="inputStreams">The input streams for the process. Optional parameter.</param>
+    public MediaFileProcess(string processFileName, string arguments, BaseProcessingSettings settings, Stream[] inputStreams)
+        : this(processFileName, arguments, settings, inputStreams, null)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MediaFileProcess"/> class.
+    /// </summary>
+    /// <param name="processFileName">The name of the process file.</param>
+    /// <param name="arguments">The arguments for the process file.</param>
+    /// <param name="settings">The processing settings for the media file process.</param>
+    /// <param name="pipeNames">The pipe names for the process. Optional parameter.</param>
+    public MediaFileProcess(string processFileName, string arguments, BaseProcessingSettings settings, string[] pipeNames)
+        : this(processFileName, arguments, settings, null, pipeNames)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="MediaFileProcess"/> class.
+    /// </summary>
+    /// <param name="processFileName">The name of the process file.</param>
+    /// <param name="arguments">The arguments for the process file.</param>
+    /// <param name="settings">The processing settings for the media file process.</param>
     /// <param name="inputStreams">The input streams for the process. Optional parameter.</param>
     /// <param name="pipeNames">The pipe names for the process. Optional parameter.</param>
     public MediaFileProcess(string processFileName,
                             string arguments,
                             BaseProcessingSettings settings,
-                            Stream[]? inputStreams = null,
-                            string[]? pipeNames = null)
+                            Stream[]? inputStreams,
+                            string[]? pipeNames)
     {
         Process = new Process();
         Settings = settings;
         InputStreams = inputStreams;
         PipeNames = pipeNames;
+
         Process.StartInfo.FileName = processFileName;
         Process.StartInfo.Arguments = arguments;
         Process.StartInfo.CreateNoWindow = Settings.CreateNoWindow;
         Process.StartInfo.UseShellExecute = Settings.UseShellExecute;
         Process.StartInfo.RedirectStandardInput = inputStreams is not null;
-        Process.StartInfo.RedirectStandardOutput = settings.IsStandartOutputRedirect;
+        Process.StartInfo.RedirectStandardOutput = Settings.IsStandartOutputRedirect;
         Process.StartInfo.RedirectStandardError = Settings.RedirectStandardError;
+
         Process.EnableRaisingEvents = Settings.EnableRaisingEvents;
         Process.StartInfo.WindowStyle = Settings.WindowStyle;
 
-        if(Settings.ProcessOnExitedHandler is not null)
+        if (Settings.ProcessOnExitedHandler is not null)
             Process.Exited += Settings.ProcessOnExitedHandler;
 
-
-        if(Settings.OutputDataReceivedEventHandler is not null)
+        if (Settings.OutputDataReceivedEventHandler is not null)
             Process.OutputDataReceived += Settings.OutputDataReceivedEventHandler;
 
-        if(Settings.ErrorDataReceivedHandler is not null)
+        if (Settings.ErrorDataReceivedHandler is not null)
             Process.ErrorDataReceived += Settings.ErrorDataReceivedHandler;
 
         Process.Exited += ProcessOnExited;
