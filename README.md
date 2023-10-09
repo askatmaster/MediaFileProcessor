@@ -1,5 +1,5 @@
 # MediaFileProcessor
-C#(.NET Standard 2.0) OpenSource library for processing various files (videos, photos, documents, images).
+C# (.NET Standard 2.1) OpenSource library for processing various files (videos, photos, documents, images).
 
 ```dotnet add package MediaFileProcessor --version 1.0.2```
 
@@ -18,27 +18,25 @@ The first step is to define the data to be processed. The data to be processed i
 You can create an instance of this class from a stream, a file path, an array of bytes, a named pipe, a naming pattern:
 
 ```csharp 
-var fromPath = new MediaFile(@"C:\fileTest.avi", MediaFileInputType.Path);
+var fromPath = new MediaFile(@"C:\fileTest.avi");
 
-var fromNamedPipe = new MediaFile(@"fileTestPipeName", MediaFileInputType.NamedPipe);
+var fromNamedPipe = new MediaFile("fileTestPipeName");
 
-var namingTemplate = new MediaFile(@"C:\fileTest%003d.avi", MediaFileInputType.Template);
+var fromPipe = new MediaFile("pipeName");
 
-var fs = @"C:\fileTest.avi".ToStream();~~~~
+var fs = @"C:\fileTest.avi".ToFileStream();
 var fromStream = new MediaFile(fs);
 
 var bytes = @"C:\fileTest.avi".ToBytes();
 var fromBytes = new MediaFile(bytes);
 ```
 
-When creating an instance from a path, a named pipe, and a naming pattern, you must specify the receive type given via the ```MediaFileInputType``` parameter.
-
 # FFmpeg instruction
 
 To process video files with FFmpeg, you must have its executable file ffmpeg.exe.
 If you don't want to download it yourself, you can use the following code:
 
-```await VideoFileProcessor.DownloadExecutableFiles();```
+```await VideoFileProcessor.DownloadExecutableFilesAsync();```
 
 This code will download the archive from https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip and unzip the required ffmpeg.exe to the root directory.
 
@@ -63,14 +61,14 @@ Next, define the configuration for processing:
 ```csharp 
 var settings = new VideoProcessingSettings();
 
-var mediaFile = new MediaFile(@"pathToOutputFile", MediaFileInputType.Path);~~~~
+var mediaFile = new MediaFile("pathToOutputFile");
 
-settings.ReplaceIfExist()                          //Перезаписывать выходные файлы без запроса.
-        .Seek(TimeSpan.FromMilliseconds(47500))    //Кадр, с которого нужно начать поиск.
-        .SetInputFiles(mediaFile)                  //Установить входные файлы
-        .FramesNumber(1)                           //Количество видеокадров для вывода
-        .Format(FileFormatType.JPG)                //Форсировать формат входного или выходного файла.
-        .SetOutputArguments(@"pathToInputFile");   //Настройка выходных аргументов
+settings.ReplaceIfExist()                          //Overwrite Output Files Without Prompting.
+        .Seek(TimeSpan.FromMilliseconds(47500))    //A frame to start your search with.
+        .SetInputFiles(mediaFile)                  //Install Input Files
+        .FramesNumber(1)                           //Number of Video Frames to Output
+        .Format(FileFormatType.JPG)                //Force Input or Output File Format.
+        .SetOutputArguments(@"pathToInputFile");   //Configuring Output Arguments
 ```
 Next, you just need to pass the configuration to the method  ```ExecuteAsync```:
 
@@ -86,7 +84,7 @@ It is necessary to OBSERVE the ORDER of the configurations, because some argumen
 ```csharp
 var videoProcessor = new VideoFileProcessor();
 
-var stream = @"pathToOutputFile".ToStream();
+var stream = "pathToOutputFile".ToFileStream();
 var data = await videoProcessor.GetVideoInfo(new MediaFile(stream));
 
 var info = JsonConvert.DeserializeObject<VideoFileInfo>(data, _jsonSnakeCaseSerializerSettings)!;
@@ -106,7 +104,7 @@ If you need to set an argument that is not present in the configuration methods,
 
 Full code:
 ```csharp
-var mediaFile = new MediaFile(@"pathToOutputFile", MediaFileInputType.Path);
+var mediaFile = new MediaFile(@"pathToOutputFile");
 
 var videoFileProcessor = new VideoFileProcessor();
 
@@ -163,7 +161,7 @@ Below is an example of using frame extraction from a video file at a certain tim
  var videoFileProcessor = new VideoFileProcessor();
  //Test block with physical paths to input and output files
  await videoFileProcessor.GetFrameFromVideoAsync(TimeSpan.FromMilliseconds(47500),
-                                                 new MediaFile(@"C:\inputFile.avi", MediaFileInputType.Path),
+                                                 new MediaFile(@"C:\inputFile.avi"),
                                                  @"C:\resultPath.jpg",
                                                  FileFormatType.JPG);
 ```
@@ -215,7 +213,7 @@ The current version of the library already implements some options for image pro
 ### An example of image compression in three options (directory path, stream, byte array)
 ```csharp
 //Test block with physical paths to input and output files
-await processor.CompressImageAsync(new MediaFile(_image, MediaFileInputType.Path), ImageFormat.JPG, 60, FilterType.Lanczos, "x1080", @"С:\result.jpg", ImageFormat.JPG);
+await processor.CompressImageAsync(new MediaFile(_image), ImageFormat.JPG, 60, FilterType.Lanczos, "x1080", @"С:\result.jpg", ImageFormat.JPG);
 
 //Block for testing file processing as streams without specifying physical paths
 await using var stream = new FileStream(_image, FileMode.Open);
@@ -237,7 +235,7 @@ In the current version of the library, some options for processing documents usi
 
 -convert .docx file to .pdf
 ```csharp
-var file = new MediaFile(@"C:\inputFile.docx", MediaFileInputType.Path);
+var file = new MediaFile(@"C:\inputFile.docx");
 var processor = new DocumentFileProcessor();
 await processor.ConvertDocxToPdf(file, "test.pdf");
 ```
@@ -329,25 +327,25 @@ The ```ZipFileProcessor``` class is introduced for working with zip archives.
 Applications for unpacking downloaded ffmpeg archive and extracting executable files
 ```csharp
 // Open an existing zip file for reading
-            using(var zip = ZipFileProcessor.Open(fileName, FileAccess.Read))
-            {
-                // Read the central directory collection
-                var dir = zip.ReadCentralDir();
+using(var zip = ZipFileProcessor.Open(fileName, FileAccess.Read))
+{
+    // Read the central directory collection
+    var dir = zip.ReadCentralDir();
 
-                // Look for the desired file
-                foreach (var entry in dir)
-                {
-                    if (Path.GetFileName(entry.FilenameInZip) == "ffmpeg.exe")
-                    {
-                        zip.ExtractFile(entry, $@"ffmpeg.exe"); // File found, extract it
-                    }
+    // Look for the desired file
+    foreach (var entry in dir)
+    {
+        if (Path.GetFileName(entry.FilenameInZip) == "ffmpeg.exe")
+        {
+            zip.ExtractFile(entry, $@"ffmpeg.exe"); // File found, extract it
+        }
 
-                    if (Path.GetFileName(entry.FilenameInZip) == "ffmpeg.exe")
-                    {
-                        zip.ExtractFile(entry, $@"ffprobe.exe"); // File found, extract it
-                    }
-                }
-            }
+        if (Path.GetFileName(entry.FilenameInZip) == "ffmpeg.exe")
+        {
+            zip.ExtractFile(entry, $@"ffprobe.exe"); // File found, extract it
+        }
+    }
+}
 ```
 # MediaFileProcess
 
@@ -362,7 +360,7 @@ This is necessary because in the case of passing to different streams in differe
 The configuration of the running process itself must be done in the ```ProcessingSettings``` class.
 
 ```csharp
-var inputStreamFile = @"C:\inputFile.txt".ToStream();
+var inputStreamFile = @"C:\inputFile.txt".ToFileStream();
 
 var settings = new ProcessingSettings
 {
@@ -381,3 +379,8 @@ var process = new MediaFileProcess("program.exe", "-arg1 value1 -arg2 value2 -ar
 var result = await process.ExecuteAsync(new CancellationToken());
 ```
 
+### Special thanks to
+
+* [JetBrains](https://www.jetbrains.com/), for the Rider IDE opensource license.
+* [Syntevo](https://www.syntevo.com/), for the SmartGit opensource license.
+* [PostSharp](https://www.postsharp.net/), for the Metalama opensource license.

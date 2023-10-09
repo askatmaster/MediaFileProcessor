@@ -1,4 +1,5 @@
-﻿using MediaFileProcessor.Extensions;
+﻿using System.Globalization;
+using MediaFileProcessor.Extensions;
 using MediaFileProcessor.Models.Common;
 using MediaFileProcessor.Models.Enums;
 using MediaFileProcessor.Models.Video;
@@ -77,7 +78,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// </summary>
     public VideoBaseProcessingSettings AudioBitRate(AudioBitrateType bitRate)
     {
-        _stringBuilder.Append($" -ab {bitRate.ToString().Replace("_", "")} ");
+        _stringBuilder.Append($" -ab {bitRate.ToString().Replace("_", "", StringComparison.InvariantCulture)} ");
 
         return this;
     }
@@ -89,7 +90,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// </summary>
     public VideoBaseProcessingSettings AudioSampleRate(AudioSampleRateType audioSampleRate)
     {
-        _stringBuilder.Append($" -ar {audioSampleRate.ToString().Replace("Hz", "")} ");
+        _stringBuilder.Append($" -ar {audioSampleRate.ToString().Replace("Hz", "", StringComparison.InvariantCulture)} ");
 
         return this;
     }
@@ -172,7 +173,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// </summary>
     public VideoBaseProcessingSettings TimePosition(TimeSpan position)
     {
-        _stringBuilder.Append($" -to {position.TotalSeconds:00:00:00.000} ".Replace(",", "."));
+        _stringBuilder.Append($" -to {position.TotalSeconds:00:00:00.000} ".Replace(",", ".", StringComparison.InvariantCulture));
 
         return this;
     }
@@ -182,7 +183,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// </summary>
     public VideoBaseProcessingSettings Seek(TimeSpan seek)
     {
-        _stringBuilder.Append($" -ss {seek.TotalSeconds:00:00:00.000} ".Replace(",", "."));
+        _stringBuilder.Append($" -ss {seek.Hours:00}:{seek.Minutes:00}:{seek.Seconds:00}.{seek.Milliseconds:000} ".Replace(",", ".", StringComparison.InvariantCulture));
 
         return this;
     }
@@ -192,7 +193,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// </summary>
     public VideoBaseProcessingSettings SeekOf(TimeSpan seek)
     {
-        _stringBuilder.Append($" -sseof {seek.TotalSeconds:00:00:00.000} ".Replace(",", "."));
+        _stringBuilder.Append($" -sseof {seek.TotalSeconds:00:00:00.000} ".Replace(",", ".", StringComparison.InvariantCulture));
 
         return this;
     }
@@ -200,7 +201,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Sync audio
     /// </summary>
-    public VideoBaseProcessingSettings ASync(AudioSyncMethodType index)
+    public VideoBaseProcessingSettings Asynchronously(AudioSyncMethodType index)
     {
         _stringBuilder.Append($" -async {index.ToString().ToLowerInvariant()}");
 
@@ -222,7 +223,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// </summary>
     public VideoBaseProcessingSettings InputTimeOffset(TimeSpan offset)
     {
-        _stringBuilder.Append($" -itsoffset {offset.TotalSeconds:00:00:00.000} ".Replace(",", "."));
+        _stringBuilder.Append($" -itsoffset {offset.TotalSeconds:00:00:00.000} ".Replace(",", ".", StringComparison.InvariantCulture));
 
         return this;
     }
@@ -232,7 +233,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// </summary>
     public VideoBaseProcessingSettings InputTimestampScale(TimeSpan scale)
     {
-        _stringBuilder.Append($" -itsscale {scale.TotalSeconds:00:00:00.000} ".Replace(",", "."));
+        _stringBuilder.Append($" -itsscale {scale.TotalSeconds:00:00:00.000} ".Replace(",", ".", StringComparison.InvariantCulture));
 
         return this;
     }
@@ -242,7 +243,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// </summary>
     public VideoBaseProcessingSettings Timestamp(TimeSpan timestamp)
     {
-        _stringBuilder.Append($" -timestamp {timestamp.TotalSeconds:00:00:00.000} ".Replace(",", "."));
+        _stringBuilder.Append($" -timestamp {timestamp.TotalSeconds:00:00:00.000} ".Replace(",", ".", StringComparison.InvariantCulture));
 
         return this;
     }
@@ -474,7 +475,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// </summary>
     public VideoBaseProcessingSettings VideoAspectRatio(VideoAspectRatioType ratioType)
     {
-        _stringBuilder.Append($" -aspect {ratioType.ToString()[1..].Replace("_", ":")} ");
+        _stringBuilder.Append($" -aspect {ratioType.ToString()[1..].Replace("_", ":", StringComparison.InvariantCulture)} ");
 
         return this;
     }
@@ -557,17 +558,17 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
         if(videoSize is VideoSizeType.CUSTOM)
         {
             if(witdh is null || height is null)
-                throw new Exception("When choosing a custom value, you need to specify dimensions");
+                throw new ArgumentException("When choosing a custom value, you need to specify dimensions");
 
             _stringBuilder.Append($" -vf \"scale={witdh}:{height}\" ");
         }
         else
         {
             var size = videoSize.ToString().ToLowerInvariant();
-            if (size.StartsWith("_"))
-                size = size.Replace("_", "");
-            if (size.Contains("_"))
-                size = size.Replace("_", "-");
+            if (size.StartsWith("_", StringComparison.InvariantCulture))
+                size = size.Replace("_", "", StringComparison.InvariantCulture);
+            if (size.Contains("_", StringComparison.InvariantCulture))
+                size = size.Replace("_", "-", StringComparison.InvariantCulture);
 
             _stringBuilder.Append($" -s {size} ");
         }
@@ -612,8 +613,8 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     public VideoBaseProcessingSettings Format(FileFormatType formatType)
     {
         var format = formatType is FileFormatType.JPG ? "image2" : formatType.ToString().ToLowerInvariant();
-        if (format.StartsWith("_"))
-            format = format.Replace("_", "");
+        if (format.StartsWith("_", StringComparison.InvariantCulture))
+            format = format.Replace("_", "", StringComparison.InvariantCulture);
 
         _stringBuilder.Append(formatType is FileFormatType.TS ? " -f mpegts " : $" -f {format} ");
 
@@ -646,7 +647,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// </summary>
     public VideoBaseProcessingSettings VideoTimeScale(double scale)
     {
-        _stringBuilder.Append($" -filter:v \"setpts = {scale.ToString().Replace(",", ".")} * PTS\" ");
+        _stringBuilder.Append($" -filter:v \"setpts = {scale.ToString(CultureInfo.InvariantCulture).Replace(",", ".", StringComparison.InvariantCulture)} * PTS\" ");
 
         return this;
     }
