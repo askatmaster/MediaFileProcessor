@@ -1227,6 +1227,17 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
 
         return this;
     }
+    
+    /// <summary>
+    /// If some input channel layout is not known, try to guess only if it corresponds to at most the specified number of channels.
+    /// For example, 2 tells to ffmpeg to recognize 1 channel as mono and 2 channels as stereo but not 6 channels as 5.1. The default is to always try to guess. Use 0 to disable all guessing.
+    /// </summary>
+    public VideoBaseProcessingSettings GuessLayoutMaxChannels()
+    {
+        _stringBuilder.Append(" -guess_layout_max channels ");
+
+        return this;
+    }
 
     /// <summary>
     /// Setting Output Arguments

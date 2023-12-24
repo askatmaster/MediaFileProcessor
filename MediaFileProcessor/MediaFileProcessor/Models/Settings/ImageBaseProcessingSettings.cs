@@ -2308,7 +2308,7 @@ public class ImageBaseProcessingSettings : BaseProcessingSettings
         switch(files.Length)
         {
             case 0:
-                throw new Exception("No input files");
+                throw new FileNotFoundException("No input files");
             case 1:
                 _stringBuilder.Append(files[0]
                                           .InputType is MediaFileInputType.Path or MediaFileInputType.NamedPipe
