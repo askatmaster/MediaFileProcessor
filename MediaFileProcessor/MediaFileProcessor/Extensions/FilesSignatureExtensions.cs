@@ -9,7 +9,7 @@ namespace MediaFileProcessor.Extensions;
 public static class FilesSignatureExtensions
 {
     /// <summary>
-    /// Signatires of JPG
+    /// Signatures of JPG
     /// </summary>
     private static List<byte[]> JPG =>
         new ()
@@ -37,7 +37,7 @@ public static class FilesSignatureExtensions
         };
 
     /// <summary>
-    /// Signatires of PNG
+    /// Signatures of PNG
     /// </summary>
     private static List<byte[]> PNG =>
         new ()
@@ -49,7 +49,7 @@ public static class FilesSignatureExtensions
         };
 
     /// <summary>
-    /// Signatires of ICO
+    /// Signatures of ICO
     /// </summary>
     private static List<byte[]> ICO =>
         new ()
@@ -61,7 +61,7 @@ public static class FilesSignatureExtensions
         };
 
     /// <summary>
-    /// Signatires of TIFF
+    /// Signatures of TIFF
     /// </summary>
     private static List<byte[]> TIFF =>
         new ()
@@ -77,7 +77,7 @@ public static class FilesSignatureExtensions
         };
 
     /// <summary>
-    /// Signatires of _3GP
+    /// Signatures of _3GP
     /// </summary>
     private static List<byte[]> _3GP =>
         new ()
@@ -90,7 +90,7 @@ public static class FilesSignatureExtensions
         };
 
     /// <summary>
-    /// Signatires of M4V
+    /// Signatures of M4V
     /// </summary>
     private static List<byte[]> M4V =>
         new ()
@@ -103,7 +103,7 @@ public static class FilesSignatureExtensions
         };
 
     /// <summary>
-    /// Signatires of MP4
+    /// Signatures of MP4
     /// </summary>
     private static List<byte[]> MP4 =>
         new ()
@@ -139,7 +139,7 @@ public static class FilesSignatureExtensions
         };
 
     /// <summary>
-    /// Signatires of MOV
+    /// Signatures of MOV
     /// </summary>
     private static List<byte[]> MOV =>
         new ()
@@ -152,7 +152,7 @@ public static class FilesSignatureExtensions
         };
 
     /// <summary>
-    /// Signatires of MKV
+    /// Signatures of MKV
     /// </summary>
     private static List<byte[]> MKV =>
         new ()
@@ -164,7 +164,7 @@ public static class FilesSignatureExtensions
         };
 
     /// <summary>
-    /// Signatires of AVI
+    /// Signatures of AVI
     /// </summary>
     private static List<byte[]> AVI =>
         new ()
@@ -187,7 +187,7 @@ public static class FilesSignatureExtensions
         };
 
     /// <summary>
-    /// Signatires of MPEG
+    /// Signatures of MPEG
     /// </summary>
     private static List<byte[]> MPEG =>
         new ()
@@ -207,7 +207,7 @@ public static class FilesSignatureExtensions
         };
 
     /// <summary>
-    /// Signatires of GIF
+    /// Signatures of GIF
     /// </summary>
     private static List<byte[]> GIF =>
         new ()
@@ -223,7 +223,7 @@ public static class FilesSignatureExtensions
         };
 
     /// <summary>
-    /// Signatires of VOB
+    /// Signatures of VOB
     /// </summary>
     private static List<byte[]> VOB =>
         new ()
@@ -235,7 +235,7 @@ public static class FilesSignatureExtensions
         };
 
     /// <summary>
-    /// Signatires of M2TS
+    /// Signatures of M2TS
     /// </summary>
     private static List<byte[]> M2TS =>
         new ()
@@ -251,7 +251,7 @@ public static class FilesSignatureExtensions
         };
 
     /// <summary>
-    /// Signatires of MXF
+    /// Signatures of MXF
     /// </summary>
     private static List<byte[]> MXF =>
         new ()
@@ -264,7 +264,7 @@ public static class FilesSignatureExtensions
         };
 
     /// <summary>
-    /// Signatires of WEBM
+    /// Signatures of WEBM
     /// </summary>
     private static List<byte[]> WEBM =>
         new ()
@@ -276,7 +276,7 @@ public static class FilesSignatureExtensions
         };
 
     /// <summary>
-    /// Signatires of GXF
+    /// Signatures of GXF
     /// </summary>
     private static List<byte[]> GXF =>
         new ()
@@ -288,7 +288,7 @@ public static class FilesSignatureExtensions
         };
 
     /// <summary>
-    /// Signatires of FLV
+    /// Signatures of FLV
     /// </summary>
     private static List<byte[]> FLV =>
         new ()
@@ -300,7 +300,7 @@ public static class FilesSignatureExtensions
         };
 
     /// <summary>
-    /// Signatires of OGG
+    /// Signatures of OGG
     /// </summary>
     private static List<byte[]> OGG =>
         new ()
@@ -312,7 +312,7 @@ public static class FilesSignatureExtensions
         };
 
     /// <summary>
-    /// Signatires of WMV
+    /// Signatures of WMV
     /// </summary>
     private static List<byte[]> WMV =>
         new ()
@@ -325,7 +325,7 @@ public static class FilesSignatureExtensions
         };
 
     /// <summary>
-    /// Signatires of BMP
+    /// Signatures of BMP
     /// </summary>
     private static List<byte[]> BMP =>
         new ()
@@ -337,7 +337,7 @@ public static class FilesSignatureExtensions
         };
 
     /// <summary>
-    /// Signatires of ASF
+    /// Signatures of ASF
     /// </summary>
     private static List<byte[]> ASF =>
         new ()
@@ -350,7 +350,7 @@ public static class FilesSignatureExtensions
         };
 
     /// <summary>
-    /// Signatires of MP3
+    /// Signatures of MP3
     /// </summary>
     private static List<byte[]> MP3 =>
         new ()
@@ -362,7 +362,7 @@ public static class FilesSignatureExtensions
         };
 
     /// <summary>
-    /// Signatires of RM
+    /// Signatures of RM
     /// </summary>
     private static List<byte[]> RM =>
         new ()
@@ -374,7 +374,7 @@ public static class FilesSignatureExtensions
         };
 
     /// <summary>
-    /// Signatires of PSD
+    /// Signatures of PSD
     /// </summary>
     private static List<byte[]> PSD =>
         new ()
@@ -386,7 +386,7 @@ public static class FilesSignatureExtensions
         };
 
     /// <summary>
-    /// Signatires of WEBP
+    /// Signatures of WEBP
     /// </summary>
     private static List<byte[]> WEBP =>
         new ()
@@ -404,7 +404,7 @@ public static class FilesSignatureExtensions
         };
 
     /// <summary>
-    /// Signatires of WAV
+    /// Signatures of WAV
     /// </summary>
     private static List<byte[]> WAV =>
         new ()
@@ -432,7 +432,7 @@ public static class FilesSignatureExtensions
         };
 
     /// <summary>
-    /// Signatires of FLAC
+    /// Signatures of FLAC
     /// </summary>
     private static List<byte[]> FLAC =>
         new ()
@@ -456,7 +456,7 @@ public static class FilesSignatureExtensions
         };
 
     /// <summary>
-    /// Signatires of AAC
+    /// Signatures of AAC
     /// </summary>
     private static List<byte[]> AAC =>
         new ()
@@ -480,7 +480,7 @@ public static class FilesSignatureExtensions
         };
 
     /// <summary>
-    /// Signatires of WMA
+    /// Signatures of WMA
     /// </summary>
     private static List<byte[]> WMA =>
         new ()
@@ -636,7 +636,7 @@ public static class FilesSignatureExtensions
             >= 4 when IsWEBM(signature) => FileFormatType.WEBM,
             >= 4 when IsMKV(signature) => FileFormatType.MKV,
             >= 4 when IsTS(signature) => FileFormatType.TS,
-            _ => throw new Exception("Unable to determine the format")
+            _ => throw new FormatException("Unable to determine the format")
         };
     }
 
@@ -1872,9 +1872,9 @@ public static class FilesSignatureExtensions
     }
 
     /// <summary>
-    /// Determines if the provided ReadOnlySpan<byte> buffer is an MP3 audio file based on its signature.
+    /// Determines if the provided ReadOnlySpan{byte} buffer is an MP3 audio file based on its signature.
     /// </summary>
-    /// <param name="buffer">The ReadOnlySpan<byte> buffer containing the file signature to verify.</param>
+    /// <param name="buffer">The ReadOnlySpan{byte} buffer containing the file signature to verify.</param>
     /// <returns>Returns true if the buffer matches an MP3 file signature, otherwise returns false.</returns>
     /// <exception cref="ArgumentException">Thrown when the provided buffer is less than 3 bytes long.</exception>
     public static bool IsMP3(this ReadOnlySpan<byte> buffer)
@@ -1900,9 +1900,9 @@ public static class FilesSignatureExtensions
     }
 
     /// <summary>
-    /// Determines if the provided ReadOnlySpan<byte> buffer is a RealMedia (RM) file based on its signature.
+    /// Determines if the provided ReadOnlySpan{byte} buffer is a RealMedia (RM) file based on its signature.
     /// </summary>
-    /// <param name="buffer">The ReadOnlySpan<byte> buffer containing the file signature to verify.</param>
+    /// <param name="buffer">The ReadOnlySpan{byte} buffer containing the file signature to verify.</param>
     /// <returns>Returns true if the buffer matches a RealMedia file signature, otherwise returns false.</returns>
     /// <exception cref="ArgumentException">Thrown when the provided buffer is less than 4 bytes long.</exception>
     public static bool IsRM(this ReadOnlySpan<byte> buffer)
@@ -2107,9 +2107,9 @@ public static class FilesSignatureExtensions
     }
 
     /// <summary>
-    /// Determines if the provided ReadOnlySpan<byte> buffer is a Free Lossless Audio Codec (FLAC) file based on its signature.
+    /// Determines if the provided ReadOnlySpan{byte} buffer is a Free Lossless Audio Codec (FLAC) file based on its signature.
     /// </summary>
-    /// <param name="buffer">The ReadOnlySpan<byte> buffer containing the file signature to verify.</param>
+    /// <param name="buffer">The ReadOnlySpan{byte} buffer containing the file signature to verify.</param>
     /// <returns>Returns true if the buffer matches a FLAC file signature, otherwise returns false.</returns>
     /// <exception cref="ArgumentException">Thrown when the provided buffer is less than 4 bytes long.</exception>
     public static bool IsFLAC(this ReadOnlySpan<byte> buffer)
@@ -2141,9 +2141,9 @@ public static class FilesSignatureExtensions
     }
 
     /// <summary>
-    /// Determines if the provided ReadOnlySpan<byte> buffer is an Advanced Audio Codec (AAC) file based on its signature.
+    /// Determines if the provided ReadOnlySpan{byte} buffer is an Advanced Audio Codec (AAC) file based on its signature.
     /// </summary>
-    /// <param name="buffer">The ReadOnlySpan<byte> buffer containing the file signature to verify.</param>
+    /// <param name="buffer">The ReadOnlySpan{byte} buffer containing the file signature to verify.</param>
     /// <returns>Returns true if the buffer matches an AAC file signature, otherwise returns false.</returns>
     /// <exception cref="ArgumentException">Thrown when the provided buffer is less than 2 bytes long.</exception>
     public static bool IsAAC(this ReadOnlySpan<byte> buffer)

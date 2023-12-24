@@ -1162,6 +1162,71 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
 
         return this;
     }
+    
+    /// <summary>
+    /// Specify how to set the encoder timebase when stream copying. mode is an integer numeric value
+    /// Default value is Auto.
+    /// </summary>
+    /// <param name="mode">Encoder timebase mode</param>
+    public VideoBaseProcessingSettings CopyTb(EncoderTimebaseType mode)
+    {
+        _stringBuilder.Append($" -copytb {(int)mode}");
+
+        return this;
+    }
+    
+    /// <summary>
+    /// Do not process input timestamps, but keep their values without trying to sanitize them. In particular, do not remove the initial start time offset value.
+    /// Note that, depending on the vsync option or on specific muxer processing (e.g. in case the format option avoid_negative_ts is enabled) the output timestamps may mismatch with the input timestamps even when this option is selected.
+    /// </summary>
+    public VideoBaseProcessingSettings CopyTs()
+    {
+        _stringBuilder.Append(" -copyts ");
+
+        return this;
+    }
+    
+    /// <summary>
+    /// Frame drop threshold, which specifies how much behind video frames can be before they are dropped. In frame rate units, so 1.0 is one frame.
+    /// The default is -1.1. One possible usecase is to avoid framedrops in case of noisy timestamps or to increase frame drop precision in case of exact timestamps.
+    /// </summary>
+    public VideoBaseProcessingSettings FrameDropThreshold(int parameter)
+    {
+        _stringBuilder.Append($" -frame_drop_threshold {parameter}");
+
+        return this;
+    }
+    
+    /// <summary>
+    /// When used with copyts, shift input timestamps so they start at zero.
+    /// This means that using e.g. -ss 50 will make output timestamps start at 50 seconds, regardless of what timestamp the input file started at.
+    /// </summary>
+    public VideoBaseProcessingSettings StartAtZero()
+    {
+        _stringBuilder.Append(" -start_at_zero ");
+
+        return this;
+    }
+    
+    /// <summary>
+    /// Allow input streams with unknown type to be copied instead of failing if copying such streams is attempted.
+    /// </summary>
+    public VideoBaseProcessingSettings CopyUnknown()
+    {
+        _stringBuilder.Append(" -copy_unknown ");
+
+        return this;
+    }
+    
+    /// <summary>
+    /// Ignore input streams with unknown type instead of failing if copying such streams is attempted.
+    /// </summary>
+    public VideoBaseProcessingSettings IgnoreUnknown()
+    {
+        _stringBuilder.Append(" -ignore_unknown ");
+
+        return this;
+    }
 
     /// <summary>
     /// Setting Output Arguments

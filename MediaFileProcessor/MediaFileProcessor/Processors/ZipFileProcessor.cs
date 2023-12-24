@@ -17,7 +17,7 @@ public sealed class ZipFileProcessor : IDisposable
     public readonly bool EncodeUTF8 = false;
 
     /// <summary>
-    /// Force deflate algotithm even if it inflates the stored file. Off by default.
+    /// Force deflate algorithm even if it inflates the stored file. Off by default.
     /// </summary>
     public readonly bool ForceDeflating = false;
 

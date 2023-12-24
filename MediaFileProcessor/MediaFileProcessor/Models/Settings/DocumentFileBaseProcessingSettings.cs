@@ -10,7 +10,7 @@ namespace MediaFileProcessor.Models.Settings;
 public class DocumentFileBaseProcessingSettings : BaseProcessingSettings
 {
     /// <summary>
-    /// To produce a standalone documen (e.g. a valid HTML file including 'head' and 'body' tags)
+    /// To produce a standalone document (e.g. a valid HTML file including 'head' and 'body' tags)
     /// </summary>
     public DocumentFileBaseProcessingSettings Standalone()
     {
