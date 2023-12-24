@@ -225,9 +225,9 @@ public class ImageBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Decipher image with this password
     /// </summary>
-    public ImageBaseProcessingSettings Authenticate(string value)
+    public ImageBaseProcessingSettings Authenticate(string password)
     {
-        _stringBuilder.Append($" -authenticate {value} ");
+        _stringBuilder.Append($" -authenticate {password} ");
 
         return this;
     }
@@ -242,6 +242,11 @@ public class ImageBaseProcessingSettings : BaseProcessingSettings
         return this;
     }
 
+    /// <summary>
+    /// Automagically adjust color levels of image.
+    /// This is a 'perfect' image normalization operator.
+    /// It finds the exact minimum and maximum color values in the image and then applies a -level operator to stretch the values to the full range of values.
+    /// </summary>
     public ImageBaseProcessingSettings AutoLevel()
     {
         _stringBuilder.Append(" -auto-level ");
@@ -285,6 +290,37 @@ public class ImageBaseProcessingSettings : BaseProcessingSettings
     public ImageBaseProcessingSettings Bench(string iterations)
     {
         _stringBuilder.Append($" -bench {iterations} ");
+
+        return this;
+    }
+    
+    /// <summary>
+    /// Average a set of images.
+    /// An error results if the images are not identically sized.
+    /// </summary>
+    public ImageBaseProcessingSettings Average()
+    {
+        _stringBuilder.Append(" -average ");
+
+        return this;
+    }
+    
+    /// <summary>
+    /// Use black point compensation.
+    /// </summary>
+    public ImageBaseProcessingSettings BlackPointCompensation()
+    {
+        _stringBuilder.Append(" -black-point-compensation ");
+
+        return this;
+    }
+    
+    /// <summary>
+    /// Blend an image into another by the given absolute value or percent.
+    /// </summary>
+    public ImageBaseProcessingSettings Blend(string geometry)
+    {
+        _stringBuilder.Append($" -blend {geometry} ");
 
         return this;
     }
@@ -2293,6 +2329,17 @@ public class ImageBaseProcessingSettings : BaseProcessingSettings
     public ImageBaseProcessingSettings Verbose()
     {
         _stringBuilder.Append(" -verbose ");
+
+        return this;
+    }
+    
+    /// <summary>
+    /// Lessen (or intensify) when adding noise to an image.
+    /// If unset the value is equivalent to 1.0, or a maximum noise addition
+    /// </summary>
+    public ImageBaseProcessingSettings Attenuate(string value)
+    {
+        _stringBuilder.Append($" -attenuate {value} ");
 
         return this;
     }
