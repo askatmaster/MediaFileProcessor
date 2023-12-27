@@ -7,12 +7,12 @@ namespace MediaFileProcessor.Models.Settings;
 /// <summary>
 /// Settings for document file processing
 /// </summary>
-public class DocumentFileBaseProcessingSettings : BaseProcessingSettings
+public class PandocFileProcessingSettings : BaseProcessingSettings
 {
     /// <summary>
     /// To produce a standalone document (e.g. a valid HTML file including 'head' and 'body' tags)
     /// </summary>
-    public DocumentFileBaseProcessingSettings Standalone()
+    public PandocFileProcessingSettings Standalone()
     {
         _stringBuilder.Append(" -s ");
 
@@ -22,7 +22,7 @@ public class DocumentFileBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// The input format can be specified using the -f/--from option
     /// </summary>
-    public DocumentFileBaseProcessingSettings From(string format)
+    public PandocFileProcessingSettings From(string format)
     {
         _stringBuilder.Append($" -f {format}");
 
@@ -32,7 +32,7 @@ public class DocumentFileBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// The output format using the -t/--to option
     /// </summary>
-    public DocumentFileBaseProcessingSettings To(string format)
+    public PandocFileProcessingSettings To(string format)
     {
         _stringBuilder.Append($" -t {format}");
 
@@ -42,7 +42,7 @@ public class DocumentFileBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Specify the user data directory to search for pandoc data files
     /// </summary>
-    public DocumentFileBaseProcessingSettings DataDirectory(string directory)
+    public PandocFileProcessingSettings DataDirectory(string directory)
     {
         _stringBuilder.Append($" --data-dir={directory}");
 
@@ -52,7 +52,7 @@ public class DocumentFileBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Specify a set of default option settings
     /// </summary>
-    public DocumentFileBaseProcessingSettings DefaultOptionSettings(string file)
+    public PandocFileProcessingSettings DefaultOptionSettings(string file)
     {
         _stringBuilder.Append($" -d {file}");
 
@@ -62,7 +62,7 @@ public class DocumentFileBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Shift heading levels by a positive or negative integer
     /// </summary>
-    public DocumentFileBaseProcessingSettings ShiftHeadingLevel(string number)
+    public PandocFileProcessingSettings ShiftHeadingLevel(string number)
     {
         _stringBuilder.Append($" --shift-heading-level-by={number}");
 
@@ -72,7 +72,7 @@ public class DocumentFileBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Specify an executable to be used as a filter transforming the pandoc AST after the input is parsed and before the output is written
     /// </summary>
-    public DocumentFileBaseProcessingSettings Filter(string program)
+    public PandocFileProcessingSettings Filter(string program)
     {
         _stringBuilder.Append($" --filter={program}");
 
@@ -82,7 +82,7 @@ public class DocumentFileBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Set the metadata field KEY to the value VAL. A value specified on the command line overrides a value specified in the document using YAML metadata blocks
     /// </summary>
-    public DocumentFileBaseProcessingSettings Metadata(string value)
+    public PandocFileProcessingSettings Metadata(string value)
     {
         _stringBuilder.Append($" --metadata={value}");
 
@@ -92,7 +92,7 @@ public class DocumentFileBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Read metadata from the supplied YAML (or JSON) file
     /// </summary>
-    public DocumentFileBaseProcessingSettings MetadataFile(string file)
+    public PandocFileProcessingSettings MetadataFile(string file)
     {
         _stringBuilder.Append($" --metadata-file={file}");
 
@@ -102,7 +102,7 @@ public class DocumentFileBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Preserve tabs instead of converting them to spaces
     /// </summary>
-    public DocumentFileBaseProcessingSettings PreserveTabs()
+    public PandocFileProcessingSettings PreserveTabs()
     {
         _stringBuilder.Append(" --preserve-tabs ");
 
@@ -112,7 +112,7 @@ public class DocumentFileBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Parse untranslatable HTML and LaTeX as raw
     /// </summary>
-    public DocumentFileBaseProcessingSettings ParseRaw()
+    public PandocFileProcessingSettings ParseRaw()
     {
         _stringBuilder.Append(" --parse-raw ");
 
@@ -122,7 +122,7 @@ public class DocumentFileBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Normalize the document, including converting it to NFC Unicode normalization form
     /// </summary>
-    public DocumentFileBaseProcessingSettings Normalize()
+    public PandocFileProcessingSettings Normalize()
     {
         _stringBuilder.Append(" --normalize ");
 
@@ -132,7 +132,7 @@ public class DocumentFileBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Link to a CSS stylesheet
     /// </summary>
-    public DocumentFileBaseProcessingSettings CssUrl(string url)
+    public PandocFileProcessingSettings CssUrl(string url)
     {
         _stringBuilder.Append(" --css={url} ");
 
@@ -142,7 +142,7 @@ public class DocumentFileBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Print the default template for FORMAT
     /// </summary>
-    public DocumentFileBaseProcessingSettings PrintDefaultTemplate(string format)
+    public PandocFileProcessingSettings PrintDefaultTemplate(string format)
     {
         _stringBuilder.Append(" -D {format} ");
 
@@ -152,7 +152,7 @@ public class DocumentFileBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Parse each file individually before combining for multifile documents.
     /// </summary>
-    public DocumentFileBaseProcessingSettings FileScope()
+    public PandocFileProcessingSettings FileScope()
     {
         _stringBuilder.Append(" --file-scope ");
 
@@ -162,7 +162,7 @@ public class DocumentFileBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Additional settings that are not currently provided in the wrapper
     /// </summary>
-    public DocumentFileBaseProcessingSettings CustomArguments(string arg)
+    public PandocFileProcessingSettings CustomArguments(string arg)
     {
         _stringBuilder.Append(arg);
 
@@ -177,7 +177,7 @@ public class DocumentFileBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Setting Output Arguments
     /// </summary>
-    public DocumentFileBaseProcessingSettings SetOutputFileArguments(string? arg)
+    public PandocFileProcessingSettings SetOutputFileArguments(string? arg)
     {
         OutputFileArguments = arg;
 
@@ -190,7 +190,7 @@ public class DocumentFileBaseProcessingSettings : BaseProcessingSettings
     /// <param name="files">An array of media files that represent the input files for the processing</param>
     /// <exception cref="NullReferenceException">Thrown when the input 'files' argument is null</exception>
     /// <returns>An instance of the DocumentFileProcessingSettings object, representing the current state of the processing settings</returns>
-    public DocumentFileBaseProcessingSettings SetInputFiles(params MediaFile[]? files)
+    public PandocFileProcessingSettings SetInputFiles(params MediaFile[]? files)
     {
         // Check if the input files are specified
         if (files is null)

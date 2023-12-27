@@ -26,7 +26,7 @@ public class DocumentFileProcessor : IDocumentFileProcessor
     private const string ZipAddress = "https://github.com/jgm/pandoc/releases/download/3.0.1/pandoc-3.0.1-windows-x86_64.zip";
 
     /// <inheritdoc />
-    public async Task<MemoryStream?> ExecuteAsync(DocumentFileBaseProcessingSettings settings, CancellationToken cancellationToken)
+    public async Task<MemoryStream?> ExecuteAsync(PandocFileProcessingSettings settings, CancellationToken cancellationToken)
     {
         using var process = new MediaFileProcess(_pandoc,
                                                  settings.GetProcessArguments(),
@@ -46,7 +46,7 @@ public class DocumentFileProcessor : IDocumentFileProcessor
     /// <returns>A `MemoryStream` containing the converted PDF file.</returns>
     private async Task<MemoryStream?> ExecuteConvertDocxToPdfAsync(MediaFile file, string? outputFile, CancellationToken cancellationToken)
     {
-        var settings = new DocumentFileBaseProcessingSettings().From("docx").To("pdf").Standalone().SetInputFiles(file).SetOutputFileArguments(outputFile);
+        var settings = new PandocFileProcessingSettings().From("docx").To("pdf").Standalone().SetInputFiles(file).SetOutputFileArguments(outputFile);
 
         return await ExecuteAsync(settings, cancellationToken);
     }

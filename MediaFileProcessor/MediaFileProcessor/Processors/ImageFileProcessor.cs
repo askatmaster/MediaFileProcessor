@@ -34,7 +34,7 @@ public class ImageFileProcessor : IImageFileProcessor
     private const string ZipAddress = "https://imagemagick.org/archive/binaries/ImageMagick-7.1.0-61-portable-Q16-x64.zip";
 
     /// <inheritdoc />
-    public async Task<MemoryStream?> ExecuteAsync(ImageBaseProcessingSettings settings, CancellationToken cancellationToken)
+    public async Task<MemoryStream?> ExecuteAsync(ImageMagickProcessingSettings settings, CancellationToken cancellationToken)
     {
         using var process = new MediaFileProcess(_convert,
                                                  settings.GetProcessArguments(),
@@ -68,7 +68,7 @@ public class ImageFileProcessor : IImageFileProcessor
                                                                 ImageFormatType outputFormatType,
                                                                 CancellationToken cancellationToken)
     {
-        var settings = new ImageBaseProcessingSettings().Format(inputFormatType)
+        var settings = new ImageMagickProcessingSettings().Format(inputFormatType)
                                                     .SetInputFiles(file)
                                                     .Quality(quality)
                                                     .Filter(filterType)
@@ -136,7 +136,7 @@ public class ImageFileProcessor : IImageFileProcessor
                                                                ImageFormatType? outputFormat,
                                                                CancellationToken cancellationToken)
     {
-        var settings = new ImageBaseProcessingSettings().Format(inputFormatType).SetInputFiles(file).Format(outputFormat).SetOutputFileArguments(outputFile);
+        var settings = new ImageMagickProcessingSettings().Format(inputFormatType).SetInputFiles(file).Format(outputFormat).SetOutputFileArguments(outputFile);
 
         return await ExecuteAsync(settings, cancellationToken);
     }
@@ -181,7 +181,7 @@ public class ImageFileProcessor : IImageFileProcessor
                                                               string? outputFile,
                                                               CancellationToken cancellationToken)
     {
-        var settings = new ImageBaseProcessingSettings().Resize(size)
+        var settings = new ImageMagickProcessingSettings().Resize(size)
                                                     .Quality(92)
                                                     .Format(inputFormatType)
                                                     .SetInputFiles(file)
@@ -230,7 +230,7 @@ public class ImageFileProcessor : IImageFileProcessor
     /// <returns>The resulting gif as a memory stream, or null if outputFile is not null.</returns>
     private async Task<MemoryStream?> ExecuteImagesToGifAsync(MediaFile file, int delay, ImageFormatType inputFormatType, string? outputFile, CancellationToken cancellationToken)
     {
-        var settings = new ImageBaseProcessingSettings().Delay(delay)
+        var settings = new ImageMagickProcessingSettings().Delay(delay)
                                                     .Format(inputFormatType)
                                                     .SetInputFiles(file)
                                                     .Format(FileFormatType.GIF)

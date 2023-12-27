@@ -14,7 +14,7 @@ public interface IImageFileProcessor
     /// <param name="settings">The settings used for the processing process.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
     /// <returns>A `MemoryStream` containing the converted PDF file.</returns>
-    Task<MemoryStream?> ExecuteAsync(ImageBaseProcessingSettings settings, CancellationToken cancellationToken);
+    Task<MemoryStream?> ExecuteAsync(ImageMagickProcessingSettings settings, CancellationToken cancellationToken);
 
     /// <summary>
     /// Compresses the image asynchronously.

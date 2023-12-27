@@ -14,7 +14,7 @@ public interface IVideoFileProcessor
     /// <param name="settings">The video processing settings to use for processing the video.</param>
     /// <param name="cancellationToken">The cancellation token used to cancel the processing if necessary.</param>
     /// <returns>A MemoryStream representing the processed video, or null if the process was cancelled.</returns>
-    Task<MemoryStream?> ExecuteAsync(VideoBaseProcessingSettings settings, CancellationToken cancellationToken);
+    Task<MemoryStream?> ExecuteAsync(FFmpegProcessingSettings settings, CancellationToken cancellationToken);
 
     /// <summary>
     /// Converts images to video and saves it to the specified file path.

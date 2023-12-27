@@ -43,7 +43,7 @@ public class VideoFileProcessor : IVideoFileProcessor
     private const string ZipAddress = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip";
 
     /// <inheritdoc />
-    public async Task<MemoryStream?> ExecuteAsync(VideoBaseProcessingSettings settings, CancellationToken cancellationToken)
+    public async Task<MemoryStream?> ExecuteAsync(FFmpegProcessingSettings settings, CancellationToken cancellationToken)
     {
         using var process = new MediaFileProcess(_ffmpeg, settings.GetProcessArguments(), settings, settings.GetInputStreams(), settings.GetInputPipeNames());
 
@@ -68,7 +68,7 @@ public class VideoFileProcessor : IVideoFileProcessor
                                                                 FileFormatType? outputFormat = null,
                                                                 CancellationToken? cancellationToken = null)
     {
-        var settings = new VideoBaseProcessingSettings().ReplaceIfExist().Seek(timestamp).SetInputFiles(file).FramesNumber(1).SetOutputArguments(outputFile);
+        var settings = new FFmpegProcessingSettings().ReplaceIfExist().Seek(timestamp).SetInputFiles(file).FramesNumber(1).SetOutputArguments(outputFile);
 
         if(outputFile is null && outputFormat is null)
             throw new FormatException("If the outputFile is not specified then the outputFormat must be indicated necessarily");
@@ -159,7 +159,7 @@ public class VideoFileProcessor : IVideoFileProcessor
 
         try
         {
-            var settings = new VideoBaseProcessingSettings().ReplaceIfExist();
+            var settings = new FFmpegProcessingSettings().ReplaceIfExist();
 
             if(file.InputType is MediaFileInputType.Stream)
             {
@@ -234,7 +234,7 @@ public class VideoFileProcessor : IVideoFileProcessor
                                                     FileFormatType? outputFormat = null,
                                                     CancellationToken? cancellationToken = null)
     {
-        var settings = new VideoBaseProcessingSettings().ReplaceIfExist().SetInputFiles(file).Seek(startTime).TimePosition(endTime).SetOutputArguments(outputFile);
+        var settings = new FFmpegProcessingSettings().ReplaceIfExist().SetInputFiles(file).Seek(startTime).TimePosition(endTime).SetOutputArguments(outputFile);
 
         if(outputFile is null && outputFormat is null)
             throw new FormatException("If the outputFile is not specified then the outputFormat must be indicated necessarily");
@@ -317,7 +317,7 @@ public class VideoFileProcessor : IVideoFileProcessor
 
         outputFormat ??= outputFile!.GetFileFormatType();
 
-        var settings = new VideoBaseProcessingSettings().ReplaceIfExist()
+        var settings = new FFmpegProcessingSettings().ReplaceIfExist()
                                                     .FrameRate(frameRate)
                                                     .SetInputFiles(file)
                                                     .SetOutputArguments(outputFile);
@@ -402,7 +402,7 @@ public class VideoFileProcessor : IVideoFileProcessor
                                                                FileFormatType? outputFormat = null,
                                                                CancellationToken? cancellationToken = null)
     {
-        var settings = new VideoBaseProcessingSettings().ReplaceIfExist().SetInputFiles(file).SetOutputArguments(outputImagesPattern);
+        var settings = new FFmpegProcessingSettings().ReplaceIfExist().SetInputFiles(file).SetOutputArguments(outputImagesPattern);
 
         if(outputImagesPattern is null && outputFormat is null)
             throw new NotSupportedException("If the outputImagesPattern is not specified then the outputFormat must be indicated necessarily");
@@ -481,7 +481,7 @@ public class VideoFileProcessor : IVideoFileProcessor
 
         outputFormat ??= outputFile!.GetFileFormatType();
 
-        var settings = new VideoBaseProcessingSettings().ReplaceIfExist()
+        var settings = new FFmpegProcessingSettings().ReplaceIfExist()
                                                     .SetInputFiles(file)
                                                     .DeleteVideo()
                                                     .AudioSampleRate(AudioSampleRateType.Hz44100)
@@ -565,7 +565,7 @@ public class VideoFileProcessor : IVideoFileProcessor
 
         outputFormat ??= outputFile!.GetFileFormatType();
 
-        var settings = new VideoBaseProcessingSettings().ReplaceIfExist().SetInputFiles(file).MapMetadata().SetOutputArguments(outputFile);
+        var settings = new FFmpegProcessingSettings().ReplaceIfExist().SetInputFiles(file).MapMetadata().SetOutputArguments(outputFile);
 
         switch(outputFormat)
         {
@@ -672,7 +672,7 @@ public class VideoFileProcessor : IVideoFileProcessor
             _ => throw new ArgumentOutOfRangeException(nameof(position), position, null)
         };
 
-        var settings = new VideoBaseProcessingSettings().ReplaceIfExist()
+        var settings = new FFmpegProcessingSettings().ReplaceIfExist()
                                                     .SetInputFiles(videoFile, watermarkFile)
                                                     .FilterComplexArgument(positionArgumant)
                                                     .SetOutputArguments(outputFile);
@@ -760,7 +760,7 @@ public class VideoFileProcessor : IVideoFileProcessor
 
         outputFormat ??= outputFile!.GetFileFormatType();
 
-        var settings = new VideoBaseProcessingSettings().ReplaceIfExist()
+        var settings = new FFmpegProcessingSettings().ReplaceIfExist()
                                                     .SetInputFiles(file)
                                                     .MapMetadata()
                                                     .MapArgument("0:v:0")
@@ -864,7 +864,7 @@ public class VideoFileProcessor : IVideoFileProcessor
 
         outputFormat ??= outputFile!.GetFileFormatType();
 
-        var settings = new VideoBaseProcessingSettings().ReplaceIfExist()
+        var settings = new FFmpegProcessingSettings().ReplaceIfExist()
                                                     .SetInputFiles(audioFile, videoFile)
                                                     .SetOutputArguments(outputFile);
 
@@ -968,7 +968,7 @@ public class VideoFileProcessor : IVideoFileProcessor
     /// <returns>The resulting GIF as a memory stream, or null if an output file was specified.</returns>
     public async Task<MemoryStream?> ConvertVideoToGifAsync(MediaFile file, int fps, int scale, int loop, string? outputFile = null, CancellationToken? cancellationToken = null)
     {
-        var setting = new VideoBaseProcessingSettings().ReplaceIfExist()
+        var setting = new FFmpegProcessingSettings().ReplaceIfExist()
                                                    .SetInputFiles(file)
                                                    .CustomArguments($"-vf \"fps={fps},scale={scale}:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse\"")
                                                    .Loop(loop)
@@ -994,7 +994,7 @@ public class VideoFileProcessor : IVideoFileProcessor
                                                           string? outputFile = null,
                                                           CancellationToken? cancellationToken = null)
     {
-        var settings = new VideoBaseProcessingSettings().ReplaceIfExist()
+        var settings = new FFmpegProcessingSettings().ReplaceIfExist()
                                                     .SetInputFiles(file)
                                                     .Crf(compressionRatio)
                                                     .VideoCodecPreset(VideoCodecPresetType.SLOW)
@@ -1093,7 +1093,7 @@ public class VideoFileProcessor : IVideoFileProcessor
                                     VideoBitstreamFilter videoBsf,
                                     CancellationToken cancellationToken)
     {
-        var setting = new VideoBaseProcessingSettings().ReplaceIfExist()
+        var setting = new FFmpegProcessingSettings().ReplaceIfExist()
                                                    .CustomArguments("-fflags +genpts")
                                                    .SetInputFiles(inputFile)
                                                    .VideoCodec(videoCodecType)
@@ -1145,7 +1145,7 @@ public class VideoFileProcessor : IVideoFileProcessor
         strCmd = strCmd.Remove(strCmd.Length - 1) + "\" ";
 
         // Set the output format and execute the FFmpeg command
-        var settings = new VideoBaseProcessingSettings().ReplaceIfExist().CustomArguments(strCmd).SetOutputArguments(outputFile);
+        var settings = new FFmpegProcessingSettings().ReplaceIfExist().CustomArguments(strCmd).SetOutputArguments(outputFile);
 
         switch (outputFormat)
         {
@@ -1204,16 +1204,16 @@ public class VideoFileProcessor : IVideoFileProcessor
     /// <inheritdoc />
     public async Task<string> GetVideoInfoAsync(MediaFile videoFile, CancellationToken? cancellationToken = null)
     {
-        VideoBaseProcessingSettings? settings;
+        FFmpegProcessingSettings? settings;
 
         if(videoFile.InputFilePath != null)
         {
-            settings = new VideoBaseProcessingSettings().CustomArguments("-v panic -print_format json=c=1 -show_streams -show_entries "
+            settings = new FFmpegProcessingSettings().CustomArguments("-v panic -print_format json=c=1 -show_streams -show_entries "
                                                                    + $"format=size,duration,bit_rate:format_tags=creation_time {videoFile.InputFilePath}");
         }
         else
         {
-            settings = new VideoBaseProcessingSettings().CustomArguments("-v panic -print_format json=c=1 -show_streams -show_entries "
+            settings = new FFmpegProcessingSettings().CustomArguments("-v panic -print_format json=c=1 -show_streams -show_entries "
                                                                    + "format=size,duration,bit_rate:format_tags=creation_time -");
 
             settings.SetInputStreams(videoFile.InputFileStream!);
@@ -1250,7 +1250,7 @@ public class VideoFileProcessor : IVideoFileProcessor
 
         outputFormat ??= outputFile!.GetFileFormatType();
 
-        var setting = new VideoBaseProcessingSettings().ReplaceIfExist()
+        var setting = new FFmpegProcessingSettings().ReplaceIfExist()
                                                    .SetInputFiles(videoFile, subsFile)
                                                    .MapArgument("0")
                                                    .MapArgument("1")

@@ -13,7 +13,7 @@ public interface IDocumentFileProcessor
     /// <param name="settings">The settings used for the conversion process.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the operation.</param>
     /// <returns>A `MemoryStream` containing the converted PDF file.</returns>
-    Task<MemoryStream?> ExecuteAsync(DocumentFileBaseProcessingSettings settings, CancellationToken cancellationToken);
+    Task<MemoryStream?> ExecuteAsync(PandocFileProcessingSettings settings, CancellationToken cancellationToken);
 
     /// <summary>
     /// Converts a .docx file to a PDF file and saves it to disk asynchronously.

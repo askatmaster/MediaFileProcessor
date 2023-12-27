@@ -8,12 +8,12 @@ namespace MediaFileProcessor.Models.Settings;
 /// <summary>
 /// Settings for video processing
 /// </summary>
-public class VideoBaseProcessingSettings : BaseProcessingSettings
+public class FFmpegProcessingSettings : BaseProcessingSettings
 {
     /// <summary>
     /// Overwrite output files without asking.
     /// </summary>
-    public VideoBaseProcessingSettings ReplaceIfExist()
+    public FFmpegProcessingSettings ReplaceIfExist()
     {
         _stringBuilder.Append(" -y ");
 
@@ -24,7 +24,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// Suppress printing banner.
     /// All FFmpeg tools will normally show a copyright notice, build options and library versions. This option can be used to suppress printing this information.
     /// </summary>
-    public VideoBaseProcessingSettings HideBanner()
+    public FFmpegProcessingSettings HideBanner()
     {
         _stringBuilder.Append(" -hide_banner ");
 
@@ -34,7 +34,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// On a multi-core computer, determines how many threads will be consumed for processing depending on the codec. By default, it will consume the optimal number of threads.
     /// </summary>
-    public VideoBaseProcessingSettings Threads(int threads)
+    public FFmpegProcessingSettings Threads(int threads)
     {
         _stringBuilder.Append($" -threads {threads} ");
 
@@ -44,7 +44,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Enable to skip writing the name inside a hdlr box. Default is false.
     /// </summary>
-    public VideoBaseProcessingSettings EmptyHdlrName(bool value)
+    public FFmpegProcessingSettings EmptyHdlrName(bool value)
     {
         _stringBuilder.Append($" -empty_hdlr_name {value} ");
 
@@ -54,7 +54,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Hardware Acceleration Output Format - Force HWAccel if selected
     /// </summary>
-    public VideoBaseProcessingSettings HardwareAcceleration(HardwareAccelerationType hardwareAcceleration, bool hardwareAccelerationOutputFormatCopy)
+    public FFmpegProcessingSettings HardwareAcceleration(HardwareAccelerationType hardwareAcceleration, bool hardwareAccelerationOutputFormatCopy)
     {
         _stringBuilder.Append($" -hwaccel {hardwareAcceleration.ToString().ToLowerInvariant()} ");
         if(hardwareAccelerationOutputFormatCopy)
@@ -66,7 +66,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Audio bitrate
     /// </summary>
-    public VideoBaseProcessingSettings AudioBitRate(int bitRate)
+    public FFmpegProcessingSettings AudioBitRate(int bitRate)
     {
         _stringBuilder.Append($" -ab {bitRate}k ");
 
@@ -76,7 +76,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Audio bitrate
     /// </summary>
-    public VideoBaseProcessingSettings AudioBitRate(AudioBitrateType bitRate)
+    public FFmpegProcessingSettings AudioBitRate(AudioBitrateType bitRate)
     {
         _stringBuilder.Append($" -ab {bitRate.ToString().Replace("_", "", StringComparison.InvariantCulture)} ");
 
@@ -88,7 +88,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// Set the audio sampling frequency. For output streams it is set by default to the frequency of the corresponding input stream.
     /// For input streams this option only makes sense for audio grabbing devices and raw demuxers and is mapped to the corresponding demuxer options.
     /// </summary>
-    public VideoBaseProcessingSettings AudioSampleRate(AudioSampleRateType audioSampleRate)
+    public FFmpegProcessingSettings AudioSampleRate(AudioSampleRateType audioSampleRate)
     {
         _stringBuilder.Append($" -ar {audioSampleRate.ToString().Replace("Hz", "", StringComparison.InvariantCulture)} ");
 
@@ -98,7 +98,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Audio codec
     /// </summary>
-    public VideoBaseProcessingSettings AudioCodec(AudioCodecType audioCodec)
+    public FFmpegProcessingSettings AudioCodec(AudioCodecType audioCodec)
     {
         _stringBuilder.Append($" -c:a {audioCodec.ToString().ToLowerInvariant()} ");
 
@@ -108,7 +108,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Set the subtitle codec
     /// </summary>
-    public VideoBaseProcessingSettings SubtitlesCodec(string arg)
+    public FFmpegProcessingSettings SubtitlesCodec(string arg)
     {
         _stringBuilder.Append($" -c:s {arg} ");
 
@@ -118,7 +118,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Set the subtitle codec
     /// </summary>
-    public VideoBaseProcessingSettings SubtitlesCodec(SubtitleCodecType arg)
+    public FFmpegProcessingSettings SubtitlesCodec(SubtitleCodecType arg)
     {
         _stringBuilder.Append($" -c:s {arg.ToString().ToLowerInvariant()} ");
 
@@ -128,7 +128,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Delete audio from video
     /// </summary>
-    public VideoBaseProcessingSettings DeleteAudio()
+    public FFmpegProcessingSettings DeleteAudio()
     {
         _stringBuilder.Append(" -an ");
 
@@ -138,7 +138,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Dump video coding statistics to vstats_HHMMSS.log.
     /// </summary>
-    public VideoBaseProcessingSettings VStats()
+    public FFmpegProcessingSettings VStats()
     {
         _stringBuilder.Append(" -vstats ");
 
@@ -148,7 +148,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Calculate PSNR of compressed frames. This option is deprecated, pass the PSNR flag to the encoder instead, using -flags +psnr.
     /// </summary>
-    public VideoBaseProcessingSettings PSNR()
+    public FFmpegProcessingSettings PSNR()
     {
         _stringBuilder.Append(" -psnr ");
 
@@ -160,7 +160,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// When used as an output option (before an output url), stop writing the output after its duration reaches duration.
     /// -to and -t are mutually exclusive and -t has priority
     /// </summary>
-    public VideoBaseProcessingSettings MaxDuration(TimeSpan duration)
+    public FFmpegProcessingSettings MaxDuration(TimeSpan duration)
     {
         _stringBuilder.Append($" -t {duration} ");
 
@@ -171,7 +171,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// Stop writing the output or reading the input at position. position must be a time duration specification
     /// -to and -t are mutually exclusive and -t has priority
     /// </summary>
-    public VideoBaseProcessingSettings TimePosition(TimeSpan position)
+    public FFmpegProcessingSettings TimePosition(TimeSpan position)
     {
         _stringBuilder.Append($" -to {position.TotalSeconds:00:00:00.000} ".Replace(",", ".", StringComparison.InvariantCulture));
 
@@ -181,7 +181,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// The frame to begin seeking from.
     /// </summary>
-    public VideoBaseProcessingSettings Seek(TimeSpan seek)
+    public FFmpegProcessingSettings Seek(TimeSpan seek)
     {
         _stringBuilder.Append($" -ss {seek.Hours:00}:{seek.Minutes:00}:{seek.Seconds:00}.{seek.Milliseconds:000} ".Replace(",", ".", StringComparison.InvariantCulture));
 
@@ -191,7 +191,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Like the -ss (Seek) option but relative to the "end of file". That is negative values are earlier in the file, 0 is at EOF
     /// </summary>
-    public VideoBaseProcessingSettings SeekOf(TimeSpan seek)
+    public FFmpegProcessingSettings SeekOf(TimeSpan seek)
     {
         _stringBuilder.Append($" -sseof {seek.TotalSeconds:00:00:00.000} ".Replace(",", ".", StringComparison.InvariantCulture));
 
@@ -201,7 +201,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Sync audio
     /// </summary>
-    public VideoBaseProcessingSettings Asynchronously(AudioSyncMethodType index)
+    public FFmpegProcessingSettings Asynchronously(AudioSyncMethodType index)
     {
         _stringBuilder.Append($" -async {index.ToString().ToLowerInvariant()}");
 
@@ -211,7 +211,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Sync video
     /// </summary>
-    public VideoBaseProcessingSettings VSync(VideoSyncMethodType index)
+    public FFmpegProcessingSettings VSync(VideoSyncMethodType index)
     {
         _stringBuilder.Append($" -vsync {index.ToString().ToLowerInvariant()}");
 
@@ -221,7 +221,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Set the input time offset
     /// </summary>
-    public VideoBaseProcessingSettings InputTimeOffset(TimeSpan offset)
+    public FFmpegProcessingSettings InputTimeOffset(TimeSpan offset)
     {
         _stringBuilder.Append($" -itsoffset {offset.TotalSeconds:00:00:00.000} ".Replace(",", ".", StringComparison.InvariantCulture));
 
@@ -231,7 +231,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Rescale input timestamps. scale should be a floating point number
     /// </summary>
-    public VideoBaseProcessingSettings InputTimestampScale(TimeSpan scale)
+    public FFmpegProcessingSettings InputTimestampScale(TimeSpan scale)
     {
         _stringBuilder.Append($" -itsscale {scale.TotalSeconds:00:00:00.000} ".Replace(",", ".", StringComparison.InvariantCulture));
 
@@ -241,7 +241,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Set the recording timestamp in the container
     /// </summary>
-    public VideoBaseProcessingSettings Timestamp(TimeSpan timestamp)
+    public FFmpegProcessingSettings Timestamp(TimeSpan timestamp)
     {
         _stringBuilder.Append($" -timestamp {timestamp.TotalSeconds:00:00:00.000} ".Replace(",", ".", StringComparison.InvariantCulture));
 
@@ -251,7 +251,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// As an input option, blocks all data streams of a file from being filtered or being automatically selected or mapped for any output (-dn)
     /// </summary>
-    public VideoBaseProcessingSettings BlockAllDataStreams()
+    public FFmpegProcessingSettings BlockAllDataStreams()
     {
         _stringBuilder.Append(" -dn ");
 
@@ -264,7 +264,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// Failing to use this option when necessary can result in exaggerated durations or muxing failures due to non-monotonic timestamps.
     /// Note that this option will delay the output of all data until the next subtitle packet is decoded: it may increase memory consumption and latency a lot
     /// </summary>
-    public VideoBaseProcessingSettings FixSubDuration()
+    public FFmpegProcessingSettings FixSubDuration()
     {
         _stringBuilder.Append(" -fix_sub_duration");
 
@@ -274,7 +274,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Set the number of data frames to output. This is an obsolete alias for -frames:d, which you should use instead
     /// </summary>
-    public VideoBaseProcessingSettings DataFramesOutput(int number)
+    public FFmpegProcessingSettings DataFramesOutput(int number)
     {
         _stringBuilder.Append($" -dframes {number}");
 
@@ -284,7 +284,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Set the number of audio frames to output. This is an obsolete alias for -frames:a, which you should use instead.
     /// </summary>
-    public VideoBaseProcessingSettings AudioFramesOutput(int number)
+    public FFmpegProcessingSettings AudioFramesOutput(int number)
     {
         _stringBuilder.Append($" -aframes {number}");
 
@@ -295,7 +295,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// Sets the keyframe interval to 30 frames.
     /// This means that every 30th frame will be a keyframe, which allows for better seeking and compression efficiency
     /// </summary>
-    public VideoBaseProcessingSettings KeyFrame(int frameNum)
+    public FFmpegProcessingSettings KeyFrame(int frameNum)
     {
         _stringBuilder.Append($" -g {frameNum}");
 
@@ -306,7 +306,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// Create the filtergraph specified by filtergraph and use it to filter the stream.
     /// This is an alias for -filter:a
     /// </summary>
-    public VideoBaseProcessingSettings AudioFilterGraph(string value)
+    public FFmpegProcessingSettings AudioFilterGraph(string value)
     {
         _stringBuilder.Append($" -af {value}");
 
@@ -317,7 +317,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// Create the filtergraph specified by filtergraph and use it to filter the stream.
     /// This is an alias for -filter:a
     /// </summary>
-    public VideoBaseProcessingSettings AudioFilterGraph(AudioFilterType value)
+    public FFmpegProcessingSettings AudioFilterGraph(AudioFilterType value)
     {
         _stringBuilder.Append($" -af {value.ToString().ToLowerInvariant()}");
 
@@ -327,7 +327,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Stop writing to the stream after framecount frames
     /// </summary>
-    public VideoBaseProcessingSettings Frames(string value, string? stream = null)
+    public FFmpegProcessingSettings Frames(string value, string? stream = null)
     {
         _stringBuilder.Append($" -frames{stream} {value}");
 
@@ -339,7 +339,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// If qscale is used without a stream_specifier then it applies only to the video stream, this is to maintain compatibility with previous behavior
     /// and as specifying the same codec specific value to 2 different codecs that is audio and video generally is not what is intended when no stream_specifier is used
     /// </summary>
-    public VideoBaseProcessingSettings QualityScale(string value, string? stream = null)
+    public FFmpegProcessingSettings QualityScale(string value, string? stream = null)
     {
         _stringBuilder.Append($" -qscale{stream} {value}");
 
@@ -349,7 +349,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Create the filtergraph specified by filtergraph and use it to filter the stream
     /// </summary>
-    public VideoBaseProcessingSettings Filter(string value, string? stream = null)
+    public FFmpegProcessingSettings Filter(string value, string? stream = null)
     {
         _stringBuilder.Append($" -filter{stream} {value}");
 
@@ -359,7 +359,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Set maximum frame rate (Hz value, fraction or abbreviation)
     /// </summary>
-    public VideoBaseProcessingSettings FpsMax(string value, string? stream = null)
+    public FFmpegProcessingSettings FpsMax(string value, string? stream = null)
     {
         _stringBuilder.Append($" -fpsmax{stream} {value}");
 
@@ -372,7 +372,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// For the libfdk_aac (AAC) codec, the value determines the bitrate in bits per second. However,
     /// this is not a complete list of possible values for all codecs, and each codec can have its own quality settings.
     /// </summary>
-    public VideoBaseProcessingSettings AudioQuality(string value)
+    public FFmpegProcessingSettings AudioQuality(string value)
     {
         _stringBuilder.Append($" -aq {value}");
 
@@ -383,7 +383,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// Sets the disposition for a stream
     /// By default, the disposition is copied from the input stream, unless the output stream this option applies to is fed by a complex filtergraph - in that case the disposition is unset by default
     /// </summary>
-    public VideoBaseProcessingSettings Disposition(string value, string? stream = null)
+    public FFmpegProcessingSettings Disposition(string value, string? stream = null)
     {
         _stringBuilder.Append($" -disposition{stream} {value}");
 
@@ -396,7 +396,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// recognized by some demuxers for which the frame size is either not stored
     /// in the file or is configurable – e.g. raw video or video grabbers
     /// </summary>
-    public VideoBaseProcessingSettings FrameSize(string value, string? stream = null)
+    public FFmpegProcessingSettings FrameSize(string value, string? stream = null)
     {
         _stringBuilder.Append($" -s{stream} {value}");
 
@@ -406,7 +406,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Force audio tag/fourcc
     /// </summary>
-    public VideoBaseProcessingSettings AudioTagOrFourcc(string value)
+    public FFmpegProcessingSettings AudioTagOrFourcc(string value)
     {
         _stringBuilder.Append($" -atag {value}");
 
@@ -416,7 +416,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Set the audio sample format
     /// </summary>
-    public VideoBaseProcessingSettings AudioSampleFormat(string value, string? stream = null)
+    public FFmpegProcessingSettings AudioSampleFormat(string value, string? stream = null)
     {
         _stringBuilder.Append($" -sample_fmt{stream} {value}");
 
@@ -426,7 +426,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Set the number of audio frames to output
     /// </summary>
-    public VideoBaseProcessingSettings AudioFramesOutput(string value)
+    public FFmpegProcessingSettings AudioFramesOutput(string value)
     {
         _stringBuilder.Append($" -frames:a {value}");
 
@@ -437,7 +437,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// Enable interaction on standard input. On by default unless standard input is used as an input.
     /// To explicitly disable interaction you need to specify -nostdin
     /// </summary>
-    public VideoBaseProcessingSettings StdIn()
+    public FFmpegProcessingSettings StdIn()
     {
         _stringBuilder.Append(" -stdin ");
 
@@ -447,7 +447,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Disable interaction on standard input.
     /// </summary>
-    public VideoBaseProcessingSettings NoStdIn()
+    public FFmpegProcessingSettings NoStdIn()
     {
         _stringBuilder.Append(" -nostdin ");
 
@@ -460,7 +460,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// </summary>
     /// <param name="target">Predefined audio and video options for various file formats</param>
     /// <param name="targetStandard">Predefined standard</param>
-    public VideoBaseProcessingSettings Target(TargetType target, TargetStandardType? targetStandard)
+    public FFmpegProcessingSettings Target(TargetType target, TargetStandardType? targetStandard)
     {
         _stringBuilder.Append(" -target ");
 
@@ -473,7 +473,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Video aspect ratios
     /// </summary>
-    public VideoBaseProcessingSettings VideoAspectRatio(VideoAspectRatioType ratioType)
+    public FFmpegProcessingSettings VideoAspectRatio(VideoAspectRatioType ratioType)
     {
         _stringBuilder.Append($" -aspect {ratioType.ToString()[1..].Replace("_", ":", StringComparison.InvariantCulture)} ");
 
@@ -483,7 +483,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Video bit rate in kbit/s
     /// </summary>
-    public VideoBaseProcessingSettings VideoBitRate(int bitRate)
+    public FFmpegProcessingSettings VideoBitRate(int bitRate)
     {
         _stringBuilder.Append($" -b:v {bitRate}k ");
 
@@ -493,7 +493,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// This sets the maximum video bitrate.
     /// </summary>
-    public VideoBaseProcessingSettings MaxRate(int bitRate)
+    public FFmpegProcessingSettings MaxRate(int bitRate)
     {
         _stringBuilder.Append($" -maxrate {bitRate}k ");
 
@@ -503,7 +503,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Channel audio
     /// </summary>
-    public VideoBaseProcessingSettings AudioChannel(int channel)
+    public FFmpegProcessingSettings AudioChannel(int channel)
     {
         _stringBuilder.Append($" -ac {channel} ");
 
@@ -513,7 +513,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Video frame rate
     /// </summary>
-    public VideoBaseProcessingSettings VideoFps(int fps)
+    public FFmpegProcessingSettings VideoFps(int fps)
     {
         _stringBuilder.Append($" -r {fps} ");
 
@@ -523,7 +523,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// This specifies the H.264 level to use. In this case, we're using level 3.0, which is also widely supported by mobile devices
     /// </summary>
-    public VideoBaseProcessingSettings Level(double level)
+    public FFmpegProcessingSettings Level(double level)
     {
         _stringBuilder.Append($" -level {level} ");
 
@@ -533,7 +533,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Pixel format. Available formats can be gathered via `ffmpeg -pix_fmts`.
     /// </summary>
-    public VideoBaseProcessingSettings PixelFormat(string format)
+    public FFmpegProcessingSettings PixelFormat(string format)
     {
         _stringBuilder.Append($" -pix_fmt {format} ");
 
@@ -543,7 +543,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Pixel format. Available formats can be gathered via `ffmpeg -pix_fmts`.
     /// </summary>
-    public VideoBaseProcessingSettings PixelFormat(PixelFormatType formatType)
+    public FFmpegProcessingSettings PixelFormat(PixelFormatType formatType)
     {
         _stringBuilder.Append($" -pix_fmt {formatType.ToString().ToLowerInvariant()} ");
 
@@ -553,7 +553,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Video sizes
     /// </summary>
-    public VideoBaseProcessingSettings VideoSize(VideoSizeType videoSize, int? witdh = null, int? height = null)
+    public FFmpegProcessingSettings VideoSize(VideoSizeType videoSize, int? witdh = null, int? height = null)
     {
         if(videoSize is VideoSizeType.CUSTOM)
         {
@@ -579,7 +579,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Video codec
     /// </summary>
-    public VideoBaseProcessingSettings VideoCodec(VideoCodecType codec)
+    public FFmpegProcessingSettings VideoCodec(VideoCodecType codec)
     {
         _stringBuilder.Append($" -c:v {codec.ToString().ToLowerInvariant()} ");
 
@@ -589,7 +589,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Codec Preset (Tested for -vcodec libx264)
     /// </summary>
-    public VideoBaseProcessingSettings VideoCodecPreset(VideoCodecPresetType preset)
+    public FFmpegProcessingSettings VideoCodecPreset(VideoCodecPresetType preset)
     {
         _stringBuilder.Append($" -preset {preset.ToString().ToLowerInvariant()} ");
 
@@ -600,7 +600,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// Codec Profile (Tested for -vcodec libx264)
     /// Specifies wheter or not to use a H.264 Profile
     /// </summary>
-    public VideoBaseProcessingSettings VideoCodecProfile(VideoCodecProfileType codecProfile)
+    public FFmpegProcessingSettings VideoCodecProfile(VideoCodecProfileType codecProfile)
     {
         _stringBuilder.Append($" -profile:v {codecProfile} ");
 
@@ -610,7 +610,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Force input or output file format. The format is normally auto detected for input files and guessed from the file extension for output files, so this option is not needed in most cases
     /// </summary>
-    public VideoBaseProcessingSettings Format(FileFormatType formatType)
+    public FFmpegProcessingSettings Format(FileFormatType formatType)
     {
         var format = formatType is FileFormatType.JPG ? "image2" : formatType.ToString().ToLowerInvariant();
         if (format.StartsWith("_", StringComparison.InvariantCulture))
@@ -624,7 +624,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Set Format. If you want to install a format that is not provided
     /// </summary>
-    public VideoBaseProcessingSettings Format(string? format)
+    public FFmpegProcessingSettings Format(string? format)
     {
         if(format != null)
             _stringBuilder.Append($" -f {format} ");
@@ -635,7 +635,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// enables experimental AAC audio encoding, which is required for some older versions of ffmpeg.
     /// </summary>
-    public VideoBaseProcessingSettings Strict(FFmpegStrictness value)
+    public FFmpegProcessingSettings Strict(FFmpegStrictness value)
     {
         _stringBuilder.Append($" -strict {value.ToString().ToLowerInvariant()} ");
 
@@ -645,7 +645,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Video Speed Up / Down using setpts filter
     /// </summary>
-    public VideoBaseProcessingSettings VideoTimeScale(double scale)
+    public FFmpegProcessingSettings VideoTimeScale(double scale)
     {
         _stringBuilder.Append($" -filter:v \"setpts = {scale.ToString(CultureInfo.InvariantCulture).Replace(",", ".", StringComparison.InvariantCulture)} * PTS\" ");
 
@@ -655,7 +655,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Map Metadata from INput to Output
     /// </summary>
-    public VideoBaseProcessingSettings MapMetadata()
+    public FFmpegProcessingSettings MapMetadata()
     {
         _stringBuilder.Append(" -map_metadata 0 ");
 
@@ -665,7 +665,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Enable bitexact mode for (de)muxer and (de/en)coder
     /// </summary>
-    public VideoBaseProcessingSettings BitExact()
+    public FFmpegProcessingSettings BitExact()
     {
         _stringBuilder.Append(" -bitexact ");
 
@@ -675,7 +675,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Set the maximum demux-decode delay.
     /// </summary>
-    public VideoBaseProcessingSettings MuxDelay(int seconds)
+    public FFmpegProcessingSettings MuxDelay(int seconds)
     {
         _stringBuilder.Append($" -muxdelay {seconds} ");
 
@@ -685,7 +685,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Set the initial demux-decode delay.
     /// </summary>
-    public VideoBaseProcessingSettings MuxPreload(int seconds)
+    public FFmpegProcessingSettings MuxPreload(int seconds)
     {
         _stringBuilder.Append($" -muxpreload {seconds} ");
 
@@ -696,7 +696,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// The -map option is used to select which threads from the input(s) should be included in the output(s).
     /// This -map parameter can also be used to exclude certain threads with negative mapping.
     /// </summary>
-    public VideoBaseProcessingSettings MapArgument(string map)
+    public FFmpegProcessingSettings MapArgument(string map)
     {
         _stringBuilder.Append($" -map {map} ");
 
@@ -706,7 +706,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Set a metadata key/value pair
     /// </summary>
-    public VideoBaseProcessingSettings MetaData(string arg)
+    public FFmpegProcessingSettings MetaData(string arg)
     {
         _stringBuilder.Append($" -metadata:{arg} ");
 
@@ -717,7 +717,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// Read with native frame rate. Perfect for streaming.
     /// Example (-metadata title="my title")
     /// </summary>
-    public VideoBaseProcessingSettings ReadNativeFrameRate()
+    public FFmpegProcessingSettings ReadNativeFrameRate()
     {
         _stringBuilder.Append(" -re ");
 
@@ -727,7 +727,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Video framerate
     /// </summary>
-    public VideoBaseProcessingSettings FrameRate(int rate)
+    public FFmpegProcessingSettings FrameRate(int rate)
     {
         _stringBuilder.Append($" -framerate {rate} ");
 
@@ -737,7 +737,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Specifies an optional rectangle from the source video to crop
     /// </summary>
-    public VideoBaseProcessingSettings CropArea(CropArea area)
+    public FFmpegProcessingSettings CropArea(CropArea area)
     {
         _stringBuilder.Append($" -filter:v \"crop={area.Width}:{area.Height}:{area.X}:{area.Y}\" ");
 
@@ -747,7 +747,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Number of video frames to output
     /// </summary>
-    public VideoBaseProcessingSettings FramesNumber(int num)
+    public FFmpegProcessingSettings FramesNumber(int num)
     {
         _stringBuilder.Append($" -frames:v {num} ");
 
@@ -757,7 +757,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Copy input stream to output
     /// </summary>
-    public VideoBaseProcessingSettings CopyAllCodec()
+    public FFmpegProcessingSettings CopyAllCodec()
     {
         _stringBuilder.Append(" -c copy ");
 
@@ -767,7 +767,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Skip inclusion of video stream
     /// </summary>
-    public VideoBaseProcessingSettings DeleteVideo()
+    public FFmpegProcessingSettings DeleteVideo()
     {
         _stringBuilder.Append(" -vn ");
 
@@ -778,7 +778,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// Set the file size limit, expressed in bytes. No further chunk of bytes is written after the limit is exceeded.
     /// The size of the output file is slightly more than the requested file size
     /// </summary>
-    public VideoBaseProcessingSettings FileSize(string size)
+    public FFmpegProcessingSettings FileSize(string size)
     {
         _stringBuilder.Append($" -fs {size} ");
 
@@ -788,7 +788,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Skip inclusion of subtitle stream
     /// </summary>
-    public VideoBaseProcessingSettings DeleteSubtitles()
+    public FFmpegProcessingSettings DeleteSubtitles()
     {
         _stringBuilder.Append(" -sn ");
 
@@ -798,7 +798,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Skip inclusion of data stream
     /// </summary>
-    public VideoBaseProcessingSettings DeleteData()
+    public FFmpegProcessingSettings DeleteData()
     {
         _stringBuilder.Append(" -dn ");
 
@@ -808,7 +808,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Complex filtergraphs are configured with the -filter_complex option
     /// </summary>
-    public VideoBaseProcessingSettings FilterComplexArgument()
+    public FFmpegProcessingSettings FilterComplexArgument()
     {
         _stringBuilder.Append(" -dn ");
 
@@ -818,7 +818,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Set the number of times to loop the output. Use -1 for no loop, 0 for looping indefinitely (default)
     /// </summary>
-    public VideoBaseProcessingSettings FilterComplexArgument(string arg)
+    public FFmpegProcessingSettings FilterComplexArgument(string arg)
     {
         _stringBuilder.Append($" -filter_complex \"overlay={arg}\" ");
 
@@ -830,7 +830,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// The values will depend on which encoder you're using
     /// For x264 your valid range is 0-51
     /// </summary>
-    public VideoBaseProcessingSettings Crf(int crf)
+    public FFmpegProcessingSettings Crf(int crf)
     {
         _stringBuilder.Append($" -crf {crf} ");
 
@@ -840,7 +840,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Video BitStream Filter
     /// </summary>
-    public VideoBaseProcessingSettings VideoBSF(VideoBitstreamFilter bsf)
+    public FFmpegProcessingSettings VideoBSF(VideoBitstreamFilter bsf)
     {
         _stringBuilder.Append($" -bsf:v {bsf.ToString().ToLowerInvariant()} ");
 
@@ -850,7 +850,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Subtitle BitStream Filter
     /// </summary>
-    public VideoBaseProcessingSettings SubtitleBSF(SubtitleBitstreamFilterType bsf)
+    public FFmpegProcessingSettings SubtitleBSF(SubtitleBitstreamFilterType bsf)
     {
         _stringBuilder.Append($" -bsf:s {bsf.ToString().ToLowerInvariant()} ");
 
@@ -860,7 +860,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Set the size of the canvas used to render subtitles
     /// </summary>
-    public VideoBaseProcessingSettings CanvasSize(string size)
+    public FFmpegProcessingSettings CanvasSize(string size)
     {
         _stringBuilder.Append($" -canvas_size {size} ");
 
@@ -870,7 +870,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Audio BitStream Filter
     /// </summary>
-    public VideoBaseProcessingSettings AudioBSF(AudioBitstreamFilterType bsf)
+    public FFmpegProcessingSettings AudioBSF(AudioBitstreamFilterType bsf)
     {
         _stringBuilder.Append($" -bsf:a {bsf.ToString().ToLowerInvariant()} ");
 
@@ -880,7 +880,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Start a new fragment at each video keyframe
     /// </summary>
-    public VideoBaseProcessingSettings MovFralgs(MovFlagsType flag)
+    public FFmpegProcessingSettings MovFralgs(MovFlagsType flag)
     {
         _stringBuilder.Append($" -movflags +{flag.ToString().ToLowerInvariant()} ");
 
@@ -890,7 +890,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Output file compression level. 0-100
     /// </summary>
-    public VideoBaseProcessingSettings CompressionLevel(int lvl)
+    public FFmpegProcessingSettings CompressionLevel(int lvl)
     {
         _stringBuilder.Append($" -compression_level {lvl} ");
 
@@ -900,7 +900,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Set language
     /// </summary>
-    public VideoBaseProcessingSettings Language(LanguageType lng)
+    public FFmpegProcessingSettings Language(LanguageType lng)
     {
         _stringBuilder.Append($" language={lng.ToString().ToLowerInvariant()} ");
 
@@ -910,7 +910,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Set physical density of pixels, in dots per inch, unset by default
     /// </summary>
-    public VideoBaseProcessingSettings Dpi(int value)
+    public FFmpegProcessingSettings Dpi(int value)
     {
         _stringBuilder.Append($" -dpi {value} ");
 
@@ -920,7 +920,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// For lossy encoding, this controls image quality. For lossless encoding, this controls the effort and time spent in compression. Range is 0 to 100. Default is 75.
     /// </summary>
-    public VideoBaseProcessingSettings Quality(int value)
+    public FFmpegProcessingSettings Quality(int value)
     {
         //-q:v
         _stringBuilder.Append($" -quality {value} ");
@@ -931,7 +931,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Enables/Disables use of lossless mode. Default is 0.
     /// </summary>
-    public VideoBaseProcessingSettings Lossless(bool value)
+    public FFmpegProcessingSettings Lossless(bool value)
     {
         _stringBuilder.Append($" -lossless {value} ");
 
@@ -942,7 +942,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// This option enables or disables accurate seeking in input files with the -ss option. It is enabled by default, so seeking is accurate when transcoding.
     /// Use -noaccurate_seek to disable it, which may be useful e.g. when copying some streams and transcoding the others
     /// </summary>
-    public VideoBaseProcessingSettings AccurateSeek()
+    public FFmpegProcessingSettings AccurateSeek()
     {
         _stringBuilder.Append(" -accurate_seek ");
 
@@ -953,7 +953,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// Allows discarding specific streams or frames from streams. Any input stream can be fully discarded,
     /// using value all whereas selective discarding of frames from a stream occurs at the demuxer and is not supported by all demuxers.
     /// </summary>
-    public VideoBaseProcessingSettings Discard()
+    public FFmpegProcessingSettings Discard()
     {
         _stringBuilder.Append(" -discard ");
 
@@ -968,7 +968,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// Should not be used with a low value when input is an actual capture device or live stream as it may cause packet loss.
     /// It is useful for when flow speed of output packets is important, such as live streaming.
     /// </summary>
-    public VideoBaseProcessingSettings Readrate(string speed)
+    public FFmpegProcessingSettings Readrate(string speed)
     {
         _stringBuilder.Append($" -readrate {speed} ");
 
@@ -983,7 +983,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// Should not be used with a low value when input is an actual capture device or live stream as it may cause packet loss.
     /// It is useful for when flow speed of output packets is important, such as live streaming.
     /// </summary>
-    public VideoBaseProcessingSettings Readrate(ReadRateType speed)
+    public FFmpegProcessingSettings Readrate(ReadRateType speed)
     {
         _stringBuilder.Append($" -readrate {(int)speed}");
 
@@ -993,7 +993,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Set the number of times to loop the output. Use -1 for no loop, 0 for looping indefinitely (default)
     /// </summary>
-    public VideoBaseProcessingSettings Loop(int loop)
+    public FFmpegProcessingSettings Loop(int loop)
     {
         _stringBuilder.Append($" -loop {loop} ");
 
@@ -1003,7 +1003,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Set thread safe
     /// </summary>
-    public VideoBaseProcessingSettings Safe(int safe)
+    public FFmpegProcessingSettings Safe(int safe)
     {
         _stringBuilder.Append($" -safe {safe} ");
 
@@ -1013,7 +1013,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Read input at native frame rate. This is equivalent to setting -readrate 1
     /// </summary>
-    public VideoBaseProcessingSettings NativeFrameRateInput()
+    public FFmpegProcessingSettings NativeFrameRateInput()
     {
         _stringBuilder.Append(" -re ");
 
@@ -1023,7 +1023,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Dump each input packet to stderr.
     /// </summary>
-    public VideoBaseProcessingSettings Dump()
+    public FFmpegProcessingSettings Dump()
     {
         _stringBuilder.Append(" -dump ");
 
@@ -1033,7 +1033,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// When dumping packets, also dump the payload.
     /// </summary>
-    public VideoBaseProcessingSettings Hex()
+    public FFmpegProcessingSettings Hex()
     {
         _stringBuilder.Append(" -hex ");
 
@@ -1048,7 +1048,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// </summary>
     /// <param name="fps">Frame per second</param>
     /// <param name="stream">stream_specifier</param>
-    public VideoBaseProcessingSettings Rate(int fps, string? stream = null)
+    public FFmpegProcessingSettings Rate(int fps, string? stream = null)
     {
         _stringBuilder.Append($" -r{stream} {fps}");
 
@@ -1058,7 +1058,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Do not overwrite output files, and exit immediately if a specified output file already exists
     /// </summary>
-    public VideoBaseProcessingSettings GetOutputIfExist()
+    public FFmpegProcessingSettings GetOutputIfExist()
     {
         _stringBuilder.Append(" -n ");
 
@@ -1069,7 +1069,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// Assign a new stream-id value to an output stream. This option should be specified prior to the output filename to which it applies.
     /// For the situation where multiple output files exist, a streamid may be reassigned to a different value
     /// </summary>
-    public VideoBaseProcessingSettings StreamId(string value)
+    public FFmpegProcessingSettings StreamId(string value)
     {
         _stringBuilder.Append($" -streamid {value}");
 
@@ -1079,7 +1079,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Set number of times input stream shall be looped. Loop 0 means no loop, loop -1 means infinite loop
     /// </summary>
-    public VideoBaseProcessingSettings StreamLoop(int value)
+    public FFmpegProcessingSettings StreamLoop(int value)
     {
         _stringBuilder.Append($" -stream_loop {value}");
 
@@ -1089,7 +1089,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Set max memory used for buffering kb
     /// </summary>
-    public VideoBaseProcessingSettings BufSize(int size)
+    public FFmpegProcessingSettings BufSize(int size)
     {
         _stringBuilder.Append($" -bufsize {size}k");
 
@@ -1099,7 +1099,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Set max memory used for buffering real-time frames
     /// </summary>
-    public VideoBaseProcessingSettings Rtbufsize(int size)
+    public FFmpegProcessingSettings Rtbufsize(int size)
     {
         _stringBuilder.Append($" -rtbufsize {size}k");
 
@@ -1109,7 +1109,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// KMS CRTC ID to define the capture source. The first active plane on the given CRTC will be used.
     /// </summary>
-    public VideoBaseProcessingSettings CRTC(int id)
+    public FFmpegProcessingSettings CRTC(int id)
     {
         _stringBuilder.Append($" -crtc_id {id}");
 
@@ -1119,7 +1119,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Set maximum size of buffer for incoming data, in frames. For DV, this is an exact value. For HDV, it is not frame exact, since HDV does not have a fixed frame size.
     /// </summary>
-    public VideoBaseProcessingSettings IncomingDataBuffer(int value)
+    public FFmpegProcessingSettings IncomingDataBuffer(int value)
     {
         _stringBuilder.Append($" -dvbuffer {value}");
 
@@ -1131,7 +1131,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// This should only be used if auto detection does not work, or if usage of a different device type should be prohibited.
     /// Treating a DV device as HDV (or vice versa) will not work and result in undefined behavior. The values auto, dv and hdv are supported.
     /// </summary>
-    public VideoBaseProcessingSettings DvDevice(DvType type)
+    public FFmpegProcessingSettings DvDevice(DvType type)
     {
         _stringBuilder.Append($" -dvtype {type.ToString().ToLowerInvariant()}");
 
@@ -1143,7 +1143,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// This is useful to select the input if multiple devices are connected at the same time.
     /// Look at /sys/bus/firewire/devices to find out the GUIDs.
     /// </summary>
-    public VideoBaseProcessingSettings CaptureDeviceGuid(string guid)
+    public FFmpegProcessingSettings CaptureDeviceGuid(string guid)
     {
         _stringBuilder.Append($" -dvguid {guid}");
 
@@ -1156,7 +1156,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// The default value for -max_muxing_queue_size is 1000. In some cases,
     /// especially when working with high-resolution video or high frame rate video, you might need to increase this value to prevent the muxing queue from overflowing.
     /// </summary>
-    public VideoBaseProcessingSettings MaxMuxingQueueSize(int size)
+    public FFmpegProcessingSettings MaxMuxingQueueSize(int size)
     {
         _stringBuilder.Append($" -max_muxing_queue_size {size}");
 
@@ -1168,7 +1168,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// Default value is Auto.
     /// </summary>
     /// <param name="mode">Encoder timebase mode</param>
-    public VideoBaseProcessingSettings CopyTb(EncoderTimebaseType mode)
+    public FFmpegProcessingSettings CopyTb(EncoderTimebaseType mode)
     {
         _stringBuilder.Append($" -copytb {(int)mode}");
 
@@ -1179,7 +1179,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// Do not process input timestamps, but keep their values without trying to sanitize them. In particular, do not remove the initial start time offset value.
     /// Note that, depending on the vsync option or on specific muxer processing (e.g. in case the format option avoid_negative_ts is enabled) the output timestamps may mismatch with the input timestamps even when this option is selected.
     /// </summary>
-    public VideoBaseProcessingSettings CopyTs()
+    public FFmpegProcessingSettings CopyTs()
     {
         _stringBuilder.Append(" -copyts ");
 
@@ -1190,7 +1190,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// Frame drop threshold, which specifies how much behind video frames can be before they are dropped. In frame rate units, so 1.0 is one frame.
     /// The default is -1.1. One possible usecase is to avoid framedrops in case of noisy timestamps or to increase frame drop precision in case of exact timestamps.
     /// </summary>
-    public VideoBaseProcessingSettings FrameDropThreshold(int parameter)
+    public FFmpegProcessingSettings FrameDropThreshold(int parameter)
     {
         _stringBuilder.Append($" -frame_drop_threshold {parameter}");
 
@@ -1201,7 +1201,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// When used with copyts, shift input timestamps so they start at zero.
     /// This means that using e.g. -ss 50 will make output timestamps start at 50 seconds, regardless of what timestamp the input file started at.
     /// </summary>
-    public VideoBaseProcessingSettings StartAtZero()
+    public FFmpegProcessingSettings StartAtZero()
     {
         _stringBuilder.Append(" -start_at_zero ");
 
@@ -1211,7 +1211,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Allow input streams with unknown type to be copied instead of failing if copying such streams is attempted.
     /// </summary>
-    public VideoBaseProcessingSettings CopyUnknown()
+    public FFmpegProcessingSettings CopyUnknown()
     {
         _stringBuilder.Append(" -copy_unknown ");
 
@@ -1221,7 +1221,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Ignore input streams with unknown type instead of failing if copying such streams is attempted.
     /// </summary>
-    public VideoBaseProcessingSettings IgnoreUnknown()
+    public FFmpegProcessingSettings IgnoreUnknown()
     {
         _stringBuilder.Append(" -ignore_unknown ");
 
@@ -1232,7 +1232,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// If some input channel layout is not known, try to guess only if it corresponds to at most the specified number of channels.
     /// For example, 2 tells to ffmpeg to recognize 1 channel as mono and 2 channels as stereo but not 6 channels as 5.1. The default is to always try to guess. Use 0 to disable all guessing.
     /// </summary>
-    public VideoBaseProcessingSettings GuessLayoutMaxChannels()
+    public FFmpegProcessingSettings GuessLayoutMaxChannels()
     {
         _stringBuilder.Append(" -guess_layout_max channels ");
 
@@ -1242,7 +1242,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Setting Output Arguments
     /// </summary>
-    public VideoBaseProcessingSettings SetOutputArguments(string? arg)
+    public FFmpegProcessingSettings SetOutputArguments(string? arg)
     {
         OutputFileArguments = arg;
 
@@ -1252,7 +1252,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Additional settings that are not currently provided in the wrapper
     /// </summary>
-    public VideoBaseProcessingSettings CustomArguments(string arg)
+    public FFmpegProcessingSettings CustomArguments(string arg)
     {
         _stringBuilder.Append(arg);
 
@@ -1267,7 +1267,7 @@ public class VideoBaseProcessingSettings : BaseProcessingSettings
     /// <summary>
     /// Set input files
     /// </summary>
-    public VideoBaseProcessingSettings SetInputFiles(params MediaFile[]? files)
+    public FFmpegProcessingSettings SetInputFiles(params MediaFile[]? files)
     {
         // Check if the input files are specified
         if(files is null || files.Length == 0)
