@@ -31,7 +31,7 @@ public class ImageFileProcessor : IImageFileProcessor
     /// <summary>
     /// The address from which the convert executable can be downloaded.
     /// </summary>
-    private const string ZipAddress = "https://imagemagick.org/archive/binaries/ImageMagick-7.1.0-61-portable-Q16-x64.zip";
+    private const string ZipAddress = "https://imagemagick.org/archive/binaries/ImageMagick-7.1.1-25-portable-Q16-x64.zip";
 
     /// <inheritdoc />
     public async Task<MemoryStream?> ExecuteAsync(ImageMagickProcessingSettings settings, CancellationToken cancellationToken)
