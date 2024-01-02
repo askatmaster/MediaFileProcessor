@@ -626,7 +626,7 @@ public class FFmpegProcessingSettings : BaseProcessingSettings
     /// </summary>
     public FFmpegProcessingSettings Format(string? format)
     {
-        if(format != null)
+        if(!string.IsNullOrEmpty(format))
             _stringBuilder.Append($" -f {format} ");
 
         return this;

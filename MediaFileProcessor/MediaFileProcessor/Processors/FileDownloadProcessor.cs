@@ -56,12 +56,10 @@ public static class FileDownloadProcessor
                 Console.Write(percentage + "%");
             }
         }
-        catch(Exception)
+        finally
         {
-            if(deleteIfFail && File.Exists(fileName))
+            if (deleteIfFail && File.Exists(fileName))
                 File.Delete(fileName);
-
-            throw;
         }
     }
 }

@@ -418,7 +418,7 @@ public sealed class ZipFileProcessor : IDisposable
         var path = Path.GetDirectoryName(filename);
 
         if (!Directory.Exists(path))
-            if (path != null)
+            if (!string.IsNullOrEmpty(path))
                 Directory.CreateDirectory(path);
 
         // Check if it is a directory. If so, do nothing.

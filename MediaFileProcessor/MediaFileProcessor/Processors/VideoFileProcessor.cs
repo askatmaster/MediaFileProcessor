@@ -1206,7 +1206,7 @@ public class VideoFileProcessor : IVideoFileProcessor
     {
         FFmpegProcessingSettings? settings;
 
-        if(videoFile.InputFilePath != null)
+        if(!string.IsNullOrEmpty(videoFile.InputFilePath))
         {
             settings = new FFmpegProcessingSettings().CustomArguments("-v panic -print_format json=c=1 -show_streams -show_entries "
                                                                    + $"format=size,duration,bit_rate:format_tags=creation_time {videoFile.InputFilePath}");
