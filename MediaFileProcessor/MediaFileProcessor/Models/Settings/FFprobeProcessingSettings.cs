@@ -186,4 +186,62 @@ public class FFprobeProcessingSettings : BaseProcessingSettings
         _stringBuilder.Append(" -colors ");
         return this;
     }
+
+    /// <summary>
+    /// Sets the log level for FFprobe processing.
+    /// </summary>
+    /// <param name="level">The log level to be set.</param>
+    public FFprobeProcessingSettings LogLevel(string level)
+    {
+        _stringBuilder.Append($" -loglevel {level} ");
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the log level with a flag and a level.
+    /// </summary>
+    /// <param name="flag">The log level flag.</param>
+    /// <param name="level">The log level.</param>
+    public FFprobeProcessingSettings LogLevelWithFlag(string flag, string level)
+    {
+        _stringBuilder.Append($" -loglevel {flag}+{level} ");
+        return this;
+    }
+
+    /// <summary>
+    /// Adds the repeat flag only to the FFprobe processing settings.
+    /// </summary>
+    public FFprobeProcessingSettings AddRepeatFlagOnly()
+    {
+        _stringBuilder.Append(" -loglevel +repeat ");
+        return this;
+    }
+
+    /// <summary>
+    /// Adds the '-report' option to FFprobe processing settings.
+    /// </summary>
+    public FFprobeProcessingSettings Report()
+    {
+        _stringBuilder.Append(" -report ");
+        return this;
+    }
+
+    /// <summary>
+    /// Appends the "-hide_banner" flag to the string builder.
+    /// </summary>
+    public FFprobeProcessingSettings HideBanner()
+    {
+        _stringBuilder.Append(" -hide_banner ");
+        return this;
+    }
+
+    /// <summary>
+    /// Sets the CPU flags for FFprobe processing settings.
+    /// </summary>
+    /// <param name="flag">The CPU flag value.</param>
+    public FFprobeProcessingSettings Сpuflags(CpuFlags flag)
+    {
+        _stringBuilder.Append($" -cpuflags {flag.ToString().ToLowerInvariant().Replace("_", string.Empty, StringComparison.InvariantCulture)}");
+        return this;
+    }
 }
