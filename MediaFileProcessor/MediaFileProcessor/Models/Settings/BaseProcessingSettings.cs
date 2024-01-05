@@ -55,12 +55,12 @@ public abstract class BaseProcessingSettings
     /// <summary>
     /// Arguments for Specifying the Output Data Format
     /// </summary>
-    protected static string? OutputFileArguments { get; set; }
+    protected string? OutputFileArguments { get; set; }
 
     /// <summary>
     /// Property to determine if standard output is redirected or not.
     /// </summary>
-    public bool IsStandartOutputRedirect => OutputFileArguments == null || OutputFileArguments.Trim() == " - ";
+    public bool IsStandartOutputRedirect => OutputFileArguments == null || OutputFileArguments.Trim() == "-";
 
     /// <summary>
     /// Property to hold a dictionary of pipe names and their associated streams.
