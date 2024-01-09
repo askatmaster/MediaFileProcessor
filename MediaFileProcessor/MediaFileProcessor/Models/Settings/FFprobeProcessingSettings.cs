@@ -244,4 +244,222 @@ public class FFprobeProcessingSettings : BaseProcessingSettings
         _stringBuilder.Append($" -cpuflags {flag.ToString().ToLowerInvariant().Replace("_", string.Empty, StringComparison.InvariantCulture)}");
         return this;
     }
+    
+    /// <summary>
+    /// These options can be set for any container, codec or device.
+    /// Generic options are listed under AVFormatContext options for containers/devices and under AVCodecContext options for codecs.
+    /// </summary>
+    public FFprobeProcessingSettings Generic()
+    {
+        _stringBuilder.Append(" -generic ");
+        return this;
+    }
+    
+    /// <summary>
+    /// These options are specific to the given container, device or codec.
+    /// Private options are listed under their corresponding containers/devices/codecs.
+    /// </summary>
+    public FFprobeProcessingSettings Private()
+    {
+        _stringBuilder.Append(" -private ");
+        return this;
+    }
+    
+    /// <summary>
+    /// Force displayed width.
+    /// </summary>
+    public FFprobeProcessingSettings Width()
+    {
+        _stringBuilder.Append(" -x ");
+        return this;
+    }
+    
+    /// <summary>
+    /// Force displayed height.
+    /// </summary>
+    public FFprobeProcessingSettings Height()
+    {
+        _stringBuilder.Append(" -y ");
+        return this;
+    }
+    
+    /// <summary>
+    /// Start in fullscreen mode.
+    /// </summary>
+    public FFprobeProcessingSettings Fullscreen()
+    {
+        _stringBuilder.Append(" -fs ");
+        return this;
+    }
+    
+    /// <summary>
+    /// Disable audio.
+    /// </summary>
+    public FFprobeProcessingSettings DisableAudio()
+    {
+        _stringBuilder.Append(" -an ");
+        return this;
+    }
+    
+    /// <summary>
+    /// Disable subtitles.
+    /// </summary>
+    public FFprobeProcessingSettings DisableSubtitles()
+    {
+        _stringBuilder.Append(" -sn ");
+        return this;
+    }
+    
+    /// <summary>
+    /// Seek to pos.
+    /// </summary>
+    public FFprobeProcessingSettings SeekToPos(string pos)
+    {
+        _stringBuilder.Append($" -ss {pos} ");
+        return this;
+    }
+
+    /// <summary>
+    /// Play duration seconds of audio/video
+    /// </summary>
+    public FFprobeProcessingSettings PlayDuration(string duration)
+    {
+        _stringBuilder.Append($" -t {duration} ");
+        return this;
+    }
+
+    /// <summary>
+    /// Seek by bytes.
+    /// </summary>
+    public FFprobeProcessingSettings SeekByBytes()
+    {
+        _stringBuilder.Append(" -bytes ");
+        return this;
+    }
+
+    /// <summary>
+    /// Set custom interval for seeking.
+    /// </summary>
+    public FFprobeProcessingSettings SetSeekInterval(string interval)
+    {
+        _stringBuilder.Append($" -seek_interval {interval} ");
+        return this;
+    }
+
+    /// <summary>
+    /// Disable graphical display.
+    /// </summary>
+    public FFprobeProcessingSettings DisableDisplay()
+    {
+        _stringBuilder.Append(" -nodisp ");
+        return this;
+    }
+    
+    /// <summary>
+    /// Borderless window.
+    /// </summary>
+    public FFprobeProcessingSettings BorderlessWindow()
+    {
+        _stringBuilder.Append(" -noborder ");
+        return this;
+    }
+
+    /// <summary>
+    /// Window always on top.
+    /// </summary>
+    public FFprobeProcessingSettings WindowAlwaysOnTop()
+    {
+        _stringBuilder.Append(" -alwaysontop ");
+        return this;
+    }
+
+    /// <summary>
+    /// Set the startup volume.
+    /// </summary>
+    public FFprobeProcessingSettings Volume(int value)
+    {
+        _stringBuilder.Append($" -volume {value} ");
+        return this;
+    }
+
+    /// <summary>
+    /// Force format.
+    /// </summary>
+    public FFprobeProcessingSettings ForceFormat(string fmt)
+    {
+        _stringBuilder.Append($" -f {fmt} ");
+        return this;
+    }
+
+    /// <summary>
+    /// Set window title.
+    /// </summary>
+    public FFprobeProcessingSettings WindowTitle(string title)
+    {
+        _stringBuilder.Append($" -window_title \"{title}\" ");
+        return this;
+    }
+
+    /// <summary>
+    /// Set the x position for the left of the window.
+    /// </summary>
+    public FFprobeProcessingSettings WindowLeft(string left)
+    {
+        _stringBuilder.Append($" -left {left} ");
+        return this;
+    }
+
+    /// <summary>
+    /// Set the y position for the top of the window.
+    /// </summary>
+    public FFprobeProcessingSettings WindowTop(string top)
+    {
+        _stringBuilder.Append($" -top {top} ");
+        return this;
+    }
+
+    /// <summary>
+    /// Loops movie playback number times.
+    /// </summary>
+    public FFprobeProcessingSettings ReplayLoop(string numberOfLoops)
+    {
+        _stringBuilder.Append($" -loop {numberOfLoops} ");
+        return this;
+    }
+    
+    /// <summary>
+    /// Set the show mode to use.
+    /// </summary>
+    public FFprobeProcessingSettings ShowMode(string mode)
+    {
+        _stringBuilder.Append($" -showmode {mode} ");
+        return this;
+    }
+
+    /// <summary>
+    /// Create the filtergraph specified by filtergraph and use it to filter the video stream.
+    /// </summary>
+    public FFprobeProcessingSettings VideoFiltergraph(string filtergraph)
+    {
+        _stringBuilder.Append($" -vf \"{filtergraph}\" ");
+        return this;
+    }
+
+    /// <summary>
+    /// Filtergraph is a description of the filtergraph to apply to the input audio.
+    /// </summary>
+    public FFprobeProcessingSettings AudioFiltergraph(string filtergraph)
+    {
+        _stringBuilder.Append($" -af \"{filtergraph}\" ");
+        return this;
+    }
+
+    /// <summary>
+    /// Read input_url.
+    /// </summary>
+    public FFprobeProcessingSettings InputUrl(string inputUrl)
+    {
+        _stringBuilder.Append($" -i \"{inputUrl}\" ");
+        return this;
+    }
 }
