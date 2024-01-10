@@ -462,4 +462,193 @@ public class FFprobeProcessingSettings : BaseProcessingSettings
         _stringBuilder.Append($" -i \"{inputUrl}\" ");
         return this;
     }
+    
+        /// <summary>
+    /// Print several playback statistics.
+    /// </summary>
+    public FFprobeProcessingSettings ShowStats()
+    {
+        _stringBuilder.Append(" -stats ");
+        return this;
+    }
+
+    /// <summary>
+    /// Non-spec-compliant optimizations.
+    /// </summary>
+    public FFprobeProcessingSettings FastEnable()
+    {
+        _stringBuilder.Append(" -fast ");
+        return this;
+    }
+
+    /// <summary>
+    /// Generate pts.
+    /// </summary>
+    public FFprobeProcessingSettings GenPts()
+    {
+        _stringBuilder.Append(" -genpts ");
+        return this;
+    }
+
+    /// <summary>
+    /// Set the master clock to audio, video or external.
+    /// </summary>
+    public FFprobeProcessingSettings SyncType(string type)
+    {
+        _stringBuilder.Append($" -sync {type} ");
+        return this;
+    }
+
+    /// <summary>
+    /// Select the desired audio stream using the given stream specifier.
+    /// </summary>
+    public FFprobeProcessingSettings AudioStreamSpecifier(string specifier)
+    {
+        _stringBuilder.Append($" -ast {specifier} ");
+        return this;
+    }
+
+    /// <summary>
+    /// Select the desired video stream using the given stream specifier.
+    /// </summary>
+    public FFprobeProcessingSettings VideoStreamSpecifier(string specifier)
+    {
+        _stringBuilder.Append($" -vst {specifier} ");
+        return this;
+    }
+
+    /// <summary>
+    /// Select the desired subtitle stream using the given stream specifier.
+    /// </summary>
+    public FFprobeProcessingSettings SubtitleStreamSpecifier(string specifier)
+    {
+        _stringBuilder.Append($" -sst {specifier} ");
+        return this;
+    }
+
+    /// <summary>
+    /// Exit when video is done playing.
+    /// </summary>
+    public FFprobeProcessingSettings AutoExit()
+    {
+        _stringBuilder.Append(" -autoexit ");
+        return this;
+    }
+
+    /// <summary>
+    /// Exit if any key is pressed.
+    /// </summary>
+    public FFprobeProcessingSettings ExitOnKeydown()
+    {
+        _stringBuilder.Append(" -exitonkeydown ");
+        return this;
+    }
+    
+        /// <summary>
+    /// Exit if any mouse button is pressed.
+    /// </summary>
+    public FFprobeProcessingSettings ExitOnMousedown()
+    {
+        _stringBuilder.Append(" -exitonmousedown ");
+        return this;
+    }
+
+    /// <summary>
+    /// Force a specific decoder implementation.
+    /// </summary>
+    public FFprobeProcessingSettings Codec(string mediaSpecifier, string codecName)
+    {
+        _stringBuilder.Append($" -codec:{mediaSpecifier} {codecName} ");
+        return this;
+    }
+
+    /// <summary>
+    /// Force a specific audio decoder.
+    /// </summary>
+    public FFprobeProcessingSettings AudioCodec(string codecName)
+    {
+        _stringBuilder.Append($" -acodec {codecName} ");
+        return this;
+    }
+
+    /// <summary>
+    /// Force a specific video decoder.
+    /// </summary>
+    public FFprobeProcessingSettings VideoCodec(string codecName)
+    {
+        _stringBuilder.Append($" -vcodec {codecName} ");
+        return this;
+    }
+
+    /// <summary>
+    /// Force a specific subtitle decoder.
+    /// </summary>
+    public FFprobeProcessingSettings SubtitleCodec(string codecName)
+    {
+        _stringBuilder.Append($" -scodec {codecName} ");
+        return this;
+    }
+
+    /// <summary>
+    /// Automatically rotate the video.
+    /// </summary>
+    public FFprobeProcessingSettings Autorotate()
+    {
+        _stringBuilder.Append(" -autorotate ");
+        return this;
+    }
+
+    /// <summary>
+    /// Drop video frames if video is out of sync.
+    /// </summary>
+    public FFprobeProcessingSettings FrameDrop()
+    {
+        _stringBuilder.Append(" -framedrop ");
+        return this;
+    }
+
+    /// <summary>
+    /// Do not limit the input buffer size.
+    /// </summary>
+    public FFprobeProcessingSettings Infbuf()
+    {
+        _stringBuilder.Append(" -infbuf ");
+        return this;
+    }
+
+    /// <summary>
+    /// Defines how many threads are used to process a filter pipeline.
+    /// </summary>
+    public FFprobeProcessingSettings FilterThreads(string nbThreads)
+    {
+        _stringBuilder.Append($" -filter_threads {nbThreads} ");
+        return this;
+    }
+
+    /// <summary>
+    /// Use vulkan renderer.
+    /// </summary>
+    public FFprobeProcessingSettings EnableVulkan()
+    {
+        _stringBuilder.Append(" -enable_vulkan ");
+        return this;
+    }
+
+    /// <summary>
+    /// Vulkan configuration.
+    /// </summary>
+    public FFprobeProcessingSettings VulkanParams(string parameters)
+    {
+        _stringBuilder.Append($" -vulkan_params {parameters} ");
+        return this;
+    }
+
+    /// <summary>
+    /// Use HW accelerated decoding.
+    /// </summary>
+    public FFprobeProcessingSettings Hwaccel()
+    {
+        _stringBuilder.Append(" -hwaccel ");
+        return this;
+    }
 }
