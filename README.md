@@ -1,7 +1,7 @@
 # MediaFileProcessor
 C# (.NET Standard 2.1) OpenSource library for processing various files (videos, photos, documents, images).
 
-```dotnet add package MediaFileProcessor --version 1.0.2```
+```dotnet add package MediaFileProcessor --version 1.0.3```
 
 This library is a universal wrapper for executable processes in the operating system (Windows/Linux).
 The library allows files to communicate with processes through named pipes, streams, byte arrays, and directory paths.
@@ -123,7 +123,7 @@ var result = await videoFileProcessor.ExecuteAsync(settings, new CancellationTok
 ### Important Note When Processing MP4 Files!
 When processing MP4 video files into a video stream or byte set, use this method.
 ```csharp
-public async Task<MemoryStream?> MP4SetStartMoovAsync(MediaFile file, string? outputFile = null, CancellationToken cancellationToken = default)
+public async Task<MemoryStream?> SetStartMoovAsync(MediaFile file, string? outputFile = null, CancellationToken cancellationToken = default)
 ```
 
 This method moves the MOOV atom of the MP4 format to the beginning because FFmpeg must know how to process this file when reading files from a stream. 
@@ -160,26 +160,17 @@ Below is an example of using frame extraction from a video file at a certain tim
 ```csharp
  var videoFileProcessor = new VideoFileProcessor();
  //Test block with physical paths to input and output files
- await videoFileProcessor.GetFrameFromVideoAsync(TimeSpan.FromMilliseconds(47500),
-                                                 new MediaFile(@"C:\inputFile.avi"),
-                                                 @"C:\resultPath.jpg",
-                                                 FileFormatType.JPG);
-```
-
-Below is an example of using a frame extraction from a video file at a certain timing, provided that we have a file in the video of an array of bytes
-```csharp
-//Block for testing file processing as bytes without specifying physical paths
- var bytes = await File.ReadAllBytesAsync(@"C:\inputFile.avi");
- var resultBytes = await videoProcessor.GetFrameFromVideoAsBytesAsync(TimeSpan.FromMilliseconds(47500), new MediaFile(bytes), FileFormatType.JPG);
- await using (var output = new FileStream(@"C:\resultPath.jpg", FileMode.Create))
-     output.Write(resultBytes);
+ await videoFileProcessor.ExtractFrameFromVideoAsync(TimeSpan.FromMilliseconds(47500),
+                                                     new MediaFile(@"C:\inputFile.avi"),
+                                                     @"C:\resultPath.jpg",
+                                                     FileFormatType.JPG);
 ```
 
 Below is an example of using a frame extraction from a video file at a certain timing, provided that we have a file in the video stream
 ```csharp
 //Block for testing file processing as streams without specifying physical paths
 await using var stream = new FileStream(@"C:\inputFile.avi", FileMode.Open);
-var resultStream = await videoProcessor.GetFrameFromVideoAsStreamAsync(TimeSpan.FromMilliseconds(47500), new MediaFile(stream), FileFormatType.JPG);
+var resultStream = await videoProcessor.GetFrameFromVideoAsStreamAsync(TimeSpan.FromMilliseconds(47500), new MediaFile(stream), null, FileFormatType.JPG);
 await using (var output = new FileStream(@"C:\resultPath.jpg", FileMode.Create))
      resultStream.WriteTo(output);
 ```
@@ -273,7 +264,7 @@ foreach (var file in files)
 
 //Block for testing file processing as streams without specifying physical paths
 stream.Seek(0, SeekOrigin.Begin);
-var resultStream = await videoProcessor.ConvertImagesToVideoAsStreamAsync(new MediaFile(stream), 24, "yuv420p", FileFormatType.AVI);
+var resultStream = await videoProcessor.ConvertImagesToVideoAsync(new MediaFile(stream), 24, "yuv420p", FileFormatType.AVI);
 await using (var output = new FileStream(@"C:\mfptest\results\ConvertImagesToVideoTest\resultStream.avi", FileMode.Create))
 {
    resultStream.WriteTo(output);
@@ -298,7 +289,7 @@ An illustrative example of stream decoding:
 ```csharp
 //Block for testing file processing as streams without specifying physical paths
 await using var stream = new FileStream(_video1, FileMode.Open);
-var resultMultiStream = await videoProcessor.ConvertVideoToImagesAsStreamAsync(new MediaFile(stream), FileFormatType.JPG);
+var resultMultiStream = await videoProcessor.ConvertVideoToImagesAsync(new MediaFile(stream), null,  FileFormatType.JPG);
 var count = 1;
 var data = resultMultiStream.ReadAsDataArray();
 
@@ -352,24 +343,23 @@ using(var zip = ZipFileProcessor.Open(fileName, FileAccess.Read))
 Perhaps the main class of this library is the class ```MediaFileProcess```.
 It is a universal wrapper for executable processes.
 
-When instantiating it, you must give it the path/name of the executable process, process arguments, ```ProcessingSettings```, input streams, and names of input named pipes.
+When instantiating it, you must give it the path/name of the executable process, process arguments, classes from  ```BaseProcessingSettings```, input streams, and names of input named pipes.
 ### Note on input streams and named pipes:
 If a process needs to pass multiple threads to different input arguments,
 then you should specify the names of the named pipes in the input arguments and pass these names and input streams to the corresponding arguments of the ```MediaFileProcess``` constructor.
 This is necessary because in the case of passing to different streams in different input arguments, named pipes are used.
-The configuration of the running process itself must be done in the ```ProcessingSettings``` class.
+The configuration of the running process itself should be done in the class that derives from ```BaseProcessingSettings```.
 
 ```csharp
 var inputStreamFile = @"C:\inputFile.txt".ToFileStream();
 
-var settings = new ProcessingSettings
+var settings = new FFmpegProcessingSettings
 {
     CreateNoWindow = true,
     UseShellExecute = false,
     EnableRaisingEvents = false,
     WindowStyle = ProcessWindowStyle.Normal,
     ProcessOnExitedHandler = null,
-    IsStandartOutputRedirect = true,
     OutputDataReceivedEventHandler = null,
     ErrorDataReceivedHandler = null
 };
@@ -378,6 +368,8 @@ var process = new MediaFileProcess("program.exe", "-arg1 value1 -arg2 value2 -ar
 
 var result = await process.ExecuteAsync(new CancellationToken());
 ```
+
+P.S. You can use test files with different formats from the ```testFiles``` folder
 
 ### Special thanks to
 
