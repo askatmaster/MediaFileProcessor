@@ -1,4 +1,28 @@
-# MediaFileProcessor
+* [Overview](#overview)
+* [FFmpeg instruction](#ffmpeg-instruction)
+  * [File Processing Example](#file-processing-example)
+  * [Get Video File Info](#get-video-file-info)
+  * [Attention!](#attention)
+    * [Important Note When Processing MP4 Files!](#important-note-when-processing-mp4-files)
+    * [Example "Extract frame from video"](#example-extract-frame-from-video)
+* [ImageMagick instruction](#imagemagick-instruction)
+    * [An example of image compression in three options (directory path, stream, byte array)](#an-example-of-image-compression-in-three-options-directory-path-stream-byte-array)
+* [Pandoc instruction](#pandoc-instruction)
+* [Useful Features](#useful-features)
+  * [MultiStream](#multistream)
+    * [Example of using MultiStream](#example-of-using-multistream)
+    * [On-the-fly stream decoding](#on-the-fly-stream-decoding)
+    * [To learn more about the decoding process, I advise you to study the source code.](#to-learn-more-about-the-decoding-process-i-advise-you-to-study-the-source-code)
+  * [FileDownloadProcessor](#filedownloadprocessor)
+  * [ZipFileProcessor](#zipfileprocessor)
+  * [MediaFileProcess](#mediafileprocess)
+    * [Note on input streams and named pipes:](#note-on-input-streams-and-named-pipes)
+  * [FileDataExtensions](#filedataextensions)
+  * [FilesSignatureExtensions](#filessignatureextensions)
+  * [StreamDecodeExtensions](#streamdecodeextensions)
+* [Special thanks to](#special-thanks-to)
+
+# Overview
 C# (.NET Standard 2.1) OpenSource library for processing various files (videos, photos, documents, images).
 
 ```dotnet add package MediaFileProcessor --version 1.0.3```
@@ -90,7 +114,7 @@ var data = await videoProcessor.GetVideoInfo(new MediaFile(stream));
 var info = JsonConvert.DeserializeObject<VideoFileInfo>(data, _jsonSnakeCaseSerializerSettings)!;
 ```
 
-### Attention!
+## Attention!
 
 When setting the process configuration, you can set the input data using the ```SetInputFiles``` method, which accepts an array of parameters in the form of instances of the ```MediaFile``` class.
 
@@ -274,7 +298,7 @@ We collect a thousand images into one ```MultiStream``` and pass it to the proce
 The ```MultiStream``` class has a ```ReadAsDataArray``` method to get the contained streams as arrays of bytes,
 and ```ReadAsStreamArray``` to get the contained streams as an array of streams.
 
-## On-the-fly stream decoding
+### On-the-fly stream decoding
 When we use the ffmpeg function to split a video file frame by frame into images, it creates a set of images for us in the specified output directory.
 
 But what if we need to get its result to the directory and to the output stream. In this case, it will write all the images obtained from the video file into a single output stream.
@@ -338,7 +362,7 @@ using(var zip = ZipFileProcessor.Open(fileName, FileAccess.Read))
     }
 }
 ```
-# MediaFileProcess
+## MediaFileProcess
 
 Perhaps the main class of this library is the class ```MediaFileProcess```.
 It is a universal wrapper for executable processes.
@@ -368,10 +392,64 @@ var process = new MediaFileProcess("program.exe", "-arg1 value1 -arg2 value2 -ar
 
 var result = await process.ExecuteAsync(new CancellationToken());
 ```
+## FileDataExtensions
 
-P.S. You can use test files with different formats from the ```testFiles``` folder
+The FileDataExtensions file contains a class with the same name, which consists of several extension methods aimed at helping to work with file and byte array data.
+Here are some of the methods presented in that class:
 
-### Special thanks to
+* `ToFileStream` - these methods are used to convert a file name to a FileStream with an optional FileMode.
+
+* `ToMemoryStream` - this method converts a byte array to a MemoryStream.
+
+* `ToBytes`- this method converts a file name to a byte array.
+
+* `ToFile` - these methods take either a byte array or a stream and write it to a file with the given name.
+
+* `GetFileFormatType` - this method returns the format type of the file.
+
+* `GetFilesFromByteArray` and variations - these methods are used to get a MultiStream from a byte array.
+
+## FilesSignatureExtensions
+
+The FilesSignatureExtensions file in your project contains a class FilesSignatureExtensions which provides a set of extension methods to interact with various file types and their associated signatures.
+These methods are primarily used to detect and handle different types of media files depending on their signature.
+Here are some functionalities provided by the extension methods:
+
+* Properties representing byte arrays for various media file signatures like `JPG, PNG, ICO, TIFF, MP4, AVI, GIF, VOB, MP3, WAV`, etc.
+
+* Methods like `FileFormatType GetFormat(this byte[] signature)` and `FileFormatType GetFormat(this ReadOnlySpan<byte> signature)` which return the media file format type based on the byte signature.
+
+* A collection of boolean methods like `IsTS(this byte[] buffer), IsJPEG(this byte[] buffer), IsPNG(this byte[] buffer), IsMOV(this byte[] buffer), etc.,` which determine the type of media file from a byte buffer.
+
+* Methods like `bool CompareByteArrays(byte[] arr1, byte[] arr2)` and `bool CompareByteArrays(byte[] arr1, byte[] arr2, int position)` which compares byte arrays.
+
+* Methods like `string? GetFileFormat(Stream stream)` and `string? GetFileFormat(byte[] fileData)` which return file format based on stream or byte array.
+
+## StreamDecodeExtensions
+
+The StreamDecodeExtensions file contains a class StreamDecodeExtensions that extends certain functionalities to help with stream decoding and handling such as searching for file signatures and generating multi streams based on these signatures.
+Here are the methods offered by this class for these functionalities:
+
+* `byte[] ConcatByteArrays(ReadOnlySpan<byte> array1, ReadOnlySpan<byte> array2)`: This method concatenates two byte arrays.
+
+* `(int?, bool) SearchFileSignature(Span<byte> bytes, int startIndex, int endIndex)`: This method is designed to search for a file signature in the span of bytes within specified start and end indices.
+
+* `bool SignaturePositionIgnore(ReadOnlySpan<byte> signature, ref int signatureStartPos)`: This method examines if the signature position should be ignored.
+
+* `List<byte[]>? GetListOfSignature(Span<byte> data)`: This method retrieves a list of signatures from the provided data span.
+
+* `MultiStream GetMultiStreamBySignature(Stream stream, List<byte[]> fileSignature)`: This method generates a MultiStream based on a stream and a list of file signatures.
+
+## FFmpegExtensions
+
+The FFmpegExtensions file contains a static class FFmpegExtensions which provides utility methods for handling FFmpeg-related operations.
+Currently, it contains a single extension method:
+
+* `string ToFfmpegDuration(this TimeSpan duration)`: this extension method on TimeSpan instances is used to convert a TimeSpan duration to a string formatted for FFmpeg usage. This method handles both positive and negative durations, returning the appropriate FFmpeg-formatted string representation of the duration.
+
+_**P.S. You can use test files with different formats from the ```testFiles``` folder**_
+
+# Special thanks to
 
 * [JetBrains](https://www.jetbrains.com/), for the Rider IDE opensource license.
 * [Syntevo](https://www.syntevo.com/), for the SmartGit opensource license.
