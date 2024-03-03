@@ -162,7 +162,7 @@ public class FFmpegProcessingSettings : BaseProcessingSettings
     /// </summary>
     public FFmpegProcessingSettings MaxDuration(TimeSpan duration)
     {
-        _stringBuilder.Append($" -t {duration} ");
+        _stringBuilder.Append($" -t {duration.ToFfmpegDuration()} ");
 
         return this;
     }
@@ -173,7 +173,7 @@ public class FFmpegProcessingSettings : BaseProcessingSettings
     /// </summary>
     public FFmpegProcessingSettings TimePosition(TimeSpan position)
     {
-        _stringBuilder.Append($" -to {position.TotalSeconds:00:00:00.000} ".Replace(",", ".", StringComparison.InvariantCulture));
+        _stringBuilder.Append($" -to {position.ToFfmpegDuration()} ");
 
         return this;
     }
@@ -183,7 +183,7 @@ public class FFmpegProcessingSettings : BaseProcessingSettings
     /// </summary>
     public FFmpegProcessingSettings Seek(TimeSpan seek)
     {
-        _stringBuilder.Append($" -ss {seek.Hours:00}:{seek.Minutes:00}:{seek.Seconds:00}.{seek.Milliseconds:000} ".Replace(",", ".", StringComparison.InvariantCulture));
+        _stringBuilder.Append($" -ss {seek.ToFfmpegDuration()} ");
 
         return this;
     }
@@ -193,7 +193,7 @@ public class FFmpegProcessingSettings : BaseProcessingSettings
     /// </summary>
     public FFmpegProcessingSettings SeekOf(TimeSpan seek)
     {
-        _stringBuilder.Append($" -sseof {seek.TotalSeconds:00:00:00.000} ".Replace(",", ".", StringComparison.InvariantCulture));
+        _stringBuilder.Append($" -sseof {seek.ToFfmpegDuration()} ");
 
         return this;
     }
@@ -223,7 +223,7 @@ public class FFmpegProcessingSettings : BaseProcessingSettings
     /// </summary>
     public FFmpegProcessingSettings InputTimeOffset(TimeSpan offset)
     {
-        _stringBuilder.Append($" -itsoffset {offset.TotalSeconds:00:00:00.000} ".Replace(",", ".", StringComparison.InvariantCulture));
+        _stringBuilder.Append($" -itsoffset {offset.ToFfmpegDuration()} ");
 
         return this;
     }
@@ -233,7 +233,7 @@ public class FFmpegProcessingSettings : BaseProcessingSettings
     /// </summary>
     public FFmpegProcessingSettings InputTimestampScale(TimeSpan scale)
     {
-        _stringBuilder.Append($" -itsscale {scale.TotalSeconds:00:00:00.000} ".Replace(",", ".", StringComparison.InvariantCulture));
+        _stringBuilder.Append($" -itsscale {scale.ToFfmpegDuration()} ");
 
         return this;
     }
@@ -243,7 +243,7 @@ public class FFmpegProcessingSettings : BaseProcessingSettings
     /// </summary>
     public FFmpegProcessingSettings Timestamp(TimeSpan timestamp)
     {
-        _stringBuilder.Append($" -timestamp {timestamp.TotalSeconds:00:00:00.000} ".Replace(",", ".", StringComparison.InvariantCulture));
+        _stringBuilder.Append($" -timestamp {timestamp.ToFfmpegDuration()} ");
 
         return this;
     }
